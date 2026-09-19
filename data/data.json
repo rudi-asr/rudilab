@@ -357,6 +357,15 @@
       "credlyLink": "https://www.credly.com/badges/410868cd-3bfa-4a79-8545-af9316d64c61/linked_in?t=tl5s67"
     },
     {
+      "key": "a4",
+      "name": "Ethical Hacker",
+      "issuer": "Cisco",
+      "category": "Cybersecurity",
+      "date": "2026-09-19",
+      "image": "/images/achievements/ethical-hacker.png",
+      "credlyLink": ""
+    },
+    {
       "key": "a2",
       "name": "Your request is my demand",
       "issuer": "Hack The Box",

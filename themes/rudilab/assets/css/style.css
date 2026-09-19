@@ -111,8 +111,10 @@ section[id] { scroll-margin-top: 76px; }
 }
 .nav-toggle:hover { color: var(--accent); border-color: var(--accent); }
 @media (max-width: 700px) {
-  /* Sembunyikan "// sec-research.log" di HP agar brand tidak tabrakan */
-  .brand-slug { display: none; }
+  /* Kurangi padding topbar dan font brand di mobile agar tidak tabrakan */
+  .topbar .wrap { padding: 10px 12px; }
+  .brand { font-size: 11px; gap: 5px; }
+  .brand-logo { width: 20px; height: 20px; }
 
   .nav-toggle { display: inline-flex; }
   .nav {

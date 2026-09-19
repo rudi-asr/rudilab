@@ -43,8 +43,22 @@ status: "Proven"
       live server-side - recorded as lower-severity latent risks that amplify the two primary findings.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Evidence</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Clickjacking - Missing Framing Headers</td><td>No <code class="inline">X-Frame-Options</code> / <code class="inline">CSP frame-ancestors</code> on login</td><td>CWE-1021</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-02</td><td class="sev-med">Medium</td><td>No Brute-force Protection on Login</td><td>Unlimited login attempts; no rate-limit or lockout observed</td><td>CWE-307</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-03</td><td class="sev-low">Low</td><td>Expired TLS Certificate</td><td>Cert expired; connection still established (Low due to non-public scope)</td><td>CWE-295</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-04</td><td class="sev-info">Info</td><td>Server Version Disclosure</td><td>Server header + error pages reveal software version</td><td>CWE-200</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-05</td><td class="sev-low">Low</td><td>Sensitive Logic &amp; PII in Front-end Bundle</td><td>Business logic &amp; PII handling visible in public JS bundle</td><td>CWE-922</td><td class="muted">Not claimed</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Authorization Status &amp; Scope</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized testing - scope-strict, no-DoS</td></tr>
       <tr><td class="k">Discovery method</td><td>Black-box, external, actual command execution</td></tr>
@@ -57,7 +71,7 @@ status: "Proven"
   </section>
 
   <section id="overview">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Findings overview</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Findings overview</h2></div>
     <table><thead><tr><th>#</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
       <tr><td>1</td><td>Clickjacking - login page can be framed</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
       <tr><td>2</td><td>No brute-force / rate-limit on login</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
@@ -68,7 +82,7 @@ status: "Proven"
   </section>
 
   <section id="f1">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed. Clickjacking requires the victim to interact with the page; impact is limited and user-gated.</p>
     <h3><span class="step-n">step 1 -</span> verify security headers</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
@@ -116,7 +130,7 @@ Connection: keep-alive</span>
   </section>
 
   <section id="f2">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed. The login endpoint is unauthenticated, without rate-limit or lockout, enabling credential brute-force.</p>
     <h3><span class="step-n">step 1 -</span> repeated failed logins, same source</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
@@ -150,7 +164,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="f34">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Findings 3 &amp; 4 - TLS &amp; version disclosure <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low / Info]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Findings 3 &amp; 4 - TLS &amp; version disclosure <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low / Info]</span></h2></div>
     <p><strong>Self-signed TLS certificate.</strong> Clients cannot validate server identity and users are conditioned to
       bypass certificate warnings, weakening resistance to an on-path MitM. <span class="muted">Rated Low: requires a
       privileged network position.</span></p>
@@ -160,7 +174,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="fplus">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Finding + - Sensitive logic &amp; PII in the front-end bundle <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Finding + - Sensitive logic &amp; PII in the front-end bundle <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low]</span></h2></div>
     <p class="muted">Source: the application's JavaScript bundle is downloadable unauthenticated. Static review revealed design
       choices that belong on the server. Reported as a latent risk that amplifies findings 1 and 2.</p>
     <h3>a - role logic enforced client-side</h3>
@@ -184,7 +198,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="safe">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Tested and found safe</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Tested and found safe</h2></div>
     <table><thead><tr><th>Vector</th><th>Result</th></tr></thead><tbody>
       <tr><td>SQL injection on login</td><td class="yes">SAFE - generic 401, no error reflection, no bypass</td></tr>
       <tr><td>Path traversal on record endpoints</td><td class="yes">SAFE - 404 from API; 200s were SPA fallback</td></tr>
@@ -196,7 +210,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="notclaimed">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Findings not claimed</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Findings not claimed</h2></div>
     <div class="callout notclaimed"><span class="label">Scope of claims</span>
       <ul class="tight" style="margin-bottom:0;">
         <li>No credentials were compromised; no authentication bypass is claimed.</li>
@@ -208,7 +222,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Conclusion</h2></div>
     <p>Two Medium findings - clickjacking via missing framing headers and an unthrottled login endpoint - were proven by live
       execution. The front-end architecture issues (client-side role logic, PII in URLs, localStorage) are latent risks that
       amplify the impact if either Medium finding is exploited. No production data was modified, no credentials were
@@ -216,7 +230,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">11</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/1021.html">CWE-1021 - Improper Restriction of Rendered UI Layers (Clickjacking)</a></li>
       <li><a href="https://cwe.mitre.org/data/definitions/307.html">CWE-307 - Improper Restriction of Excessive Authentication Attempts</a></li>

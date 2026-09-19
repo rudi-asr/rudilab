@@ -43,8 +43,19 @@ status: "Proven"
       The org-switch IDOR (<code class="inline">POST /api/v1/orgs/switch</code>) returned 403 and is <strong>not</strong> vulnerable (see PoC 4).</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Evidence</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Broken Access Control - Member List</td><td><code class="inline">GET /orgs/me/members</code> &rarr; 200 (new SDR account)</td><td>CWE-862 / CWE-200</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-02</td><td class="sev-med">Medium</td><td>Broken Access Control - Research Batches</td><td><code class="inline">GET /research/discover/batches</code> &rarr; 200 (unused account)</td><td>CWE-862 / CWE-200</td><td class="muted">Not claimed</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Authorization Status &amp; Scope</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized testing - scope-strict, non-destructive</td></tr>
       <tr><td class="k">Discovery method</td><td>Public registration + authenticated API requests</td></tr>
@@ -58,7 +69,7 @@ status: "Proven"
   </section>
 
   <section id="pre">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Preconditions</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Preconditions</h2></div>
     <ul class="tight">
       <li>New account with the SDR role registered through the public registration endpoint.</li>
       <li>JWT obtained directly from the registration response - no email verification or admin approval required.</li>
@@ -68,7 +79,7 @@ status: "Proven"
   </section>
 
   <section id="poc1">
-    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - Self-registration creates an active account + JWT</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 1 - Self-registration creates an active account + JWT</h2></div>
     <p><em>Objective:</em> show that public registration creates an active account and returns an auth token with no further verification or approval.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ TARGET="https://TARGET"
@@ -85,7 +96,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc2">
-    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - New user can view the member list</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 2 - New user can view the member list</h2></div>
     <p><em>Objective:</em> show that a newly registered SDR account can read the organization member list and roles.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -i "$TARGET/api/v1/orgs/me/members" \
@@ -100,7 +111,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc3">
-    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - New user can view existing research batches</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 3 - New user can view existing research batches</h2></div>
     <p><em>Objective:</em> show that a new SDR account with no discovery activity can read research batches already in the system.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -i "$TARGET/api/v1/research/discover/batches?limit=10" \
@@ -114,7 +125,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc4">
-    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 4 - Org switching (negative test / not vulnerable)</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>PoC 4 - Org switching (negative test / not vulnerable)</h2></div>
     <p><em>Objective:</em> prevent overclaiming by including a negative test for the org-switch IDOR.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -i -X POST "$TARGET/api/v1/orgs/switch" \
@@ -128,7 +139,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Impact</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Impact</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Member-list disclosure.</strong> A new SDR account can read the full member list and roles, including owner
       accounts - usable for account enumeration, social engineering, or targeted attacks on higher-privilege accounts.<br><br>
@@ -146,14 +157,14 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Severity Assessment</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Severity Assessment</h2></div>
     <p>Severity is researcher-assessed based on the observed conditions: the flaw is network-accessible with no complex
       preconditions, but requires a registered low-privilege account. Impact is limited to disclosure of the member list
       and resource metadata, with no evidence of data modification or availability impact.</p>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Root Cause</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Root Cause</h2></div>
     <p>No adequate authorization check on <code class="inline">/api/v1/orgs/me/members</code> and
       <code class="inline">/api/v1/research/discover/batches</code>. Both endpoints validate only that the request carries a
       valid token (<strong>authentication</strong>) but never validate whether the caller is authorized to access the
@@ -161,7 +172,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Solution &amp; Recommendations</h2></div>
     <h3>before - vulnerable pattern</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>python</span></div>
 <pre><span class="hl-red"># VULNERABLE: returns all members without an org filter
@@ -235,7 +246,7 @@ def get_batches(
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Conclusion</h2></div>
     <p>A new SDR account can read information that should not be exposed: the organization member list (PoC 2) and existing
       research batches (PoC 3). Both endpoints perform an authentication check but lack an adequate authorization check. The
       org-switch IDOR was not proven - the endpoint correctly returns 403 - and is excluded as a finding. All testing was
@@ -243,7 +254,7 @@ def get_batches(
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">13</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/284.html">CWE-284 - Improper Access Control</a></li>
       <li><a href="https://cwe.mitre.org/data/definitions/285.html">CWE-285 - Improper Authorization</a></li>

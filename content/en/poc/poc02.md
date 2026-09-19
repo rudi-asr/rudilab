@@ -43,8 +43,18 @@ status: "Proven"
       TLS issue as Critical would overstate real-world risk.</div>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Evidence</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-low">Low-Medium</td><td>TLS Certificate - Expired &amp; CN Mismatch</td><td>Cert expired; CN does not match served hostname</td><td>CWE-295 / CWE-297</td><td class="muted">Not claimed</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Authorization Status &amp; Scope</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized testing - black-box, external</td></tr>
       <tr><td class="k">Discovery method</td><td>Unauthenticated TLS inspection of a public endpoint</td></tr>
@@ -57,7 +67,7 @@ status: "Proven"
   </section>
 
   <section id="pre">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Preconditions</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Preconditions</h2></div>
     <ul class="tight">
       <li>Black-box testing from an external network, no authentication.</li>
       <li>No account or credentials required - the finding is publicly verifiable.</li>
@@ -67,7 +77,7 @@ status: "Proven"
   </section>
 
   <section id="poc1">
-    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - TLS verification via curl</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 1 - TLS verification via curl</h2></div>
     <p><em>Objective:</em> demonstrate that the certificate is invalid and causes verification errors.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -vI https://TARGET 2>&1 | grep -E "expire|CN=|subject|SSL|certificate"</span>
@@ -79,7 +89,7 @@ curl: (60) SSL certificate problem: certificate has expired</span></pre></div>
   </section>
 
   <section id="poc2">
-    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - Certificate detail via OpenSSL</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 2 - Certificate detail via OpenSSL</h2></div>
     <p><em>Objective:</em> extract certificate details to confirm the expiry date and hostname mismatch.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ echo | openssl s_client -connect TARGET:443 -servername TARGET 2>/dev/null \
@@ -92,7 +102,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
   <section id="poc3">
-    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - SSL audit via Nmap</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 3 - SSL audit via Nmap</h2></div>
     <p><em>Objective:</em> confirm the finding with an independent tool.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ nmap -p 443 --script ssl-cert TARGET</span>
@@ -106,7 +116,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Impact &amp; Attack Scenario</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Impact &amp; Attack Scenario</h2></div>
     <p>With an invalid certificate, an attacker in an on-path position (e.g. a shared network, ARP poisoning) can target
       users habituated to dismissing TLS warnings. Once a user clicks through the warning, transport confidentiality and
       integrity are no longer guaranteed.</p>
@@ -125,7 +135,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Severity Assessment</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Severity Assessment</h2></div>
     <p>Severity is researcher-assessed based on the observed conditions: exploitation requires an on-path (MITM)
       position and the victim dismissing a browser certificate warning, and any exposure is warning-gated. This places
       the finding in the Medium band - rescored from an earlier Critical rating; the accurate rating is what a triager
@@ -133,14 +143,14 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Root Cause</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Root Cause</h2></div>
     <p>No auto-renewal mechanism and no proactive expiry monitoring for TLS certificates. Let's Encrypt certificates are
       valid for 90 days and must be renewed on schedule. The hostname mismatch indicates the installed certificate was issued
       for a different domain or subdomain - most likely a deployment misconfiguration.</p>
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Solution &amp; Recommendations</h2></div>
     <h3>renew &amp; auto-renew</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ certbot --nginx -d TARGET          # renew with correct CN/SAN
@@ -162,14 +172,14 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
   </section>
 
   <section id="verify">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Verification After Fix</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Verification After Fix</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -vI https://TARGET 2>&1 | grep -E "expire|subject|SSL"</span>
 <span class="out"># no certificate errors; notAfter is in the future; CN/SAN matches the domain</span></pre></div>
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Conclusion</h2></div>
     <p>An expired certificate combined with a hostname mismatch removes the guarantees of transport encryption and server
       authentication for users who click through the warning. Remediation is fast and free with Let's Encrypt Certbot and
       should be paired with auto-renewal and expiry monitoring. The realistic risk is Medium - meaningful, but gated by an
@@ -177,7 +187,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">13</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/295.html">CWE-295 - Improper Certificate Validation</a></li>
       <li><a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">OWASP A02:2021 - Cryptographic Failures</a></li>

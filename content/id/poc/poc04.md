@@ -36,8 +36,18 @@ status: "Proven"
     <p>Kondisi ini dilaporkan ke operator melalui saluran kontak resmi mereka pada 2026-04-28 dan re-verifikasi dijadwalkan 90 hari kemudian. Lihat bagian Kronologi Pengungkapan untuk detailnya.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Peta Risiko</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Kelas Kerentanan</th><th>Bukti</th><th>CWE</th><th>Status Perbaikan</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Directory Listing - Aplikasi Web Sektor Publik</td><td>Directory index dapat diakses di URL publik tanpa kredensial</td><td>CWE-548 / CWE-200</td><td class="muted">Tidak diklaim - operator diberitahu</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Independent research - no commissioned engagement, no authorization letter</td></tr>
       <tr><td class="k">Discovery method</td><td>Passive observation of a publicly reachable URL</td></tr>
@@ -55,7 +65,7 @@ status: "Proven"
   </section>
 
   <section id="affected">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Sistem yang Terdampak</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Sistem yang Terdampak</h2></div>
     <table><tbody>
       <tr><td class="k">Organization</td><td>redacted</td></tr>
       <tr><td class="k">System</td><td>Public-facing information system, government sector</td></tr>
@@ -67,7 +77,7 @@ status: "Proven"
   </section>
 
   <section id="repro">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Detail Teknis &amp; Reproduksi</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Detail Teknis &amp; Reproduksi</h2></div>
     <p>Ketika web server menerima permintaan untuk direktori dan tidak menemukan file index, server akan mengembalikan error atau membuat daftar isi direktori. Perilaku terakhir ini - directory listing - mengekspos nama file kepada siapa saja.</p>
     <h3>lab reproduction (host under my control)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
@@ -75,7 +85,7 @@ status: "Proven"
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Dampak</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Dampak</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Structure disclosure.</strong> Directory layout and naming conventions are revealed, shortening
       reconnaissance for follow-on attacks.<br><br>
@@ -97,17 +107,17 @@ status: "Proven"
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Penilaian Keparahan</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Penilaian Keparahan</h2></div>
     <p>Tingkat keparahan dinilai peneliti: satu GET tanpa autentikasi mengungkapkan direktori penuh beserta isinya.</p>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Akar Masalah</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Akar Masalah</h2></div>
     <p>Server menghasilkan indeks direktori saat tidak ada file index, dan direktori tersebut berisi file yang dapat diakses publik.</p>
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Solusi &amp; Rekomendasi</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>before - vulnerable pattern (Apache)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>apache</span></div>
 <pre>Konfirmasi juga bahwa file yang sebelumnya terdaftar tidak lagi dapat diambil secara langsung setelah directory listing dinonaktifkan.</p>

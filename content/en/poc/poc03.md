@@ -44,8 +44,21 @@ status: "Proven"
       confirmed from response headers and open ports.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Evidence</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-high">High</td><td>Exposed Backend API - Direct Access / nginx Bypass</td><td>Backend reachable on raw port; nginx 502 but API returns 200</td><td>CWE-668 / CWE-284</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-02</td><td class="sev-high">High</td><td>Exposed Object Storage (MinIO)</td><td>MinIO health &amp; API endpoints reachable from internet</td><td>CWE-668</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-03</td><td class="sev-high">High</td><td>Exposed Database (PostgreSQL)</td><td><code class="inline">psql</code> port reachable from public internet</td><td>CWE-668</td><td class="muted">Not claimed</td></tr>
+      <tr><td>F-04</td><td class="sev-med">Medium</td><td>Public OpenAPI / Swagger Docs</td><td>Full API schema accessible without authentication</td><td>CWE-200</td><td class="muted">Not claimed</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Authorization Status &amp; Scope</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized under a bug-bounty program - scope-strict</td></tr>
       <tr><td class="k">Discovery method</td><td>External port scan + authenticated API requests</td></tr>
@@ -58,7 +71,7 @@ status: "Proven"
   </section>
 
   <section id="poc1">
-    <div class="sec-head"><span class="sec-num">03</span><h2>PoC 1 - Port exposure verification</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - Port exposure verification</h2></div>
     <p><em>Objective:</em> show that backend service ports are reachable from the public internet.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ for port in 80 443 &lt;APP&gt; &lt;API&gt; &lt;CLONE&gt; &lt;S3&gt; &lt;DB&gt;; do
@@ -77,7 +90,7 @@ status: "Proven"
   </section>
 
   <section id="poc2">
-    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 2 - API direct access &amp; nginx bypass</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - API direct access &amp; nginx bypass</h2></div>
     <p><em>Objective:</em> show the backend API is reachable directly, bypassing nginx and any controls it enforces.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd"># nginx frontend is down:
@@ -95,7 +108,7 @@ $ curl -s http://TARGET:&lt;API&gt;/api/v1/auth/login \
   </section>
 
   <section id="poc3">
-    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 3 - Public API documentation &amp; schema</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - Public API documentation &amp; schema</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s http://TARGET:&lt;API&gt;/docs           # Swagger UI
 $ curl -s http://TARGET:&lt;API&gt;/redoc          # ReDoc
@@ -108,7 +121,7 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
   <section id="poc4">
-    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 4 - MinIO health endpoints accessible</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 4 - MinIO health endpoints accessible</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s http://TARGET:&lt;S3&gt;/minio/health/live
 $ curl -s http://TARGET:&lt;S3&gt;/minio/health/cluster
@@ -121,7 +134,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="poc5">
-    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 5 - PostgreSQL port reachable from internet</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>PoC 5 - PostgreSQL port reachable from internet</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ nc -zv TARGET &lt;DB&gt; -w3</span>
 <span class="hl-red">Connection to TARGET &lt;DB&gt; port [tcp] succeeded!</span></pre></div>
@@ -131,7 +144,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="addl">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Additional Findings (same scope)</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Additional Findings (same scope)</h2></div>
     <table><thead><tr><th>ID</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
       <tr><td>F-1</td><td>Public API docs without auth (/docs, /openapi.json)</td><td class="sev med">Medium</td><td class="st">Confirmed</td></tr>
       <tr><td>F-2</td><td>No login rate limiting - 20 requests, zero 429s</td><td class="sev med">Medium</td><td class="st">Confirmed</td></tr>
@@ -148,7 +161,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="safe">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Tested and found safe</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Tested and found safe</h2></div>
     <table><thead><tr><th>Vector</th><th>Result</th></tr></thead><tbody>
       <tr><td>SQL injection (all tested endpoints)</td><td class="yes">SAFE - 401, parameterized queries confirmed</td></tr>
       <tr><td>CORS arbitrary origin</td><td class="yes">SAFE - no ACAO:* triggered</td></tr>
@@ -164,7 +177,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Impact</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Impact</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Database direct access (highest risk).</strong> Direct PostgreSQL auth attempts from the internet; weak or
       default credentials would allow a full dump without touching the API, WAF, or nginx.<br><br>
@@ -186,7 +199,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Severity Assessment</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Severity Assessment</h2></div>
     <p>Severity is researcher-assessed based on the observed conditions: the exposed service is reachable from any
       external network without authentication or user interaction, and a potential full database dump has a
       confidentiality impact that extends beyond the application's own scope. No data modification or availability
@@ -194,7 +207,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Root Cause</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Root Cause</h2></div>
     <p>All backend services bind to <code class="inline">0.0.0.0</code> (all interfaces) instead of
       <code class="inline">127.0.0.1</code> (loopback), so every service is reachable on the public-facing interface with no
       firewall or security-group restriction. The nginx reverse proxy was deployed as a routing layer, not a security
@@ -202,7 +215,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">13</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>Solution &amp; Recommendations</h2></div>
     <h3>bind services to loopback</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>config</span></div>
 <pre><span class="cmd">uvicorn main:app --host 127.0.0.1 --port &lt;API&gt;   # FastAPI
@@ -229,7 +242,7 @@ iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">14</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">15</span><h2>Conclusion</h2></div>
     <p>The application's authentication and write-authorization boundaries are solid - sensitive endpoints require valid
       sessions, SQL injection is mitigated, and low-privilege writes are correctly blocked. No exploitable IDOR or privilege
       escalation was confirmed. However, the network exposure of the backend stack is a systemic risk that undermines all
@@ -238,7 +251,7 @@ iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">15</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">16</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/668.html">CWE-668 - Exposure of Resource to Wrong Sphere</a></li>
       <li><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP A05:2021 - Security Misconfiguration</a></li>

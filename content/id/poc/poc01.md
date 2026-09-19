@@ -36,8 +36,19 @@ status: "Proven"
     <p class="muted">Fingerprint backend: FastAPI (Python) + SQLAlchemy + Uvicorn - disimpulkan dari skema error Pydantic. IDOR org-switch (POST /api/v1/orgs/switch) mengembalikan 403 dan tidak rentan (lihat PoC 4).</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Peta Risiko</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Kelas Kerentanan</th><th>Bukti</th><th>CWE</th><th>Status Perbaikan</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Broken Access Control - Daftar Anggota</td><td><code class="inline">GET /orgs/me/members</code> &rarr; 200 (akun SDR baru)</td><td>CWE-862 / CWE-200</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-02</td><td class="sev-med">Medium</td><td>Broken Access Control - Research Batches</td><td><code class="inline">GET /research/discover/batches</code> &rarr; 200 (akun belum aktif)</td><td>CWE-862 / CWE-200</td><td class="muted">Tidak diklaim</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized testing - scope-strict, non-destructive</td></tr>
       <tr><td class="k">Discovery method</td><td>Public registration + authenticated API requests</td></tr>
@@ -51,7 +62,7 @@ status: "Proven"
   </section>
 
   <section id="pre">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Prasyarat</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Prasyarat</h2></div>
     <ul class="tight">
       <li>New account with the SDR role registered through the public registration endpoint.</li>
       <li>JWT obtained directly from the registration response - no email verification or admin approval required.</li>
@@ -61,7 +72,7 @@ status: "Proven"
   </section>
 
   <section id="poc1">
-    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - Self-registration creates an active account + JWT</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 1 - Self-registration creates an active account + JWT</h2></div>
     <p><em>Tujuan:</em> menunjukkan bahwa pendaftaran publik membuat akun aktif dan mengembalikan token autentikasi tanpa verifikasi atau persetujuan lebih lanjut.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ TARGET="https://TARGET"
@@ -78,7 +89,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc2">
-    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - New user can view the member list</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 2 - New user can view the member list</h2></div>
     <p><em>Tujuan:</em> menunjukkan bahwa akun SDR yang baru didaftarkan dapat membaca daftar anggota organisasi dan peran mereka.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -i "$TARGET/api/v1/orgs/me/members" \
@@ -92,7 +103,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc3">
-    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - New user can view existing research batches</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 3 - New user can view existing research batches</h2></div>
     <p><em>Tujuan:</em> menunjukkan bahwa akun SDR baru tanpa aktivitas discovery dapat membaca batch riset yang sudah ada milik pengguna lain.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre>Akun baru tanpa aktivitas discovery sebelumnya menerima respons berisi batch riset lengkap yang sudah ada milik pengguna lain.</p>
@@ -100,14 +111,14 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="poc4">
-    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 4 - Org switching (negative test / not vulnerable)</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>PoC 4 - Org switching (negative test / not vulnerable)</h2></div>
     <p>Tujuan: mencegah klaim berlebihan dengan menyertakan uji negatif untuk IDOR org-switch.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre>Kesimpulan: IDOR org-switch TIDAK rentan. Server dengan benar mengembalikan 403 pada permintaan switching lintas-tenant.</p>
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Dampak</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Dampak</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Member-list disclosure.</strong> A new SDR account can read the full member list and roles, including owner
       accounts - usable for account enumeration, social engineering, or targeted attacks on higher-privilege accounts.<br><br>
@@ -125,12 +136,12 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Penilaian Keparahan</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Penilaian Keparahan</h2></div>
     <p>Tingkat keparahan dinilai peneliti berdasarkan kondisi yang diamati: kelemahan ada di lapisan otorisasi resource, bukan lapisan autentikasi.</p>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Akar Masalah</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Akar Masalah</h2></div>
     <p>No adequate authorization check on <code class="inline">/api/v1/orgs/me/members</code> and
       <code class="inline">/api/v1/research/discover/batches</code>. Both endpoints validate only that the request carries a
       valid token (<strong>authentication</strong>) but never validate whether the caller is authorized to access the
@@ -138,7 +149,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Solusi &amp; Rekomendasi</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>before - vulnerable pattern</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>python</span></div>
 <pre><span class="hl-red"># VULNERABLE: returns all members without an org filter
@@ -212,7 +223,7 @@ def get_batches(
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Kesimpulan</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Kesimpulan</h2></div>
     <p>A new SDR account can read information that should not be exposed: the organization member list (PoC 2) and existing
       research batches (PoC 3). Both endpoints perform an authentication check but lack an adequate authorization check. The
       org-switch IDOR was not proven - the endpoint correctly returns 403 - and is excluded as a finding. All testing was
@@ -220,7 +231,7 @@ def get_batches(
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">13</span><h2>Referensi</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>Referensi</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/284.html">CWE-284 - Improper Access Control</a></li>
       <li><a href="https://cwe.mitre.org/data/definitions/285.html">CWE-285 - Improper Authorization</a></li>

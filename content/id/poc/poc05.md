@@ -35,8 +35,22 @@ status: "Proven"
     <p>Peninjauan sekunder terhadap bundle JavaScript publik menemukan logika sensitif dan penanganan PII yang seharusnya tidak terekspos di sisi klien.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Peta Risiko</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Kelas Kerentanan</th><th>Bukti</th><th>CWE</th><th>Status Perbaikan</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Clickjacking - Header Framing Tidak Ada</td><td>Tidak ada <code class="inline">X-Frame-Options</code> / <code class="inline">CSP frame-ancestors</code> di halaman login</td><td>CWE-1021</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-02</td><td class="sev-med">Medium</td><td>Tidak Ada Perlindungan Brute-force Login</td><td>Percobaan login tidak dibatasi; tidak ada rate-limit atau lockout</td><td>CWE-307</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-03</td><td class="sev-low">Low</td><td>Sertifikat TLS Kedaluwarsa</td><td>Sertifikat kedaluwarsa; koneksi masih diterima</td><td>CWE-295</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-04</td><td class="sev-info">Info</td><td>Versi Server Terekspos</td><td>Header Server + halaman error mengungkap versi software</td><td>CWE-200</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-05</td><td class="sev-low">Low</td><td>Logika Sensitif &amp; PII di Bundle Front-end</td><td>Logika bisnis &amp; penanganan PII terlihat di bundle JS publik</td><td>CWE-922</td><td class="muted">Tidak diklaim</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized testing - scope-strict, no-DoS</td></tr>
       <tr><td class="k">Discovery method</td><td>Black-box, external, actual command execution</td></tr>
@@ -49,7 +63,7 @@ status: "Proven"
   </section>
 
   <section id="overview">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Ringkasan Temuan</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Ringkasan Temuan</h2></div>
     <table><thead><tr><th>#</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
       <tr><td>1</td><td>Clickjacking - login page can be framed</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
       <tr><td>2</td><td>No brute-force / rate-limit on login</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
@@ -60,7 +74,7 @@ status: "Proven"
   </section>
 
   <section id="f1">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Keparahan: Medium - dinilai peneliti. Clickjacking mengharuskan korban berinteraksi dengan halaman; eksploitasi tidak trivial namun didokumentasikan dan layak diperbaiki pada halaman login.</p>
     <h3><span class="step-n">step 1 -</span> verify security headers</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
@@ -106,7 +120,7 @@ Connection: keep-alive</span>
   </section>
 
   <section id="f2">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Keparahan: Medium - dinilai peneliti. Endpoint login tidak terautentikasi, tanpa pembatasan percobaan atau pembatasan laju, memungkinkan serangan brute-force tanpa hambatan teknis.</p>
     <h3><span class="step-n">step 1 -</span> repeated failed logins, same source</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>

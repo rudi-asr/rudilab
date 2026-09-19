@@ -36,8 +36,21 @@ status: "Proven"
     <p class="muted">Fingerprint stack: frontend Vue.js · backend FastAPI/Uvicorn · object storage MinIO · PostgreSQL - disimpulkan dari header respons HTTP dan dokumen OpenAPI publik.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Peta Risiko</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Kelas Kerentanan</th><th>Bukti</th><th>CWE</th><th>Status Perbaikan</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-high">High</td><td>Backend API Terekspos - Akses Langsung / Bypass nginx</td><td>Backend dapat dijangkau via port langsung; nginx 502 tapi API 200</td><td>CWE-668 / CWE-284</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-02</td><td class="sev-high">High</td><td>Object Storage Terekspos (MinIO)</td><td>Endpoint MinIO dapat dijangkau dari internet</td><td>CWE-668</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-03</td><td class="sev-high">High</td><td>Database Terekspos (PostgreSQL)</td><td>Port <code class="inline">psql</code> dapat dijangkau dari internet publik</td><td>CWE-668</td><td class="muted">Tidak diklaim</td></tr>
+      <tr><td>F-04</td><td class="sev-med">Medium</td><td>Dokumentasi OpenAPI / Swagger Publik</td><td>Skema API lengkap dapat diakses tanpa autentikasi</td><td>CWE-200</td><td class="muted">Tidak diklaim</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Status Otorisasi &amp; Ruang Lingkup</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Authorized under a bug-bounty program - scope-strict</td></tr>
       <tr><td class="k">Discovery method</td><td>External port scan + authenticated API requests</td></tr>
@@ -50,14 +63,14 @@ status: "Proven"
   </section>
 
   <section id="poc1">
-    <div class="sec-head"><span class="sec-num">03</span><h2>PoC 1 - Port exposure verification</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - Port exposure verification</h2></div>
     <p><em>Tujuan:</em> menunjukkan bahwa port layanan backend dapat dijangkau dari internet publik.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <p>Semua empat port backend dapat dijangkau dari luar. Port database adalah yang paling kritis - akses data langsung tanpa autentikasi.</p>
   </section>
 
   <section id="poc2">
-    <div class="sec-head"><span class="sec-num">04</span><h2>PoC 2 - API direct access &amp; nginx bypass</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - API direct access &amp; nginx bypass</h2></div>
     <p><em>Tujuan:</em> menunjukkan bahwa API backend dapat dijangkau langsung, melewati nginx dan kontrol yang diterapkannya.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd"># nginx frontend is down:
@@ -74,7 +87,7 @@ $ curl -s http://TARGET:&lt;API&gt;/api/v1/auth/login \
   </section>
 
   <section id="poc3">
-    <div class="sec-head"><span class="sec-num">05</span><h2>PoC 3 - Public API documentation &amp; schema</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - Public API documentation &amp; schema</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s http://TARGET:&lt;API&gt;/docs           # Swagger UI
 $ curl -s http://TARGET:&lt;API&gt;/redoc          # ReDoc
@@ -86,19 +99,19 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
   <section id="poc4">
-    <div class="sec-head"><span class="sec-num">06</span><h2>PoC 4 - MinIO health endpoints accessible</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 4 - MinIO health endpoints accessible</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre>Akses anonim ke endpoint health mengkonfirmasi layanan object storage dan statusnya. Daftar bucket mengembalikan nama container penyimpanan internal.</p>
   </section>
 
   <section id="poc5">
-    <div class="sec-head"><span class="sec-num">07</span><h2>PoC 5 - PostgreSQL port reachable from internet</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>PoC 5 - PostgreSQL port reachable from internet</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre>TCP handshake PostgreSQL berhasil dari internet eksternal. Penyerang dapat mencoba akses database langsung jika memiliki atau menebak kredensial.</p>
   </section>
 
   <section id="addl">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Additional Findings (same scope)</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Additional Findings (same scope)</h2></div>
     <table><thead><tr><th>ID</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
       <tr><td>F-1</td><td>Public API docs without auth (/docs, /openapi.json)</td><td class="sev med">Medium</td><td class="st">Confirmed</td></tr>
       <tr><td>F-2</td><td>No login rate limiting - 20 requests, zero 429s</td><td class="sev med">Medium</td><td class="st">Confirmed</td></tr>
@@ -115,7 +128,7 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
   <section id="safe">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Tested and found safe</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Tested and found safe</h2></div>
     <table><thead><tr><th>Vector</th><th>Result</th></tr></thead><tbody>
       <tr><td>SQL injection (all tested endpoints)</td><td class="yes">SAFE - 401, parameterized queries confirmed</td></tr>
       <tr><td>CORS arbitrary origin</td><td class="yes">SAFE - no ACAO:* triggered</td></tr>
@@ -131,7 +144,7 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Dampak</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Dampak</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Database direct access (highest risk).</strong> Direct PostgreSQL auth attempts from the internet; weak or
       default credentials would allow a full dump without touching the API, WAF, or nginx.<br><br>
@@ -153,12 +166,12 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Penilaian Keparahan</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Penilaian Keparahan</h2></div>
     <p>Tingkat keparahan dinilai peneliti berdasarkan kondisi yang diamati: layanan yang terekspos dapat dijangkau dari internet tanpa autentikasi.</p>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Akar Masalah</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Akar Masalah</h2></div>
     <p>All backend services bind to <code class="inline">0.0.0.0</code> (all interfaces) instead of
       <code class="inline">127.0.0.1</code> (loopback), so every service is reachable on the public-facing interface with no
       firewall or security-group restriction. The nginx reverse proxy was deployed as a routing layer, not a security
@@ -166,7 +179,7 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">13</span><h2>Solusi &amp; Rekomendasi</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>bind services to loopback</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>config</span></div>
 <pre>Batas autentikasi dan otorisasi-tulis aplikasi sudah kokoh - tidak ada bypass autentikasi atau penulisan yang tidak terotorisasi yang ditemukan. Keterpaparan hanya mempengaruhi endpoint baca yang tidak terlindungi.</p>

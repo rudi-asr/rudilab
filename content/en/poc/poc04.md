@@ -45,8 +45,18 @@ status: "Proven"
       remained unremediated at the time of publication.</p>
   </section>
 
+
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Evidence</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr><td>F-01</td><td class="sev-med">Medium</td><td>Directory Listing - Public Sector Web App</td><td>Directory index accessible at publicly reachable URL without credentials</td><td>CWE-548 / CWE-200</td><td class="muted">Not claimed - operator notified</td></tr>
+    </tbody></table>
+  </section>
+
   <section id="scope">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Authorization Status &amp; Scope</h2></div>
     <table><tbody>
       <tr><td class="k">Authorization status</td><td>Independent research - no commissioned engagement, no authorization letter</td></tr>
       <tr><td class="k">Discovery method</td><td>Passive observation of a publicly reachable URL</td></tr>
@@ -65,7 +75,7 @@ status: "Proven"
   </section>
 
   <section id="affected">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Affected System</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Affected System</h2></div>
     <table><tbody>
       <tr><td class="k">Organization</td><td>redacted</td></tr>
       <tr><td class="k">System</td><td>Public-facing information system, government sector</td></tr>
@@ -78,7 +88,7 @@ status: "Proven"
   </section>
 
   <section id="repro">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Technical Detail &amp; Reproduction</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Technical Detail &amp; Reproduction</h2></div>
     <p>When a web server receives a request for a directory and finds no index file, it either returns an error or generates
       a listing of the directory contents. The second behaviour is useful during development and is enabled by default in
       several stacks. Left on in production, every unprotected folder becomes a browsable file manager.</p>
@@ -101,7 +111,7 @@ status: "Proven"
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Impact</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Impact</h2></div>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Structure disclosure.</strong> Directory layout and naming conventions are revealed, shortening
       reconnaissance for follow-on attacks.<br><br>
@@ -123,7 +133,7 @@ status: "Proven"
   </section>
 
     <section id="cvss">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Severity Assessment</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Severity Assessment</h2></div>
     <p>Severity is researcher-assessed based on the observed conditions: a single unauthenticated GET discloses the
       file inventory, with no write or modification path observed. The rating is deliberately conservative at
       low-to-medium because no listed file was opened - if the directory contains backups, dumps, or personal data,
@@ -131,7 +141,7 @@ status: "Proven"
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Root Cause</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Root Cause</h2></div>
     <p>The server generates a directory index when no index file is present, and the directory in question is served from
       within the public web root. Two independent mistakes overlap: directory browsing was never disabled, and files not
       meant to be public were stored somewhere publicly served. Disabling the listing addresses the symptom; relocating
@@ -139,7 +149,7 @@ status: "Proven"
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Solution &amp; Recommendations</h2></div>
     <h3>before - vulnerable pattern (Apache)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>apache</span></div>
 <pre><span class="hl-red">&lt;Directory /var/www/html&gt;
@@ -178,7 +188,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
   </section>
 
   <section id="verify">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Verification After Fix</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Verification After Fix</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s -o /dev/null -w "%{http_code}\n" https://target/&lt;path&gt;/</span>
 <span class="out">403</span>
@@ -189,7 +199,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
   </section>
 
   <section id="timeline">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Disclosure Timeline</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Disclosure Timeline</h2></div>
     <table><thead><tr><th>Date</th><th>Event</th></tr></thead><tbody>
       <tr><td class="k">2026-04-28</td><td>Condition identified; report sent to the operator via its official channel, incl. affected path, technical description, and remediation steps</td></tr>
       <tr><td class="k">2026-07-27</td><td>90-day coordinated disclosure window elapsed with no acknowledgement received</td></tr>
@@ -202,7 +212,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
     <p>A publicly reachable directory on a government information system returns a full file index to unauthenticated
       visitors. The finding is low to medium in isolation, and its real severity depends on the contents of that directory,
       which were deliberately not examined. The remediation is a single configuration directive, supported by relocating
@@ -212,7 +222,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">12</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://cwe.mitre.org/data/definitions/548.html">CWE-548 - Exposure of Information Through Directory Listing</a></li>
       <li><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP A05:2021 - Security Misconfiguration</a></li>

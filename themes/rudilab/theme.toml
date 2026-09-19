@@ -1,0 +1,4 @@
+name = "rudilab"
+license = "MIT"
+description = "Custom dark theme for rudilab.my.id security portfolio"
+min_version = "0.160.0"

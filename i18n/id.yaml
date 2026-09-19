@@ -1,0 +1,45 @@
+# id.yaml - Bahasa Indonesia strings
+# Tambahkan/edit terjemahan di sini; key yang tidak ada otomatis fallback ke EN
+
+nav_about: "Tentang"
+nav_poc: "PoC"
+nav_lab: "Lab"
+nav_research: "Riset"
+nav_achievements: "Pencapaian"
+nav_certifications: "Sertifikasi"
+nav_books: "Buku"
+
+hero_h1: "Keamanan Ofensif | Penetration Tester | Keamanan Infrastruktur"
+hero_role: "Keamanan Ofensif | Penetration Tester | Keamanan Infrastruktur"
+hero_lede: >
+  Peneliti keamanan yang berfokus pada offensive security, pengujian penetrasi aplikasi web,
+  dan penguatan infrastruktur. Mendokumentasikan penilaian kerentanan nyata,
+  eksperimen homelab, dan riset yang telah dipublikasikan.
+
+section_poc: "Bukti Konsep (PoC)"
+section_lab: "Lab"
+section_research: "Riset & Publikasi"
+section_certifications: "Sertifikasi"
+section_achievements: "Pencapaian"
+section_books: "Buku"
+
+poc_subtitle: "Penilaian kerentanan dan temuan keamanan yang terdokumentasi."
+lab_subtitle: "Infrastruktur homelab, alat keamanan, dan eksperimen."
+research_subtitle: "Makalah riset yang dipublikasikan dan kontribusi akademik."
+
+view_all: "Lihat semua"
+view_document: "Lihat Dokumen"
+search_placeholder: "Cari..."
+filter_all: "Semua"
+
+date: "Tanggal"
+target: "Target"
+category: "Kategori"
+severity: "Tingkat Keparahan"
+impact: "Dampak"
+status: "Status"
+difficulty: "Kesulitan"
+
+status_proven: "Terbukti"
+status_published: "Dipublikasikan"
+status_review: "Dalam Tinjauan"

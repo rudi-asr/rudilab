@@ -1,0 +1,45 @@
+{{ define "main" }}
+<div class="article-wrap">
+  <h1 class="article-title">{{ .Title }}</h1>
+
+  <dl class="meta-grid">
+    <dt>{{ i18n "date" }}</dt>
+    <dd>{{ .Date.Format "2006-01-02" }}</dd>
+
+    <dt>{{ i18n "target" }}</dt>
+    <dd>{{ .Params.target }}</dd>
+
+    <dt>{{ i18n "category" }}</dt>
+    <dd>{{ .Params.category }}</dd>
+
+    <dt>{{ i18n "severity" }}</dt>
+    <dd>
+      {{ .Params.severity }}
+      {{ with .Params.severity_note }}<p class="severity-note mt-4">{{ . }}</p>{{ end }}
+    </dd>
+
+    {{ with .Params.cwe }}
+    <dt>CWE</dt>
+    <dd>{{ . }}</dd>
+    {{ end }}
+
+    {{ with .Params.status }}
+    <dt>{{ i18n "status" }}</dt>
+    <dd><span class="status Proven">{{ i18n "status_proven" }}</span></dd>
+    {{ end }}
+
+    {{ with .Params.impact }}
+    <dt>{{ i18n "impact" }}</dt>
+    <dd>{{ . }}</dd>
+    {{ end }}
+  </dl>
+
+  <div class="article-body">
+    {{ .Content }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// poc-{{ .Params.poc_num }} - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/poc/{{ end }}
+{{ define "footer_back_label" }}&larr; back to PoC{{ end }}

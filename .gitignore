@@ -1,0 +1,18 @@
+# Hugo build output - never commit this
+public/
+resources/_gen/
+.hugo_build.lock
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Env / secrets - just in case
+.env
+*.pem
+*.key
+.gitlab-ci.yml

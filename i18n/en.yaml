@@ -1,0 +1,44 @@
+# en.yaml - English strings (default language)
+
+nav_about: "About"
+nav_poc: "PoC"
+nav_lab: "Lab"
+nav_research: "Research"
+nav_achievements: "Achievements"
+nav_certifications: "Certifications"
+nav_books: "Books"
+
+hero_h1: "Offensive Security | Penetration Tester | Infrastructure Security"
+hero_role: "Offensive Security | Penetration Tester | Infrastructure Security"
+hero_lede: >
+  Security researcher focused on offensive security, web application penetration testing,
+  and infrastructure hardening. I document real-world vulnerability assessments,
+  homelab experiments, and published research.
+
+section_poc: "Proof of Concept (PoC)"
+section_lab: "Lab"
+section_research: "Research & Publications"
+section_certifications: "Certifications"
+section_achievements: "Achievements"
+section_books: "Books"
+
+poc_subtitle: "Documented vulnerability assessments and security findings."
+lab_subtitle: "Homelab infrastructure setups, security tools, and experiments."
+research_subtitle: "Published research papers and academic contributions."
+
+view_all: "View all"
+view_document: "View Document"
+search_placeholder: "Search..."
+filter_all: "All"
+
+date: "Date"
+target: "Target"
+category: "Category"
+severity: "Severity"
+impact: "Impact"
+status: "Status"
+difficulty: "Difficulty"
+
+status_proven: "Proven"
+status_published: "Published"
+status_review: "In review"

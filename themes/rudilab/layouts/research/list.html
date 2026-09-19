@@ -1,0 +1,55 @@
+{{ define "main" }}
+{{ $data := .Site.Data.data }}
+<div class="page">
+  <div class="page-header">
+    <h1>{{ i18n "section_research" }}</h1>
+    <p>{{ i18n "research_subtitle" }}</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
+  </div>
+  <div class="filter-tags">
+    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
+    {{ $seen := slice }}
+    {{ range $data.research }}
+      {{ $j := .journal }}
+      {{ if and $j (not (in $seen $j)) }}
+        {{ $seen = $seen | append $j }}
+        <button data-filter="{{ $j | lower }}">{{ $j }}</button>
+      {{ end }}
+    {{ end }}
+    <button data-filter="done">{{ i18n "status_published" }}</button>
+    <button data-filter="review">{{ i18n "status_review" }}</button>
+  </div>
+  <div class="r-grid">
+    {{ range $data.research }}
+    {{ $item := . }}
+    <div class="card" data-card data-tag="{{ .journal | lower }} {{ .status }}">
+      <div class="card-meta" style="display:flex;justify-content:space-between;align-items:center">
+        <span class="card-date">{{ .date }}</span>
+        <span class="status {{ .status }}">{{ if eq .status "done" }}{{ i18n "status_published" }}{{ else }}{{ i18n "status_review" }}{{ end }}</span>
+      </div>
+      <div class="card-full-title">
+        {{ if .driveLink }}
+        <a href="{{ .driveLink }}" target="_blank" rel="noopener">{{ .full_title | default .title }}</a>
+        {{ else }}{{ .full_title | default .title }}{{ end }}
+      </div>
+      {{ with .authors }}<div class="card-authors">{{ . }}</div>{{ end }}
+      <div class="card-journal">{{ .journal_name | default .journal }}{{ with .volume }} - {{ . }}{{ end }}</div>
+      <div class="card-links">
+        {{ with .doi }}
+        <a class="card-link" href="https://doi.org/{{ . }}" target="_blank" rel="noopener">DOI: {{ . }} &nearr;</a>
+        {{ end }}
+        {{ with .driveLink }}
+        <a class="card-link" href="{{ . }}" target="_blank" rel="noopener">{{ i18n "view_document" }} &nearr;</a>
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// Research - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/{{ end }}
+{{ define "footer_back_label" }}&larr; back to homepage{{ end }}

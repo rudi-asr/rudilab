@@ -1,0 +1,44 @@
+{{ define "main" }}
+{{ $data := .Site.Data.data }}
+<div class="page">
+  <div class="page-header">
+    <h1>{{ i18n "section_poc" }}</h1>
+    <p>{{ i18n "poc_subtitle" }}</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
+  </div>
+  <div class="filter-tags">
+    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
+    {{ $seen := slice }}
+    {{ range $data.poc }}
+      {{ $cat := .category }}
+      {{ if not (in $seen $cat) }}
+        {{ $seen = $seen | append $cat }}
+        <button data-filter="{{ $cat | lower }}">{{ $cat }}</button>
+      {{ end }}
+    {{ end }}
+  </div>
+  <div class="poc-grid">
+    {{ range $data.poc }}
+    <a class="card" href="{{ .pageUrl }}" data-card data-tag="{{ .category | lower }}">
+      <div class="card-meta">
+        <span class="card-date">{{ .date }}</span>
+        <span class="log-cat">{{ .category }}</span>
+        <span class="status Proven">{{ i18n "status_proven" }}</span>
+      </div>
+      <h3>{{ .title }}</h3>
+      <p>{{ .description | truncate 100 }}</p>
+      <div class="card-meta">
+        <span class="muted mono" style="font-size:11px">{{ i18n "target" }}: {{ .target }}</span>
+        <span class="muted mono" style="font-size:11px">{{ i18n "severity" }}: {{ .severity }}</span>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// PoC - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/{{ end }}
+{{ define "footer_back_label" }}&larr; back to homepage{{ end }}

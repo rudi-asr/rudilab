@@ -1,0 +1,135 @@
+{{ define "main" }}
+{{ $data := .Site.Data.data }}
+{{ $config := $data.config }}
+
+<div class="wrap">
+
+  {{/* ── HERO ── */}}
+  <section class="hero" id="about">
+    <div class="hero-inner">
+      <img class="hero-photo" src="/images/fotodiri/profile.jpg" alt="Rudi - Offensive Security">
+      <div class="hero-text">
+        <div class="hero-status">ACTIVE - {{ i18n "hero_role" }}</div>
+        <h1>{{ i18n "hero_h1" }}</h1>
+        <div class="role">{{ i18n "hero_role" }}</div>
+        <p class="lede">{{ i18n "hero_lede" }}</p>
+        <div class="hero-meta">
+          <a href="https://github.com/asruddin12" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{/* ── PROOF OF CONCEPT ── */}}
+  <section id="poc">
+    <div class="sec-head">
+      <h2>{{ i18n "section_poc" }}</h2>
+      <a class="view-all" href="{{ "/poc/" | relLangURL }}">{{ i18n "view_all" }} &rarr;</a>
+    </div>
+    <div class="log">
+      {{ $pocs := sort $data.poc "date" "desc" }}
+      {{ range first 3 $pocs }}
+      <a class="log-item" href="{{ .pageUrl }}">
+        <div class="log-meta">
+          <span class="log-date">{{ .date }}</span>
+          <span class="log-cat">{{ .category }}</span>
+          <span class="status Proven">{{ i18n "status_proven" }}</span>
+        </div>
+        <h3>{{ .title }}</h3>
+        <p>{{ .description | truncate 120 }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+  {{/* ── LAB ── */}}
+  <section id="lab">
+    <div class="sec-head">
+      <h2>{{ i18n "section_lab" }}</h2>
+      <a class="view-all" href="{{ "/lab/" | relLangURL }}">{{ i18n "view_all" }} &rarr;</a>
+    </div>
+    <div class="log">
+      {{ $labs := sort $data.homelab "date" "desc" }}
+      {{ range first 3 $labs }}
+      <a class="log-item" href="{{ .pageUrl }}">
+        <div class="log-meta">
+          <span class="log-date">{{ .date }}</span>
+          <span class="log-cat">{{ .category }}</span>
+        </div>
+        <h3>{{ .title }}</h3>
+        <p>{{ .description | truncate 120 }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+  {{/* ── RESEARCH ── */}}
+  <section id="research">
+    <div class="sec-head">
+      <h2>{{ i18n "section_research" }}</h2>
+      <a class="view-all" href="{{ "/research/" | relLangURL }}">{{ i18n "view_all" }} &rarr;</a>
+    </div>
+    <div class="log">
+      {{ $all := $data.research }}
+      {{ $published := slice }}
+      {{ range $all }}{{ if eq .status "done" }}{{ $published = $published | append . }}{{ end }}{{ end }}
+      {{ $sorted := sort $published "date" "desc" }}
+      {{ range first 3 $sorted }}
+      <a class="log-item" {{ with .driveLink }}href="{{ . }}" target="_blank" rel="noopener"{{ else }}href="#"{{ end }}>
+        <div class="log-meta">
+          <span class="log-date">{{ .date }}</span>
+          <span class="log-cat">{{ .journal }}</span>
+          <span class="status done">{{ i18n "status_published" }}</span>
+        </div>
+        <h3>{{ .full_title | default .title }}</h3>
+        <p>{{ .authors }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+  {{/* ── CERTIFICATIONS ── */}}
+  <section id="certs">
+    <div class="sec-head">
+      <h2>{{ i18n "section_certifications" }}</h2>
+    </div>
+    <div class="certs-grid">
+      {{ range $data.certs }}
+      <a class="cert-card" {{ with .verifyLink }}href="{{ . }}" target="_blank" rel="noopener"{{ end }}>
+        {{ with .image }}
+        <img src="{{ . }}" alt="{{ $.Title }}" loading="lazy">
+        {{ end }}
+        <div class="cert-name">{{ .name }}</div>
+        <div class="cert-issuer">{{ .issuer }}</div>
+        {{ with .id }}<div class="cert-id">ID: {{ . }}</div>{{ end }}
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+  {{/* ── BOOKS ── */}}
+  <section id="books">
+    <div class="sec-head">
+      <h2>{{ i18n "section_books" }}</h2>
+    </div>
+    <div class="books-grid">
+      {{ range $data.books }}
+      <a class="book-card" {{ with .link }}href="{{ . }}" target="_blank" rel="noopener"{{ end }}>
+        {{ if .cover }}
+        <img class="book-cover" src="{{ .cover }}" alt="{{ .title }}" loading="lazy">
+        {{ else }}
+        <div class="book-cover-placeholder">{{ .title }}</div>
+        {{ end }}
+        <div class="book-title">{{ .title }}</div>
+        <div class="book-note">{{ .note }}</div>
+        {{ with .isbn }}<div class="book-isbn">ISBN {{ . }}</div>{{ end }}
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+</div>
+{{ end }}

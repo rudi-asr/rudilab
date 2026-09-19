@@ -1,0 +1,378 @@
+{
+  "config": {},
+  "poc": [
+    {
+      "key": "poc-06",
+      "date": "2026-09-06",
+      "title": "WordPress Institutional Site & Academic Portal Assessment",
+      "description": "WordPress-based higher-education institution site and two academic portals (SIAKAD/CBT) assessed for security weaknesses. Nine findings: 4 Medium (XSS-vulnerable plugin, open XML-RPC, unthrottled SIAKAD & CBT logins), 3 Low, 2 Info. Coordinated disclosure - target redacted.",
+      "target": "[REDACTED] - Indonesian higher-education institution (WordPress + academic portals)",
+      "category": "Web Application",
+      "status": "Proven",
+      "severity": "Medium (highest) - 9 findings",
+      "impact": "Brute-force amplification via XML-RPC, credential exposure on unthrottled academic portals, XSS via outdated plugin, reconnaissance-grade information disclosure.",
+      "remediation": "Disable XML-RPC; update vulnerable plugin; add CAPTCHA and rate-limiting on all login forms; restrict user enumeration endpoints; add missing security headers.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc06.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-07",
+      "date": "2026-09-16",
+      "title": "Broken Access Control via LOV Sub-Endpoints",
+      "description": "Low-privilege account reads restricted employee and client PII through unguarded LOV sub-endpoints (BFLA). Parent endpoints return 403 but /lov and /tiers return 200 - Broken Function Level Authorization (CWE-285, OWASP A01:2021, API5:2023). Coordinated disclosure - target redacted.",
+      "target": "[REDACTED] - internal ERP (authorized assessment)",
+      "category": "Web Application",
+      "status": "Proven",
+      "severity": "Medium",
+      "impact": "Unauthorized read of staff identities and client list by a denied role - enables targeted phishing and internal OSINT.",
+      "remediation": "Enforce authorization at router/resource level so every sub-path inherits the guard; return only minimum lookup fields (id + label, no PII); add regression tests for all sub-endpoints.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc07.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-01",
+      "date": "2026-08-20",
+      "title": "Broken Access Control / Improper Resource Isolation",
+      "description": "A newly registered low-privilege SDR account could view organization member records and existing research batches due to insufficient authorization checks.",
+      "target": "Web application (redacted)",
+      "category": "Broken Access Control",
+      "status": "Proven",
+      "severity": "Medium",
+      "impact": "Unauthorized visibility of organization members, roles, and existing research batch metadata.",
+      "remediation": "Apply authorization checks and scope database queries to the authenticated user's organization and permissions.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc01.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-02",
+      "date": "2026-08-29",
+      "title": "TLS Certificate Expired & Hostname Mismatch",
+      "description": "The target's TLS certificate had expired and contained a hostname mismatch, eliminating transport encryption and enabling potential Man-in-the-Middle attacks against authenticated users.",
+      "target": "Web application (redacted)",
+      "category": "Cryptographic Failures",
+      "status": "Proven",
+      "severity": "Medium",
+      "impact": "Potential credential interception, session hijacking, and in-transit data modification by an on-path attacker.",
+      "remediation": "Renew TLS certificate with correct CN/SAN, enable Certbot auto-renewal, and implement HSTS.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc02.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-03",
+      "date": "2026-08-27",
+      "title": "Backend Services Exposed to Public Internet",
+      "description": "All backend services (API, object storage, and database) were directly reachable from the public internet, allowing nginx proxy controls to be bypassed entirely. PostgreSQL on a non-standard port was reachable via TCP from external networks.",
+      "target": "Web application (redacted)",
+      "category": "Security Misconfiguration",
+      "status": "Proven",
+      "severity": "High",
+      "impact": "Full API access bypassing nginx controls, potential database credential brute-force, object storage exposure, and bulk PII retrieval with valid credentials.",
+      "remediation": "Bind all backend services to 127.0.0.1 and enforce firewall/security group rules to block backend ports from the public internet.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc03.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-04",
+      "date": "2026-04-28",
+      "title": "Directory Listing / Information Disclosure",
+      "description": "A directory on a public-sector web application had no index file and no directory-browsing restriction, returning a full file listing to unauthenticated users. Reported via official contact channel on 2026-04-28; unremediated at time of publication.",
+      "target": "Web application - government sector (redacted)",
+      "category": "Security Misconfiguration",
+      "status": "Proven",
+      "severity": "Low-Medium",
+      "impact": "Exposure of file names, directory structure, and potentially sensitive documents to anyone with the URL.",
+      "remediation": "Disable directory listing (Options -Indexes in Apache / autoindex off in Nginx) and remove or relocate sensitive files from the web root.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc04.html",
+      "screenshots": []
+    },
+    {
+      "key": "poc-05",
+      "date": "2026-09-03",
+      "title": "Missing Anti-Framing & Login Brute-Force Protection",
+      "description": "Clickjacking via missing framing headers and absent login rate-limiting on a production web dashboard (financial-collections app).",
+      "target": "[REDACTED] - production web dashboard (financial-collections app)",
+      "category": "Web Application",
+      "status": "Proven",
+      "severity": "Medium",
+      "impact": "Clickjacking attack surface and credential brute-force window against production login interface.",
+      "remediation": "Add X-Frame-Options / CSP frame-ancestors header; implement server-side login rate-limiting and account lockout.",
+      "driveLink": "",
+      "pageUrl": "/poc/poc05.html",
+      "screenshots": []
+    }
+  ],
+  "research": [
+    {
+      "key": "r1",
+      "date": "2026-06-20",
+      "title": "Web Vulnerability Analysis",
+      "description": "Analisis Kerentanan Aplikasi Web Modern Menggunakan Black-Box Penetration Testing Berbasis OWASP Top 10:2025. Rudi, Mirza Sutrisno, Ade Davy Wiranata, Anton Maulana Ibrahim. Infotech: Journal of Technology Information, Vol. 12 No. 1, 2026. Sinta 4.",
+      "doi": "10.37365/jti.v12i1.615",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/18f3YVIqe-emasGDyIAJml8Go4X-aNREH/view?usp=sharing",
+      "full_title": "Analisis Kerentanan Aplikasi Web Modern Menggunakan Black-Box Penetration Testing Berbasis OWASP Top 10:2025",
+      "authors": "Rudi, Mirza Sutrisno, Ade Davy Wiranata, Anton Maulana Ibrahim",
+      "journal_name": "Infotech: Journal of Technology Information",
+      "volume": "Vol. 12, No. 1"
+    },
+    {
+      "key": "r2",
+      "date": "2026-01-31",
+      "title": "ICMP Flooding Forensics",
+      "description": "Penerapan Digital Forensic Research Workshop Framework pada Layanan Virtual Machine. Rudi, Imam Riadi, Rusydi Umar. Journal of Information System Research (JOSH), Vol. 7 No. 2, 2026. CC BY 4.0.",
+      "doi": "10.47065/josh.v7i2.9034",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/1h2SfMTbSf1fZbizOCwymydYOe5c6j7FC/view?usp=sharing",
+      "full_title": "Penerapan Digital Forensic Research Workshop Framework pada Layanan Virtual Machine",
+      "authors": "Rudi, Imam Riadi, Rusydi Umar",
+      "journal_name": "Journal of Information System Research (JOSH)",
+      "volume": "Vol. 7, No. 2"
+    },
+    {
+      "key": "r3",
+      "date": "2026-05-01",
+      "title": "NIST SP 800-86 for Cloud Digital Forensics",
+      "description": "Comparative Analysis of NIST SP 800-86 Framework in Handling Digital Evidence in Cloud Computing Environment. Rudi, Anton Maulana Ibrahim, Mirza Sutrisno. Journal of Nexural Intelligence, Vol. 1 No. 1, Mei 2026.",
+      "doi": "10.71200/nexural.v1.i1.260",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/15S3Y73LvIorQwJBXR9IDmOS23gNhivkv/view?usp=drive_link",
+      "journal": "Journal of Nexural Intelligence",
+      "full_title": "Comparative Analysis of NIST SP 800-86 Framework in Handling Digital Evidence in Cloud Computing Environment",
+      "authors": "Rudi, Anton Maulana Ibrahim, Mirza Sutrisno",
+      "journal_name": "Journal of Nexural Intelligence",
+      "volume": "Vol. 1, No. 1"
+    },
+    {
+      "key": "r4",
+      "date": "2026-00",
+      "title": "Comparative Attack Traffic Analysis",
+      "description": "Comparative Attack Traffic Analysis Using Epoch-Based and WRD Methods in Virtualized Environments. Rudi. In review - full details pending publication.",
+      "doi": "",
+      "status": "review",
+      "driveLink": "",
+      "full_title": "Comparative Attack Traffic Analysis Using Epoch-Based and WRD Methods in Virtualized Environments",
+      "authors": "Rudi",
+      "journal_name": "In Review",
+      "volume": ""
+    },
+    {
+      "key": "r5",
+      "date": "2026-01-01",
+      "title": "ISO/IEC 27037 Digital Forensics on USB Recovery",
+      "full_title": "Analisis Forensik Digital ISO/IEC 27037 pada Recovery File Terhapus Permanen dari Removable Flash Storage",
+      "authors": "Mirza Sutrisno, Rudi",
+      "journal": "INOKOM",
+      "journal_name": "Jurnal Inovasi Komputer (INOKOM)",
+      "volume": "Vol. 2, No. 1",
+      "description": "Analisis Forensik Digital ISO/IEC 27037 pada Recovery File Terhapus Permanen dari Removable Flash Storage. Mirza Sutrisno, Rudi. Jurnal Inovasi Komputer (INOKOM), Vol. 2 No. 1, Januari 2026. e-ISSN 3089-7416.",
+      "doi": "10.71200/hnkx0k70",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/1tgYCNRpV7P_Fmkdv7qbR4aWfKUpyeVVQ/view?usp=sharing"
+    },
+    {
+      "key": "r6",
+      "date": "2025-12-30",
+      "title": "Islamic Cyber-Ethical Model (ICEM)",
+      "full_title": "Development of a Conceptual Islamic Cyber-Ethical Model (ICEM) for Cybersecurity Professionals Based on Digital Islamic Education Values",
+      "authors": "Rudi, Muhammad Immawan Aulia, Oman Fathurohman Sw",
+      "journal": "Al-Mau'izhoh",
+      "journal_name": "Al-Mau'izhoh: Jurnal Pendidikan Agama Islam",
+      "volume": "Vol. 7, No. 2",
+      "description": "Development of a Conceptual Islamic Cyber-Ethical Model (ICEM) for Cybersecurity Professionals Based on Digital Islamic Education Values. Rudi, Muhammad Immawan Aulia, Oman Fathurohman Sw. Al-Mau'izhoh: Jurnal Pendidikan Agama Islam, Vol. 7 No. 2, 2025, pp. 180-185. e-ISSN 2684-9410.",
+      "doi": "10.31949/am.v7i2.16844",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/1QburTypQhY-gU4InLPTCAtNP3JhCQUNy/view?usp=sharing"
+    },
+    {
+      "key": "r7",
+      "date": "2025-12-01",
+      "title": "OpenDaylight SDN Controller Performance on Tree Topology",
+      "full_title": "Performance Analysis of the OpenDaylight (ODL) SDN Controller on Tree Topology: Throughput, Jitter, and Packet Loss",
+      "authors": "Rudi, Ade Davy Wiranata",
+      "journal": "INFOTECH journal",
+      "journal_name": "INFOTECH journal",
+      "volume": "Vol. 11, No. 2",
+      "description": "Performance Analysis of the OpenDaylight (ODL) SDN Controller on Tree Topology: Throughput, Jitter, and Packet Loss. Rudi, Ade Davy Wiranata. INFOTECH journal, Vol. 11 No. 2, Desember 2025, pp. 408-415. ISSN 2460-1861 (Print), 2615-4250 (Online).",
+      "doi": "10.31949/infotech.v11i2.16053",
+      "status": "done",
+      "driveLink": "https://drive.google.com/file/d/1cFteMENeQvegvG96vdsUU7FJnKnyB_eR/view?usp=sharing"
+    }
+  ],
+  "certs": [
+    {
+      "key": "c1",
+      "name": "CEH",
+      "issuer": "EC-Council",
+      "id": "ECC9517246038",
+      "verifyLink": "/images/certifications/ECC-CEH-Certificate.jpg"
+    },
+    {
+      "key": "c2",
+      "name": "CCNA",
+      "issuer": "Cisco",
+      "id": "417462700326GSUJ",
+      "verifyLink": "/images/certifications/certificate CCNA asruddin.jpg"
+    },
+    {
+      "key": "c3",
+      "name": "Network Security Expert (NSE)",
+      "issuer": "Fortinet",
+      "id": "fAHSsqHkAH",
+      "verifyLink": "/images/certifications/NSE_4_Certificate.jpg"
+    },
+    {
+      "key": "c4",
+      "name": "VMware Certified Associate",
+      "issuer": "VMware",
+      "id": "VMW-01300053S-00429168",
+      "verifyLink": "/images/certifications/Asruddin VMware Certificate.jpg"
+    },
+    {
+      "key": "c5",
+      "name": "JNCIA (Junos)",
+      "issuer": "Juniper Networks",
+      "id": "91N8DQEY9MB45W36",
+      "verifyLink": "/images/certifications/Junos certificate.jpg"
+    },
+    {
+      "key": "c6",
+      "name": "MTCNA",
+      "issuer": "MikroTik",
+      "id": "1604NA990",
+      "verifyLink": "/images/certifications/mtcna asruddin.jpg"
+    },
+    {
+      "key": "c7",
+      "name": "IPv6 Certified",
+      "issuer": "IPv6 Forum",
+      "id": "-",
+      "verifyLink": "/images/certifications/Asruddin IPv6.jpg"
+    },
+    {
+      "key": "c8",
+      "name": "CCFA",
+      "issuer": "eSecurity Institute",
+      "id": "jklxvyb9lb",
+      "verifyLink": "/images/certifications/Certied Computer Forensics Analyst (CCFA).jpg"
+    }
+  ],
+  "books": [
+    {
+      "key": "b1",
+      "title": "Data Warehouse",
+      "category": "Buku Referensi",
+      "note": "Penamuda Media, Mei 2026 - 213 hlm",
+      "link": "https://drive.google.com/file/d/1BcyaF79aq-mxTyi_ZUtus1ip-RTEjHSx/view?usp=sharing",
+      "isbn": "978-634-2831-06-9",
+      "cover": "https://drive.google.com/thumbnail?id=1BcyaF79aq-mxTyi_ZUtus1ip-RTEjHSx&sz=w320"
+    },
+    {
+      "key": "b2",
+      "title": "Pengantar Sistem Komputer: Dari Representasi Data hingga Sistem Komputer Terintegrasi",
+      "category": "Buku Ajar",
+      "note": "Penerbit Mafy",
+      "link": "https://penerbitmafy.com/produk/pengantar-sistem-komputer-dari-representasi-data-hingga-sistem-komputer-terintegrasi/",
+      "cover": "images/books/pengantar-sistem-komputer.png"
+    }
+  ],
+  "homelab": [
+    {
+      "key": "hl-01",
+      "date": "2026-09-01",
+      "title": "Vulnerability Scanning Lab - GVM/OpenVAS with Docker",
+      "description": "Build a full Greenbone Vulnerability Manager (GVM) stack locally using Docker Compose. Covers feed sync, scan target config, and report export.",
+      "category": "Vulnerability Scanning",
+      "stack": [
+        "GVM/OpenVAS",
+        "Docker Compose",
+        "PostgreSQL"
+      ],
+      "difficulty": "Beginner",
+      "status": "done",
+      "pageUrl": "/lab/lab01.html"
+    },
+    {
+      "key": "hl-02",
+      "date": "2026-09-02",
+      "title": "Web App Pentest Lab - DVWA + Juice Shop + Proxy",
+      "description": "Spin up multiple intentionally-vulnerable web applications in an isolated Docker network, with mitmproxy for traffic interception and Burp Suite integration.",
+      "category": "Web Application Security",
+      "stack": [
+        "DVWA",
+        "OWASP Juice Shop",
+        "Docker Compose",
+        "mitmproxy"
+      ],
+      "difficulty": "Beginner",
+      "status": "done",
+      "pageUrl": "/lab/lab02.html"
+    },
+    {
+      "key": "hl-03",
+      "date": "2026-09-03",
+      "title": "SIEM Lab - Wazuh Stack (Manager + Indexer + Dashboard)",
+      "description": "Deploy the complete Wazuh SIEM stack with Docker Compose. Enroll agents, write custom detection rules, and forward alerts to the Wazuh dashboard.",
+      "category": "SIEM / Blue Team",
+      "stack": [
+        "Wazuh",
+        "OpenSearch",
+        "Docker Compose"
+      ],
+      "difficulty": "Intermediate",
+      "status": "done",
+      "pageUrl": "/lab/lab03.html"
+    },
+    {
+      "key": "hl-04",
+      "date": "2026-09-04",
+      "title": "Network IDS/Forensics Lab - Suricata + Zeek",
+      "description": "Run Suricata and Zeek side-by-side in Docker, replay PCAP files, write custom Suricata rules, and correlate Zeek conn.log with alert output.",
+      "category": "Network Forensics",
+      "stack": [
+        "Suricata",
+        "Zeek",
+        "Docker Compose"
+      ],
+      "difficulty": "Intermediate",
+      "status": "done",
+      "pageUrl": "/lab/lab04.html"
+    }
+  ],
+  "achievements": [
+    {
+      "key": "a1",
+      "name": "Introduction to Cybersecurity",
+      "issuer": "Cisco",
+      "category": "Cybersecurity",
+      "date": "2026-09-10",
+      "image": "/images/achievements/introduction-to-cybersecurity.png",
+      "credlyLink": "https://www.credly.com/badges/410868cd-3bfa-4a79-8545-af9316d64c61/linked_in?t=tl5s67"
+    },
+    {
+      "key": "a2",
+      "name": "Your request is my demand",
+      "issuer": "Hack The Box",
+      "category": "Web Security",
+      "date": "2026-09-12",
+      "image": "/images/achievements/htb-web-requests.png",
+      "credentialUrl": "https://academy.hackthebox.com/achievement/badge/b11def7b-ae7b-11f1-82d1-bea50ffe6cb4",
+      "description": "Completed the Web Requests module on Hack The Box Academy."
+    },
+    {
+      "key": "a3",
+      "name": "JavaScript Deobfuscation",
+      "issuer": "Hack The Box",
+      "category": "Web Security",
+      "date": "2026-09-13",
+      "image": "/images/achievements/htb-javascript-deobfuscation.png",
+      "credentialUrl": "https://academy.hackthebox.com/achievement/2868588/41",
+      "description": "Completed the JavaScript Deobfuscation module on Hack The Box Academy."
+    }
+  ]
+}

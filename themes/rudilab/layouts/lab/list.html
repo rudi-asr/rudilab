@@ -1,0 +1,43 @@
+{{ define "main" }}
+{{ $data := .Site.Data.data }}
+<div class="page">
+  <div class="page-header">
+    <h1>{{ i18n "section_lab" }}</h1>
+    <p>{{ i18n "lab_subtitle" }}</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
+  </div>
+  <div class="filter-tags">
+    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
+    {{ $seen := slice }}
+    {{ range $data.homelab }}
+      {{ $cat := .category }}
+      {{ if not (in $seen $cat) }}
+        {{ $seen = $seen | append $cat }}
+        <button data-filter="{{ $cat | lower }}">{{ $cat }}</button>
+      {{ end }}
+    {{ end }}
+  </div>
+  <div class="lab-grid">
+    {{ range $data.homelab }}
+    <a class="card" href="{{ .pageUrl }}" data-card data-tag="{{ .category | lower }}">
+      <div class="card-meta">
+        <span class="card-date">{{ .date }}</span>
+        <span class="log-cat">{{ .category }}</span>
+        {{ with .difficulty }}<span class="log-cat" style="color:var(--warn);background:rgba(232,168,74,0.1)">{{ . }}</span>{{ end }}
+      </div>
+      <h3>{{ .title }}</h3>
+      <p>{{ .description | truncate 110 }}</p>
+      {{ with .stack }}
+      <div class="tag-row">{{ range . }}<span class="tag">{{ . }}</span>{{ end }}</div>
+      {{ end }}
+    </a>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// Lab - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/{{ end }}
+{{ define "footer_back_label" }}&larr; back to homepage{{ end }}

@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="article-wrap">
+  <h1 class="article-title">{{ .Title }}</h1>
+
+  <dl class="meta-grid">
+    <dt>{{ i18n "date" }}</dt>
+    <dd>{{ .Date.Format "2006-01-02" }}</dd>
+
+    {{ with .Params.category }}
+    <dt>{{ i18n "category" }}</dt>
+    <dd>{{ . }}</dd>
+    {{ end }}
+
+    {{ with .Params.difficulty }}
+    <dt>{{ i18n "difficulty" }}</dt>
+    <dd>{{ . }}</dd>
+    {{ end }}
+
+    {{ with .Params.stack }}
+    <dt>Stack</dt>
+    <dd>{{ delimit . ", " }}</dd>
+    {{ end }}
+
+    {{ with .Params.status }}
+    <dt>{{ i18n "status" }}</dt>
+    <dd>{{ . }}</dd>
+    {{ end }}
+  </dl>
+
+  <div class="article-body">
+    {{ .Content }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// Lab-{{ .Params.lab_num }} - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/lab/{{ end }}
+{{ define "footer_back_label" }}&larr; back to Lab{{ end }}

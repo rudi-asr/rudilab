@@ -1,0 +1,46 @@
+{{ define "main" }}
+{{ $data := .Site.Data.data }}
+<div class="page">
+  <div class="page-header">
+    <h1>{{ i18n "section_achievements" }}</h1>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
+  </div>
+  <div class="filter-tags">
+    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
+    {{ $seen := slice }}
+    {{ range $data.achievements }}
+      {{ $iss := .issuer }}
+      {{ if not (in $seen $iss) }}
+        {{ $seen = $seen | append $iss }}
+        <button data-filter="{{ $iss | lower }}">{{ $iss }}</button>
+      {{ end }}
+    {{ end }}
+  </div>
+  <div class="ach-grid">
+    {{ range $data.achievements }}
+    {{ $link := .credlyLink | default .credentialUrl | default "https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly" }}
+    <a class="ach-card" href="{{ $link }}" target="_blank" rel="noopener" data-card data-tag="{{ .issuer | lower }}">
+      <div class="ach-badge">
+        {{ with .image }}
+        <img src="{{ . }}" alt="achievement badge" loading="lazy">
+        {{ else }}
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent)">&#127894;</div>
+        {{ end }}
+      </div>
+      <div class="ach-info">
+        <div class="ach-issuer">{{ .issuer }}</div>
+        <div class="ach-name">{{ .name }}</div>
+        <div class="ach-category">{{ .category }}</div>
+        <div class="ach-date">{{ .date }}</div>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_sig" }}// Achievements - rudilab.my.id - Rudi - 2026{{ end }}
+{{ define "footer_back_href" }}/{{ end }}
+{{ define "footer_back_label" }}&larr; back to homepage{{ end }}

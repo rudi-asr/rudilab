@@ -1,0 +1,40 @@
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{{ "/" | relLangURL }}" aria-label="Go to homepage">
+      <svg class="brand-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="32" height="32" rx="6" fill="#0a0d12"/>
+        <path d="M16 4L27 8.5L27 16.5C27 22.5 21.5 27.5 16 29C10.5 27.5 5 22.5 5 16.5L5 8.5Z"
+              fill="none" stroke="#5ad1a0" stroke-width="1.8" stroke-linejoin="round"/>
+        <text x="9.5" y="20.5" font-family="monospace" font-size="10" font-weight="700" fill="#5ad1a0">&gt;_</text>
+      </svg>
+      <b>RUDI</b> // sec-research.log
+    </a>
+    <div class="top-right">
+      <nav class="nav" id="mainNav">
+        <a href="{{ "/#about" | absLangURL }}">{{ i18n "nav_about" }}</a>
+        <a href="{{ "/poc/" | relLangURL }}">{{ i18n "nav_poc" }}</a>
+        <a href="{{ "/lab/" | relLangURL }}">{{ i18n "nav_lab" }}</a>
+        <a href="{{ "/research/" | relLangURL }}">{{ i18n "nav_research" }}</a>
+        <a href="{{ "/achievements/" | relLangURL }}">{{ i18n "nav_achievements" }}</a>
+        <a href="{{ "/#certs" | absLangURL }}">{{ i18n "nav_certifications" }}</a>
+        <a href="{{ "/#books" | absLangURL }}">{{ i18n "nav_books" }}</a>
+      </nav>
+
+      {{/* Language toggle - link to same page in other language */}}
+      {{ range .AllTranslations }}
+        <a href="{{ .RelPermalink }}" class="lang-btn{{ if eq . $.Page }} active{{ end }}">{{ .Language.Params.langFlag }}</a>
+      {{ end }}
+      {{/* If no translation exists yet, show inactive other lang */}}
+      {{ if eq (len .AllTranslations) 0 }}
+        {{ if eq .Language.Lang "en" }}
+          <span class="lang-btn" style="opacity:0.35" title="Konten Indonesia belum tersedia">ID</span>
+        {{ else }}
+          <a href="{{ replace .RelPermalink "/id/" "/" }}" class="lang-btn">EN</a>
+        {{ end }}
+      {{ end }}
+
+      <button class="nav-toggle" id="navToggle" title="Menu" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+      <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#9728;</button>
+    </div>
+  </div>
+</div>

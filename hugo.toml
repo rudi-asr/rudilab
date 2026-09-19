@@ -1,0 +1,37 @@
+baseURL = "https://rudilab.my.id/"
+title   = "Rudi - Offensive Security | Penetration Tester | Infrastructure Security"
+theme   = "rudilab"
+uglyURLs = true
+defaultContentLanguage        = "en"
+defaultContentLanguageInSubdir = false
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.tableOfContents]
+  startLevel = 2
+  endLevel   = 4
+
+[languages.en]
+  label       = "English"
+  locale      = "en-US"
+  contentDir  = "content/en"
+  weight      = 1
+  [languages.en.params]
+    langFlag  = "EN"
+    langLabel = "English"
+
+[languages.id]
+  label       = "Bahasa Indonesia"
+  locale      = "id-ID"
+  contentDir  = "content/id"
+  weight      = 2
+  [languages.id.params]
+    langFlag  = "ID"
+    langLabel = "Bahasa Indonesia"
+
+[params]
+  author      = "Rudi"
+  description = "Offensive Security | Penetration Tester | Infrastructure Security"
+  siteSlogan  = "sec-research.log"
+  darkDefault = true

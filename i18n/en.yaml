@@ -10,10 +10,17 @@ nav_books: "Books"
 
 hero_h1: "Offensive Security | Penetration Tester | Infrastructure Security"
 hero_role: "Offensive Security | Penetration Tester | Infrastructure Security"
-hero_lede: >
-  Security researcher focused on offensive security, web application penetration testing,
-  and infrastructure hardening. I document real-world vulnerability assessments,
-  homelab experiments, and published research.
+hero_lede: "I research and prove security vulnerabilities. My work spans security research, vulnerability assessment, and penetration testing."
+
+about_p1: "My core identity is <b style=\"color:var(--text)\">security research</b> - finding, validating, and explaining security issues with a focus on deep technical understanding. Available for <b style=\"color:var(--text)\">remote engagements globally</b>, with async-friendly reporting."
+
+about_p2: "My security work is grounded on <b style=\"color:var(--text)\">10+ years hands-on inside enterprise infrastructure</b> - the same networks, servers, virtualization stacks, cloud tenants, and DevOps pipelines I now assess for weaknesses. That background is a deliberate advantage: I can read a target the way it was actually built, spot the misconfigurations that plain tool scans miss, and produce write-ups that reproduce cleanly on both a lab VM and the client's own environment."
+
+about_p3: "Backed by certifications including <b style=\"color:var(--text)\">CEH, CCNA, Network Security Expert (NSE), and VMware</b> (full list in <a href=\"#certs\">Certifications</a>)."
+
+tools_label: "Security Research Tools"
+capabilities_label: "Security capabilities"
+environments_label: "Environments I've assessed / hardened"
 
 section_poc: "Proof of Concept (PoC)"
 section_lab: "Lab"

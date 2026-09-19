@@ -1,50 +1,7 @@
 {{ define "main" }}
 <div class="wrap">
-  <header class="doc">
-    <div class="capture-line"><span class="blink">▶</span> poc-{{ .Params.poc_num }}.pcap</div>
-    <div class="poc-id">poc-{{ .Params.poc_num }}</div>
-    <h1>{{ .Title }}</h1>
-
-    <dl class="meta-grid">
-      <dt>{{ i18n "date" }}</dt>
-      <dd>{{ .Date.Format "2006-01-02" }}</dd>
-
-      <dt>{{ i18n "target" }}</dt>
-      <dd><span class="redacted-tag">{{ .Params.target }}</span></dd>
-
-      <dt>{{ i18n "category" }}</dt>
-      <dd>{{ .Params.category }}</dd>
-
-      <dt>{{ i18n "severity" }}</dt>
-      <dd>
-        {{ $sev := .Params.severity | lower }}
-        {{ if or (eq $sev "high") (eq $sev "critical") }}
-          <span class="sev-high">{{ .Params.severity }}</span>
-        {{ else if or (eq $sev "medium") (eq $sev "medium (highest) - 9 findings") }}
-          <span class="sev-med">{{ .Params.severity }}</span>
-        {{ else if or (eq $sev "low") (eq $sev "low-medium") }}
-          <span class="sev-low">{{ .Params.severity }}</span>
-        {{ else }}
-          {{ .Params.severity }}
-        {{ end }}
-        {{ with .Params.severity_note }}
-          <p class="muted" style="font-size:12.5px;margin-top:4px;font-style:italic">{{ . }}</p>
-        {{ end }}
-      </dd>
-
-      {{ with .Params.impact }}
-      <dt>{{ i18n "impact" }}</dt>
-      <dd>{{ . }}</dd>
-      {{ end }}
-
-      <dt>{{ i18n "status" }}</dt>
-      <dd><span class="status Proven">{{ i18n "status_proven" }}</span></dd>
-    </dl>
-  </header>
-
-  <div class="article-body" style="padding:0 0 80px">
-    {{ .Content }}
-  </div>
+  {{/* Render HTML asli langsung - sudah include header.doc, section, table, dll */}}
+  {{ .Content }}
 </div>
 {{ end }}
 

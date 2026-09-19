@@ -11,37 +11,14 @@ stack:
   - "Docker Compose"
 ---
 
-Homelab-04 - Suricata + Zeek IDS Lab
+<section>
+    <h2><i>01</i> Overview</h2>
+    <p><b>Suricata</b> is a high-performance IDS/IPS engine. <b>Zeek</b> is a network analysis framework that generates structured logs (conn.log, dns.log, http.log). Both process the same PCAP so you can correlate Suricata alerts with Zeek connection metadata.</p>
+  </section>
 
-- 
-
-- 
-
-- 
-
-  
-- 
-
-**
-
-  ← back to Homelab index
-  
-  
-
-  
-    
-## 01 Overview
-
-    
-Suricata** is a high-performance IDS/IPS engine. **Zeek** is a network analysis framework that generates structured logs (conn.log, dns.log, http.log). Both process the same PCAP so you can correlate Suricata alerts with Zeek connection metadata.
-
-  
-
-  
-    
-## 02 Directory Layout
-
-ids-lab/
+  <section>
+    <h2><i>02</i> Directory Layout</h2>
+<pre>ids-lab/
 &#x251C;&#x2500;&#x2500; docker-compose.yml
 &#x251C;&#x2500;&#x2500; suricata/
 &#x2502;   &#x251C;&#x2500;&#x2500; suricata.yaml
@@ -50,15 +27,12 @@ ids-lab/
 &#x251C;&#x2500;&#x2500; zeek/
 &#x2502;   &#x2514;&#x2500;&#x2500; local.zeek
 &#x2514;&#x2500;&#x2500; pcaps/
-    &#x2514;&#x2500;&#x2500; sample.pcap
+    &#x2514;&#x2500;&#x2500; sample.pcap</pre>
+  </section>
 
-  
-
-  
-    
-## 03 docker-compose.yml
-
-version: "3.9"
+  <section>
+    <h2><i>03</i> docker-compose.yml</h2>
+<pre>version: "3.9"
 
 services:
 
@@ -94,15 +68,12 @@ services:
 
 volumes:
   suricata_logs:
-  zeek_logs:
+  zeek_logs:</pre>
+  </section>
 
-  
-
-  
-    
-## 04 suricata.yaml (minimal)
-
-%YAML 1.1
+  <section>
+    <h2><i>04</i> suricata.yaml (minimal)</h2>
+<pre>%YAML 1.1
 ---
 vars:
   address-groups:
@@ -126,18 +97,15 @@ outputs:
             extended: yes
 
 rule-files:
-  - /etc/suricata/rules/local.rules
+  - /etc/suricata/rules/local.rules</pre>
+  </section>
 
-  
-
-  
-    
-## 05 Custom Suricata Rules
-
-# suricata/rules/local.rules
+  <section>
+    <h2><i>05</i> Custom Suricata Rules</h2>
+<pre># suricata/rules/local.rules
 
 # Detect HTTP GET to /admin
-alert http any any -> $HOME_NET any (
+alert http any any -&gt; $HOME_NET any (
   msg:"Lab: HTTP GET to /admin";
   flow:established,to_server;
   http.method; content:"GET";
@@ -147,19 +115,16 @@ alert http any any -> $HOME_NET any (
 )
 
 # Detect suspicious DNS query
-alert dns any any -> any 53 (
+alert dns any any -&gt; any 53 (
   msg:"Lab: DNS query for suspicious domain";
   dns.query; content:"malware-test.local"; nocase;
   sid:9000002; rev:1;
-)
+)</pre>
+  </section>
 
-  
-
-  
-    
-## 06 Run & Inspect Logs
-
-docker compose up
+  <section>
+    <h2><i>06</i> Run &amp; Inspect Logs</h2>
+<pre>docker compose up
 
 # Suricata alerts
 docker run --rm -v ids-lab_suricata_logs:/logs alpine   cat /logs/eve.json | python3 -c "
@@ -168,31 +133,30 @@ for l in sys.stdin:
   try:
     e=json.loads(l)
     if e.get('event_type')=='alert':
-      print(e['src_ip'], '-->', e['alert']['signature'])
+      print(e['src_ip'], '--&gt;', e['alert']['signature'])
   except: pass
 "
 
 # Zeek conn.log (first 20 connections)
-docker run --rm -v ids-lab_zeek_logs:/logs alpine   head -21 /logs/conn.log
+docker run --rm -v ids-lab_zeek_logs:/logs alpine   head -21 /logs/conn.log</pre>
+  </section>
 
-  
-
-  
-    
-## 07 Update Emerging Threats Rules
-
-docker compose exec suricata suricata-update
+  <section>
+    <h2><i>07</i> Update Emerging Threats Rules</h2>
+<pre>docker compose exec suricata suricata-update
 docker compose exec suricata suricata-update list-sources
-docker compose exec suricata suricata-update enable-source et/open
+docker compose exec suricata suricata-update enable-source et/open</pre>
+  </section>
 
-  
+  <section>
+    <h2><i>08</i> Tear Down</h2>
+<pre>docker compose down -v</pre>
+  </section>
 
-  
-    
-## 08 Tear Down
+</div>
 
-docker compose down -v
+<div id="ftr"></div>
+<button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
 
-  
-
-&#8593;
+</body>
+</html>

@@ -11,21 +11,51 @@
 
 /* ── DEFAULT CSS VARIABLES (dark mode) ── */
 :root {
-  --bg:      #0b0f14;
-  --panel:   #11161d;
-  --line:    #26324a;
-  --text:    #d7dee6;
-  --muted:   #9fb0c3;
-  --accent:  #5ad1a0;
-  --mono:    "JetBrains Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+  --bg:        #0b0f14;
+  --bg-2:      #0e131a;
+  --panel:     #11161d;
+  --panel-2:   #0e131a;
+  --line:      #26324a;
+  --border:    #1e2732;
+  --border-soft: #182029;
+  --text:      #d7dee6;
+  --text-strong: #ffffff;
+  --muted:     #7d8a99;
+  --dim:       #4a5563;
+  --accent:    #37d67a;
+  --accent-dim:#1f7a47;
+  --cyan:      #3fb6c4;
+  --amber:     #e0a94a;
+  --red:       #e05c5c;
+  --ok:        #37d67a;
+  --warn:      #e0a94a;
+  --danger:    #e05c5c;
+  --link:      #58b0e0;
+  --mono:      "JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:      "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --radius:    8px;
 }
 [data-theme="light"] {
-  --bg:     #f6f8fa;
-  --panel:  #ffffff;
-  --line:   #c2cbdc;
-  --text:   #1a2129;
-  --muted:  #5b6772;
-  --accent: #0f8a63;
+  --bg:        #f4f6f8;
+  --bg-2:      #f0f3f6;
+  --panel:     #ffffff;
+  --panel-2:   #f0f3f6;
+  --line:      #c2cbdc;
+  --border:    #d9dfe6;
+  --border-soft: #e4e9ee;
+  --text:      #1a2129;
+  --text-strong: #000000;
+  --muted:     #5b6772;
+  --dim:       #8a95a0;
+  --accent:    #1f8a4c;
+  --accent-dim:#2fae63;
+  --cyan:      #1f8a99;
+  --amber:     #b7791f;
+  --red:       #c0392b;
+  --ok:        #1f8a4c;
+  --warn:      #b7791f;
+  --danger:    #c0392b;
+  --link:      #1f6fb0;
 }
 
 /* ── GRID OVERLAY (homepage decorative bg) ── */

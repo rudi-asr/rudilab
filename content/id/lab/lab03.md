@@ -11,52 +11,24 @@ stack:
   - "Docker Compose"
 ---
 
-Homelab-03 - Wazuh SIEM Lab
+<section>
+    <h2><i>01</i> Gambaran Umum</h2>
+    <p>Wazuh is an open-source SIEM and XDR platform. This lab deploys the full stack - <b>Wazuh Manager</b> (rule engine), <b>Wazuh Indexer</b> (OpenSearch backend), and <b>Wazuh Dashboard</b> (Kibana-compatible UI) - using the official Docker Compose setup.</p>
+    <p class="note">Minimum: 4 vCPU, 8 GB RAM, 50 GB disk. On smaller machines lower the Indexer heap size.</p>
+  </section>
 
-- 
-
-- 
-
-- 
-
-  
-- 
-
-**
-
-  ← back to Homelab index
-  
-  
-
-  
-    
-## 01 Overview
-
-    
-Wazuh is an open-source SIEM and XDR platform. This lab deploys the full stack - Wazuh Manager** (rule engine), **Wazuh Indexer** (OpenSearch backend), and **Wazuh Dashboard** (Kibana-compatible UI) - using the official Docker Compose setup.
-
-    
-Minimum: 4 vCPU, 8 GB RAM, 50 GB disk. On smaller machines lower the Indexer heap size.
-
-  
-
-  
-    
-## 02 Clone & Generate Certs
-
-git clone https://github.com/wazuh/wazuh-docker.git -b v4.9.2 --depth 1
+  <section>
+    <h2><i>02</i> Clone &amp; Generate Certs</h2>
+<pre>git clone https://github.com/wazuh/wazuh-docker.git -b v4.9.2 --depth 1
 cd wazuh-docker/single-node
 
 # Generate self-signed TLS certificates
-docker compose -f generate-indexer-certs.yml run --rm generator
+docker compose -f generate-indexer-certs.yml run --rm generator</pre>
+  </section>
 
-  
-
-  
-    
-## 03 docker-compose.yml (key services)
-
-version: "3.9"
+  <section>
+    <h2><i>03</i> docker-compose.yml (key services)</h2>
+<pre>version: "3.9"
 
 services:
 
@@ -120,69 +92,62 @@ services:
 volumes:
   wazuh-indexer-data:
   wazuh_etc:
-  wazuh_logs:
+  wazuh_logs:</pre>
+  </section>
 
-  
-
-  
-    
-## 04 Start & Access Dashboard
-
-docker compose up -d
+  <section>
+    <h2><i>04</i> Start &amp; Access Dashboard</h2>
+<pre>docker compose up -d
 
 # Wait for indexer (~2 min)
 docker compose logs -f wazuh.indexer | grep "started"
 
 # Dashboard: https://localhost
-# Login: admin / SecretPassword
+# Login: admin / SecretPassword</pre>
+  </section>
 
-  
-
-  
-    
-## 05 Enroll a Linux Agent
-
-# On Ubuntu/Debian agent:
+  <section>
+    <h2><i>05</i> Enroll a Linux Agent</h2>
+<pre># On Ubuntu/Debian agent:
 curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
 echo "deb https://packages.wazuh.com/4.x/apt/ stable main"   | tee /etc/apt/sources.list.d/wazuh.list
 apt update && apt install -y wazuh-agent
 
-WAZUH_MANAGER="<your-host-ip>" WAZUH_AGENT_NAME="lab-ubuntu-01"   dpkg-reconfigure wazuh-agent
+WAZUH_MANAGER="&lt;your-host-ip&gt;" WAZUH_AGENT_NAME="lab-ubuntu-01"   dpkg-reconfigure wazuh-agent
 
-systemctl enable --now wazuh-agent
+systemctl enable --now wazuh-agent</pre>
+  </section>
 
-  
-
-  
-    
-## 06 Custom Detection Rule
-
-# Inside wazuh.manager container:
+  <section>
+    <h2><i>06</i> Custom Detection Rule</h2>
+<pre># Inside wazuh.manager container:
 docker compose exec wazuh.manager bash
 
-cat >> /var/ossec/etc/rules/local_rules.xml <<'EOF'
-<group name="local,lab,">
-  <rule id="100001" level="10">
-    <if_group>syslog</if_group>
-    <match>Failed password</match>
-    <description>Lab: SSH brute force attempt detected</description>
-    <mitre>
-      <id>T1110</id>
-    </mitre>
-  </rule>
-</group>
+cat &gt;&gt; /var/ossec/etc/rules/local_rules.xml &lt;&lt;'EOF'
+&lt;group name="local,lab,"&gt;
+  &lt;rule id="100001" level="10"&gt;
+    &lt;if_group&gt;syslog&lt;/if_group&gt;
+    &lt;match&gt;Failed password&lt;/match&gt;
+    &lt;description&gt;Lab: SSH brute force attempt detected&lt;/description&gt;
+    &lt;mitre&gt;
+      &lt;id&gt;T1110&lt;/id&gt;
+    &lt;/mitre&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;
 EOF
 
-/var/ossec/bin/ossec-control restart
+/var/ossec/bin/ossec-control restart</pre>
+  </section>
 
-  
+  <section>
+    <h2><i>07</i> Tear Down</h2>
+<pre>docker compose down -v</pre>
+  </section>
 
-  
-    
-## 07 Tear Down
+</div>
 
-docker compose down -v
+<div id="ftr"></div>
+<button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
 
-  
-
-&#8593;
+</body>
+</html>

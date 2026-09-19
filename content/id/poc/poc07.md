@@ -5,200 +5,139 @@ poc_num: "07"
 target: "[REDACTED] - internal ERP (authorized assessment)"
 category: "Web Application"
 severity: "Medium"
-severity_note: "Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor."
-impact: "Unauthorized read of staff identities and client list by a denied role - enables targeted phishing and internal OSINT."
 status: "Proven"
 ---
 
-poc-07 - Broken Access Control via LOV Sub-Endpoints | Rudi
-
-- 
-
-- 
-
-- 
-
-  
-- 
-
-  
-
-  
-    01
-## Ringkasan
-
-    
-The application enforces access per menu permission (for example, a role may hold
-      `master.employee` or `master.client`). A test account
-      with a low-privilege role was *not* granted the employee or client menus, and the parent
-      resources correctly rejected it with `403 Forbidden`.
-
-    
-However, several LOV (List-of-Values) sub-endpoints - the lightweight lookups used to populate
-      dropdowns - do not enforce the same menu check. They returned `200 OK` and
+<section id="summary">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
+    <p>The application enforces access per menu permission (for example, a role may hold
+      <code class="inline">master.employee</code> or <code class="inline">master.client</code>). A test account
+      with a low-privilege role was <em>not</em> granted the employee or client menus, and the parent
+      resources correctly rejected it with <code class="inline">403 Forbidden</code>.</p>
+    <p>However, several LOV (List-of-Values) sub-endpoints - the lightweight lookups used to populate
+      dropdowns - do not enforce the same menu check. They returned <code class="inline">200 OK</code> and
       disclosed data the role was never meant to see: staff identities (name, email, position) and the
-      client list. Access control is enforced on the parent resource but missed on the sub-resource.
+      client list. Access control is enforced on the parent resource but missed on the sub-resource.</p>
+  </section>
 
-  
+  <section id="preconditions">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Prasyarat</h2></div>
+    <ul class="tight">
+      <li>A single valid, low-privilege authenticated account (obtained legitimately).</li>
+      <li>The account's role lacks the menu for the target resource (e.g. <code class="inline">master.employee</code>).</li>
+      <li>The LOV / derived sub-endpoints are reachable (they back the front-end dropdowns).</li>
+    </ul>
+  </section>
 
-  
-    02
-## Prasyarat
+  <section id="poc">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Langkah-langkah PoC</h2></div>
+    <ol class="tight">
+      <li>Authenticate as the low-privilege user and obtain a valid <code class="inline">accessToken</code>.</li>
+      <li>Confirm the parent resource is correctly denied:
+        <code class="inline">GET /employees</code> &rarr; <code class="inline">403 Forbidden</code>.</li>
+      <li>Call the LOV sub-endpoint with the same token: <code class="inline">GET /employees/lov</code>.</li>
+      <li>Observe <code class="inline">200 OK</code> returning a list of identities (name, email, position).</li>
+      <li>Repeat for related resources: <code class="inline">GET /clients/lov</code>,
+        <code class="inline">GET /clients/tiers</code> &rarr; <code class="inline">200 OK</code>.</li>
+      <li>Confirm record-level access is still enforced:
+        <code class="inline">GET /employees/{id}</code> &rarr; <code class="inline">403</code> (correct).</li>
+    </ol>
+    <p>Sanitized transcript (identities and target removed):</p>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>http</span></div>
+<pre><span class="cmt"># parent resources - correctly blocked</span>
+GET /employees   &rarr; <span class="hl-red">403 Forbidden</span>  <span class="cmt">(menu master.employee)</span>
+GET /clients     &rarr; <span class="hl-red">403 Forbidden</span>  <span class="cmt">(menu master.client)</span>
 
-    
-      
-- A single valid, low-privilege authenticated account (obtained legitimately).
-      
-- The account's role lacks the menu for the target resource (e.g. `master.employee`).
-      
-- The LOV / derived sub-endpoints are reachable (they back the front-end dropdowns).
-    
-  
+<span class="cmt"># LOV sub-endpoints - authorization bypass</span>
+GET /employees/lov &rarr; <span class="out">200 OK</span>
+  [ { "id":"<span class="hl-red">[REDACTED]</span>", "name":"<span class="hl-red">[REDACTED]</span>",
+      "email":"<span class="hl-red">[REDACTED]</span>", "position":"<span class="hl-red">[REDACTED]</span>" }, ... ]
+GET /clients/lov   &rarr; <span class="out">200 OK</span>
+  [ { "code":"<span class="hl-red">[REDACTED]</span>", "name":"<span class="hl-red">[REDACTED]</span>" }, ... ]
+GET /clients/tiers &rarr; <span class="out">200 OK</span>
 
-  
-    03
-## PoC Steps
-
-    
-      
-- Authenticate as the low-privilege user and obtain a valid `accessToken`.
-      
-- Confirm the parent resource is correctly denied:
-        `GET /employees` → `403 Forbidden`.
-      
-- Call the LOV sub-endpoint with the same token: `GET /employees/lov`.
-      
-- Observe `200 OK` returning a list of identities (name, email, position).
-      
-- Repeat for related resources: `GET /clients/lov`,
-        `GET /clients/tiers` → `200 OK`.
-      
-- Confirm record-level access is still enforced:
-        `GET /employees/{id}` → `403` (correct).
-    
-    
-Sanitized transcript (identities and target removed):
-
-    http
-
-# parent resources - correctly blocked
-GET /employees   → 403 Forbidden  (menu master.employee)
-GET /clients     → 403 Forbidden  (menu master.client)
-
-# LOV sub-endpoints - authorization bypass
-GET /employees/lov → 200 OK
-  [ { "id":"[REDACTED]", "name":"[REDACTED]",
-      "email":"[REDACTED]", "position":"[REDACTED]" }, ... ]
-GET /clients/lov   → 200 OK
-  [ { "code":"[REDACTED]", "name":"[REDACTED]" }, ... ]
-GET /clients/tiers → 200 OK
-
-# record-level - correctly blocked (positive control)
-GET /employees/{id} → 403 Forbidden
-GET /clients/{id}   → 403 Forbidden
-
-    
-All identifying values (target host, staff names, emails, client names) are redacted.
+<span class="cmt"># record-level - correctly blocked (positive control)</span>
+GET /employees/{id} &rarr; <span class="hl-red">403 Forbidden</span>
+GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
+    <p class="muted">All identifying values (target host, staff names, emails, client names) are redacted.
       Only HTTP status codes and generic REST paths are shown - enough to reproduce the logic without
-      exposing data.
+      exposing data.</p>
+  </section>
 
-  
-
-  
-    04
-## Dampak
-
-    
-Disclosure of internal PII (staff names, emails, positions) and the business entity list to a role
+  <section id="impact">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Dampak</h2></div>
+    <p>Disclosure of internal PII (staff names, emails, positions) and the business entity list to a role
       that is explicitly denied that data. In practice this fuels targeted phishing and internal OSINT, and
       supplies input for account-enumeration attempts. It did not lead to account takeover during testing
       (credential controls held), so impact is confined to confidentiality - consistent with the
-      Medium rating.
-
-    Impact
+      Medium rating.</p>
+    <div class="callout impact"><span class="label">Impact</span>
       Unauthorized read of staff identities and client records by a denied role; enables phishing and
       OSINT against the organization. No integrity or availability impact observed.
-    
-  
+    </div>
+  </section>
 
-  
-    05
-## Akar Masalah
-
-    
-Authorization is applied per-endpoint, by hand, and only wired onto the parent resource handler.
-      Derived sub-endpoints (`/lov`, `/tiers`) were registered
+  <section id="rootcause">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Akar Masalah</h2></div>
+    <p>Authorization is applied per-endpoint, by hand, and only wired onto the parent resource handler.
+      Derived sub-endpoints (<code class="inline">/lov</code>, <code class="inline">/tiers</code>) were registered
       without the same menu guard. Because the check is not enforced centrally at the router/resource
       level, any sub-path added later inherits no protection by default - the classic shape of Broken
-      Function Level Authorization.
+      Function Level Authorization.</p>
+  </section>
 
-  
-
-  
-    06
-## Solution
-
-    
-Enforce authorization at the router/resource level so it applies to every sub-path, and return
-      only the minimum fields a lookup needs.
-
-    before - vulnerable
-
-// guard only on the parent; sub-routes slip through
+  <section id="solution">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Solution</h2></div>
+    <p>Enforce authorization at the router/resource level so it applies to every sub-path, and return
+      only the minimum fields a lookup needs.</p>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>before - vulnerable</span></div>
+<pre><span class="cmt">// guard only on the parent; sub-routes slip through</span>
 router.get('/employees',       requireMenu('master.employee'), listEmployees)
-router.get('/employees/lov',   listEmployeesLov)   // no guard → 200 leak
-router.get('/clients/lov',     listClientsLov)     // no guard → 200 leak
+router.get('/employees/lov',   listEmployeesLov)   <span class="hl-red">// no guard &rarr; 200 leak</span>
+router.get('/clients/lov',     listClientsLov)     <span class="hl-red">// no guard &rarr; 200 leak</span>
 
-// LOV returns full records, including PII
-return rows.map(e => ({ id:e.id, name:e.name, email:e.email, position:e.position }))
-
-    after - fixed
-
-// guard at router level → covers parent + /lov + /tiers
+<span class="cmt">// LOV returns full records, including PII</span>
+return rows.map(e =&gt; ({ id:e.id, name:e.name, email:e.email, position:e.position }))</pre></div>
+    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>after - fixed</span></div>
+<pre><span class="cmt">// guard at router level &rarr; covers parent + /lov + /tiers</span>
 const employees = Router()
 employees.use(requireMenu('master.employee'))
 employees.get('/',    listEmployees)
 employees.get('/lov', listEmployeesLov)
-// idem: clients → requireMenu('master.client')
+<span class="cmt">// idem: clients &rarr; requireMenu('master.client')</span>
 
-// least-privilege lookup: id + label only, no PII
-return rows.map(e => ({ id:e.id, label:e.name }))
-
-    Remediation
+<span class="cmt">// least-privilege lookup: id + label only, no PII</span>
+return rows.map(e =&gt; ({ id:e.id, label:e.name }))</pre></div>
+    <div class="callout fix"><span class="label">Remediasi</span>
       Framework shown is illustrative - apply the equivalent guard in your stack. Add a regression test:
-      a role without the menu must receive 403 on the parent *and* every sub-endpoint
-      (`/lov`, `/tiers`).
-    
-  
+      a role without the menu must receive 403 on the parent <em>and</em> every sub-endpoint
+      (<code class="inline">/lov</code>, <code class="inline">/tiers</code>).
+    </div>
+  </section>
 
-  
-    07
-## Kronologi Pengungkapan
+  <section id="disclosure">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Kronologi Pengungkapan</h2></div>
+    <ul class="tight">
+      <li><strong>Day 0</strong> - Finding identified during an authorized assessment; reported to the system owner.</li>
+      <li><strong>Coordinated</strong> - Per owner communication, the fix was applied (authorization guard extended to sub-endpoints and LOV payloads minimized); not independently re-verified by the researcher.</li>
+      <li><strong>Publication</strong> - This sanitized write-up published with owner consent. Target and all data redacted.</li>
+    </ul>
+  </section>
 
-    
-      
-- **Day 0** - Finding identified during an authorized assessment; reported to the system owner.
-      
-- **Coordinated** - Per owner communication, the fix was applied (authorization guard extended to sub-endpoints and LOV payloads minimized); not independently re-verified by the researcher.
-      
-- **Publication** - This sanitized write-up published with owner consent. Target and all data redacted.
-    
-  
+  <section id="refs">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Referensi</h2></div>
+    <ul class="tight">
+      <li><a href="https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/" rel="noopener">OWASP Top 10 - A01 Broken Access Control</a></li>
+      <li><a href="https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/" rel="noopener">OWASP API Security - API5:2023 Broken Function Level Authorization</a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/285.html" rel="noopener">CWE-285 - Improper Authorization</a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/200.html" rel="noopener">CWE-200 - Exposure of Sensitive Information</a></li>
+    </ul>
+  </section>
 
-  
-    08
-## Referensi
+</div>
+<div id="ftr"></div>
+<button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
 
-    
-      
-- OWASP Top 10 - A01 Broken Access Control
-      
-- OWASP API Security - API5:2023 Broken Function Level Authorization
-      
-- CWE-285 - Improper Authorization
-      
-- CWE-200 - Exposure of Sensitive Information
-    
-  
 
-&#8593;
+</body>
+</html>

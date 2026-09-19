@@ -199,18 +199,9 @@ footer .wrap {
 .fab-top:hover { color: var(--accent); border-color: var(--accent); }
 
 
-/* ── TOPBAR INNER (Hugo - independent dari .wrap masing2 halaman) ── */
-.topbar-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px; max-width: 1160px; margin: 0 auto;
-}
-@media (max-width: 700px) {
-  .topbar-inner { padding: 10px 12px; }
-  .brand { font-size: 11px; gap: 5px; }
-  .brand-logo { width: 20px; height: 20px; }
-}
+/* ── HUGO ADDITIONS ── */
 
-/* ── LANG WRAP ── */
+/* Lang toggle */
 .lang-wrap { display: flex; gap: 5px; align-items: center; }
 .lang-btn {
   background: none; border: 1px solid var(--line); color: var(--muted);
@@ -223,17 +214,20 @@ footer .wrap {
 .lang-btn.active { color: var(--accent); border-color: var(--accent); }
 .lang-btn.dim { opacity: 0.35; cursor: default; pointer-events: none; }
 
-/* ── BRAND SLUG hide on mobile ── */
+/* Brand slug - hide on small screens */
+.brand-slug { white-space: nowrap; }
 @media (max-width: 700px) {
   .brand-slug { display: none; }
-  .topbar-inner { position: relative; }
+  .topbar .wrap { padding: 10px 12px; }
+  .brand { font-size: 11px; gap: 5px; }
+  .brand-logo { width: 20px; height: 20px; }
 }
 
-/* ── FOOT ROW (Hugo footer) ── */
+/* Footer row */
 .foot-row {
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 14px;
 }
-.foot-sig { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.foot-sig  { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .foot-back { font-family: var(--mono); font-size: 12px; color: var(--muted); text-decoration: none; }
 .foot-back:hover { color: var(--accent); }

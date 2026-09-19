@@ -1,0 +1,191 @@
+[
+  {
+    "key": "lab01",
+    "type": "lab",
+    "date": "2026-09-01",
+    "title": "Vulnerability Scanning Lab - GVM/OpenVAS with Docker",
+    "description": "Build a full Greenbone Vulnerability Manager (GVM) stack locally using Docker Compose. Covers feed sync, scan target config, and report export.",
+    "url": "/lab/lab01.html",
+    "category": "Vulnerability Scanning",
+    "difficulty": "Beginner",
+    "tags": [
+      "gvm",
+      "openvas",
+      "docker",
+      "vulnerability-scanning"
+    ],
+    "stack": [
+      "GVM/OpenVAS",
+      "Docker Compose",
+      "PostgreSQL"
+    ]
+  },
+  {
+    "key": "lab02",
+    "type": "lab",
+    "date": "2026-09-02",
+    "title": "Web App Pentest Lab - DVWA + Juice Shop + Proxy",
+    "description": "Spin up multiple intentionally-vulnerable web apps in an isolated Docker network with mitmproxy and Burp Suite integration.",
+    "url": "/lab/lab02.html",
+    "category": "Web Application Security",
+    "difficulty": "Beginner",
+    "tags": [
+      "web",
+      "dvwa",
+      "juice-shop",
+      "burp",
+      "docker"
+    ],
+    "stack": [
+      "DVWA",
+      "OWASP Juice Shop",
+      "mitmproxy",
+      "Docker Compose"
+    ]
+  },
+  {
+    "key": "lab03",
+    "type": "lab",
+    "date": "2026-09-03",
+    "title": "SIEM Lab - Wazuh Stack (Manager + Indexer + Dashboard)",
+    "description": "Deploy the complete Wazuh SIEM stack with Docker Compose. Enroll agents, write custom detection rules, forward alerts to the dashboard.",
+    "url": "/lab/lab03.html",
+    "category": "SIEM / Blue Team",
+    "difficulty": "Intermediate",
+    "tags": [
+      "siem",
+      "wazuh",
+      "opensearch",
+      "docker",
+      "blueteam"
+    ],
+    "stack": [
+      "Wazuh",
+      "OpenSearch",
+      "Docker Compose"
+    ]
+  },
+  {
+    "key": "lab04",
+    "type": "lab",
+    "date": "2026-09-04",
+    "title": "Network IDS/Forensics Lab - Suricata + Zeek",
+    "description": "Run Suricata and Zeek side-by-side in Docker, replay PCAP files, write custom rules, and correlate alert output.",
+    "url": "/lab/lab04.html",
+    "category": "Network Forensics",
+    "difficulty": "Intermediate",
+    "tags": [
+      "network",
+      "ids",
+      "suricata",
+      "zeek",
+      "pcap",
+      "forensics"
+    ],
+    "stack": [
+      "Suricata",
+      "Zeek",
+      "Docker Compose"
+    ]
+  },
+  {
+    "key": "poc06",
+    "type": "poc",
+    "date": "2026-09-06",
+    "title": "WordPress Institutional Site & Academic Portal Assessment",
+    "description": "Nine findings: 4 Medium (XSS-vulnerable plugin, open XML-RPC, unthrottled SIAKAD & CBT logins), 3 Low, 2 Info.",
+    "url": "/poc/poc06.html",
+    "category": "Web Application",
+    "severity": "Medium",
+    "status": "Proven",
+    "tags": [
+      "web",
+      "wordpress",
+      "xss",
+      "field"
+    ]
+  },
+  {
+    "key": "poc01",
+    "type": "poc",
+    "date": "2026-08-20",
+    "title": "Broken Access Control / Improper Resource Isolation",
+    "description": "Low-privilege SDR account can view organization member records and research batch metadata.",
+    "url": "/poc/poc01.html",
+    "category": "Broken Access Control",
+    "severity": "Medium (CVSS 5.4)",
+    "status": "Proven",
+    "tags": [
+      "web",
+      "bac",
+      "idor",
+      "field"
+    ]
+  },
+  {
+    "key": "poc02",
+    "type": "poc",
+    "date": "2026-08-29",
+    "title": "TLS Certificate Expired & Hostname Mismatch",
+    "description": "Expired TLS certificate with hostname mismatch enabling potential MITM against authenticated users.",
+    "url": "/poc/poc02.html",
+    "category": "Cryptographic Failures",
+    "severity": "Critical (CVSS 7.5)",
+    "status": "Proven",
+    "tags": [
+      "web",
+      "tls",
+      "network",
+      "field"
+    ]
+  },
+  {
+    "key": "poc03",
+    "type": "poc",
+    "date": "2026-08-27",
+    "title": "Backend Services Exposed to Public Internet",
+    "description": "API, object storage, and PostgreSQL directly reachable from public internet, bypassing nginx proxy controls.",
+    "url": "/poc/poc03.html",
+    "category": "Security Misconfiguration",
+    "severity": "High (CVSS 8.6)",
+    "status": "Proven",
+    "tags": [
+      "network",
+      "misconfiguration",
+      "field"
+    ]
+  },
+  {
+    "key": "poc04",
+    "type": "poc",
+    "date": "2026-04-28",
+    "title": "Directory Listing / Information Disclosure",
+    "description": "Public-sector web application returns full directory listing to unauthenticated users.",
+    "url": "/poc/poc04.html",
+    "category": "Security Misconfiguration",
+    "severity": "Low-Medium (CVSS 5.3)",
+    "status": "Proven",
+    "tags": [
+      "web",
+      "info-disclosure",
+      "field"
+    ]
+  },
+  {
+    "key": "poc05",
+    "type": "poc",
+    "date": "2026-09-03",
+    "title": "Missing Anti-Framing & Login Brute-Force Protection",
+    "description": "Clickjacking via missing framing headers and absent login rate-limiting on a production web dashboard.",
+    "url": "/poc/poc05.html",
+    "category": "Web Application",
+    "severity": "Medium",
+    "status": "Proven",
+    "tags": [
+      "web",
+      "clickjacking",
+      "bruteforce",
+      "field"
+    ]
+  }
+]

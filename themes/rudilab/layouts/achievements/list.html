@@ -7,7 +7,6 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
   <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
   <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
-  {{/* CSS Hugo pipes */}}
   {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}">
   <style>
@@ -41,7 +40,7 @@ a:hover{text-decoration:underline}
 .backlink:hover{color:var(--accent);text-decoration:none}
 
 /* ── TOOLBAR ── */
-.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
 .search-wrap{position:relative}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
   color:var(--muted);pointer-events:none;width:15px;height:15px}
@@ -52,33 +51,39 @@ a:hover{text-decoration:underline}
 }
 #searchInput::placeholder{color:var(--muted)}
 #searchInput:focus{border-color:var(--accent)}
-.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.filter-label{color:var(--muted);font-size:11.5px;letter-spacing:.08em;flex:none}
-.tag-btn{
-  background:none;border:1px solid var(--line);color:var(--muted);
-  font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:20px;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.tag-btn:hover{border-color:var(--accent);color:var(--accent)}
-.tag-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:700}
-html[data-theme="light"] .tag-btn.active{color:#fff}
 
 /* ── RESULT INFO ── */
-.result-info{font-size:12px;color:var(--muted);margin-bottom:18px;min-height:18px}
+.result-info{font-size:12px;color:var(--muted);margin-bottom:20px;min-height:18px}
 .result-info b{color:var(--accent)}
+
+/* ── VENDOR GROUP ── */
+.vendor-group{margin-bottom:48px}
+.vendor-group:last-child{margin-bottom:0}
+.vendor-heading{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:18px;padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.vendor-logo{width:32px;height:32px;border-radius:6px;flex:none;
+  background:var(--panel-2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.vendor-logo img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.vendor-logo-initials{font-size:12px;font-weight:700;color:var(--accent)}
+.vendor-name{font-size:15px;font-weight:700;color:var(--text-strong);letter-spacing:.02em}
+.vendor-count{font-size:12px;color:var(--muted);margin-left:4px}
 
 /* ── GRID ── */
 .ach-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px;
 }
 @media(max-width:560px){.ach-grid{grid-template-columns:1fr}}
 
 /* ── CARD ── */
 .ach-card{
   background:var(--panel);border:1px solid var(--line);border-radius:12px;
-  padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;
   transition:border-color .18s,transform .18s,box-shadow .18s;
   position:relative;overflow:hidden;
   text-decoration:none;color:inherit;cursor:pointer;
@@ -94,38 +99,39 @@ html[data-theme="light"] .tag-btn.active{color:#fff}
 .ach-card:hover::before{opacity:1}
 
 /* badge image */
-.badge-img{width:120px;height:120px;border-radius:50%;overflow:hidden;
+.badge-img{width:100px;height:100px;border-radius:50%;overflow:hidden;
   border:2px solid var(--line);background:var(--panel-2);
   display:flex;align-items:center;justify-content:center;flex:none;
   transition:border-color .18s}
 .ach-card:hover .badge-img{border-color:var(--accent)}
 .badge-img img{width:100%;height:100%;object-fit:cover}
-.badge-initials{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.badge-initials{font-size:24px;font-weight:700;color:var(--accent);letter-spacing:1px}
 
 /* card info */
-.ach-info{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:100%}
-.ach-issuer{font-size:12.5px;font-weight:700;color:var(--accent);letter-spacing:.02em}
-.ach-name{font-size:14px;font-weight:700;color:var(--text-strong);line-height:1.38}
+.ach-info{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;width:100%}
+.ach-name{font-size:13.5px;font-weight:700;color:var(--text-strong);line-height:1.38}
 .ach-category{font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .ach-date{font-size:11px;color:var(--muted)}
 
 /* verify button */
-.ach-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;
-  border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.ach-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%;
+  border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
 .btn-verify{
   display:inline-flex;align-items:center;gap:5px;
   background:none;border:1px solid var(--line);color:var(--muted);
-  font-family:var(--mono);font-size:11.5px;padding:5px 12px;border-radius:6px;
+  font-family:var(--mono);font-size:11.5px;padding:4px 10px;border-radius:6px;
   cursor:pointer;transition:all .15s;text-decoration:none;
 }
 .btn-verify:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
-.btn-verify.primary{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
-  color:var(--accent)}
+.btn-verify.primary{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent)}
 .btn-verify.primary:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 
 /* empty state */
-.empty-state{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty-state{padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
 .empty-state span{display:block;font-size:28px;margin-bottom:12px;opacity:.4}
+
+/* hidden group */
+.vendor-group.hidden{display:none}
 
 /* scroll to top */
 .totop{position:fixed;right:20px;bottom:24px;width:38px;height:38px;border-radius:6px;
@@ -149,10 +155,10 @@ html[data-theme="light"] .tag-btn.active{color:#fff}
 {{ partial "topbar.html" . }}
 
 <div class="page">
-  <a class="backlink" href="/">← back to homepage</a>
+  <a class="backlink" href="/">&#8592; back to homepage</a>
 
   <div class="page-header">
-    <h1>Achievements</h1>
+    <h1>{{ i18n "section_achievements" }}</h1>
     <p class="sub">Certifications, badges, and digital credentials - verified achievements in cybersecurity and networking.</p>
   </div>
 
@@ -162,16 +168,14 @@ html[data-theme="light"] .tag-btn.active{color:#fff}
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/>
       </svg>
-      <input id="searchInput" type="text" placeholder="Search name, issuer, category..." autocomplete="off">
-    </div>
-    <div class="filter-row">
-      <span class="filter-label">FILTER:</span>
-      <div id="filterTags"></div>
+      <input id="searchInput" type="text" placeholder="Search achievements..." autocomplete="off">
     </div>
   </div>
 
   <div class="result-info" id="resultInfo"></div>
-  <div class="ach-grid" id="achGrid"><div class="empty-state"><span>&#9203;</span>Loading...</div></div>
+
+  <!-- VENDOR GROUPS - rendered by JS -->
+  <div id="achContainer"><div class="empty-state"><span>&#9203;</span>Loading...</div></div>
 </div>
 
 <button class="totop" id="totop" title="Back to top">&#8593;</button>
@@ -180,13 +184,12 @@ html[data-theme="light"] .tag-btn.active{color:#fff}
   <div class="wrap">
     <div class="foot-row">
       <span class="foot-sig">// Achievements - rudilab.my.id - Rudi - 2026</span>
-      <a class="foot-back" href="/">← back to homepage</a>
+      <a class="foot-back" href="/">&#8592; back to homepage</a>
     </div>
   </div>
 </footer>
 
 <script>
-/* ── helpers ── */
 function esc(s){
   return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -194,144 +197,132 @@ function initials(name){
   return (name||'').split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
 }
 
-/* issuer display names (template: add vendor aliases here, keep data.json raw) */
-const ISSUER_LABEL = {
-  'Hack The Box': 'Hack The Box (HTB)',
-  'Hack The Box Academy': 'Hack The Box (HTB)'
-};
-function issuerLabel(a){
-  return ISSUER_LABEL[a.issuer] || a.issuer || '';
+/* Vendor display config - tambah entry baru di sini saat ada vendor baru */
+const VENDOR_CONFIG = [
+  { key: 'cisco',   label: 'Cisco',              match: ['Cisco'],                        logo: null },
+  { key: 'htb',     label: 'Hack The Box (HTB)', match: ['Hack The Box','Hack The Box Academy'], logo: null },
+  { key: 'thm',     label: 'TryHackMe',          match: ['TryHackMe'],                    logo: null },
+  { key: 'other',   label: 'Other',              match: [],                               logo: null },
+];
+
+function vendorOf(issuer){
+  for(const v of VENDOR_CONFIG){
+    if(v.match.some(m => (issuer||'').toLowerCase().includes(m.toLowerCase()))) return v.key;
+  }
+  return 'other';
 }
 
-/* ── state ── */
+const CREDLY_PROFILE = 'https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly';
+
 let ALL = [];
-let activeTag = null;
 let searchQ = '';
 
-/* ── filter tags ── */
-function buildFilterTags(items){
-  const counts = {};
-  items.forEach(a=>{
-    const tags = tagsOf(a);
-    tags.forEach(t=>{ counts[t]=(counts[t]||0)+1; });
-  });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  const wrap = document.getElementById('filterTags');
-  wrap.innerHTML = '';
-  const all = document.createElement('button');
-  all.className = 'tag-btn active';
-  all.textContent = 'All';
-  all.dataset.tag = '';
-  all.addEventListener('click', ()=>setTag(''));
-  wrap.appendChild(all);
-  sorted.forEach(([tag])=>{
-    const btn = document.createElement('button');
-    btn.className = 'tag-btn';
-    btn.textContent = tag;
-    btn.dataset.tag = tag;
-    btn.addEventListener('click', ()=>setTag(tag));
-    wrap.appendChild(btn);
-  });
+function cardHtml(a){
+  const href = a.credlyLink || a.credentialUrl || CREDLY_PROFILE;
+  const actionLabel = a.credlyLink ? 'View on Credly &#8599;' : 'View Credential &#8599;';
+  const badgeHtml = a.image
+    ? `<img src="${esc(a.image)}" alt="${esc(a.name)}">`
+    : `<span class="badge-initials">${esc(initials(a.name))}</span>`;
+  return `
+  <a class="ach-card" href="${esc(href)}" target="_blank" rel="noopener">
+    <div class="badge-img">${badgeHtml}</div>
+    <div class="ach-info">
+      <div class="ach-name">${esc(a.name)}</div>
+      <div class="ach-category">${esc(a.category||'Badge')}</div>
+      ${a.date ? `<div class="ach-date">${esc(a.date)}</div>` : ''}
+    </div>
+    <div class="ach-actions">
+      <span class="btn-verify primary">&#10003; ${actionLabel}</span>
+    </div>
+  </a>`;
 }
 
-function tagsOf(a){
-  const tags = [];
-  if(a.category) tags.push(a.category);
-  if(a.issuer) tags.push(issuerLabel(a));
-  return tags;
+function vendorHeadingHtml(v, count){
+  const initl = v.label.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+  return `
+  <div class="vendor-heading">
+    <div class="vendor-logo">
+      <span class="vendor-logo-initials">${esc(initl)}</span>
+    </div>
+    <span class="vendor-name">${esc(v.label)}</span>
+    <span class="vendor-count">(${count})</span>
+  </div>`;
 }
 
-function setTag(tag){
-  activeTag = tag || null;
-  document.querySelectorAll('#filterTags .tag-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.tag === (tag||''));
-  });
-  render();
-}
-
-/* ── render ── */
 function render(){
-  const grid = document.getElementById('achGrid');
+  const container = document.getElementById('achContainer');
   const q = searchQ.toLowerCase().trim();
-  const filtered = ALL.filter(a=>{
-    const matchTag = !activeTag || tagsOf(a).includes(activeTag);
-    const matchQ   = !q ||
-      (a.name||'').toLowerCase().includes(q) ||
-      (a.issuer||'').toLowerCase().includes(q) ||
-      (a.category||'').toLowerCase().includes(q);
-    return matchTag && matchQ;
-  });
 
+  const filtered = ALL.filter(a =>
+    !q ||
+    (a.name||'').toLowerCase().includes(q) ||
+    (a.issuer||'').toLowerCase().includes(q) ||
+    (a.category||'').toLowerCase().includes(q)
+  );
+
+  /* update result info */
   const info = document.getElementById('resultInfo');
   info.innerHTML = filtered.length === ALL.length
     ? `Showing <b>${ALL.length}</b> achievement${ALL.length===1?'':'s'}`
     : `Showing <b>${filtered.length}</b> of <b>${ALL.length}</b> achievements`;
 
   if(!filtered.length){
-    grid.innerHTML = `<div class="empty-state"><span>&#128269;</span>No achievements match your filter.</div>`;
+    container.innerHTML = `<div class="empty-state"><span>&#128269;</span>No achievements match your search.</div>`;
     return;
   }
 
-  const CREDLY_PROFILE = 'https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly';
+  /* group by vendor */
+  const groups = {};
+  VENDOR_CONFIG.forEach(v => { groups[v.key] = []; });
+  filtered.forEach(a => {
+    const vk = vendorOf(a.issuer);
+    if(!groups[vk]) groups[vk] = [];
+    groups[vk].push(a);
+  });
 
-  function cardHtml(a){
-    const href = a.credlyLink || a.credentialUrl || CREDLY_PROFILE;
-    const actionLabel = a.credlyLink ? 'View on Credly' : 'View Credential';
-    const badgeHtml = a.image
-      ? `<img src="${esc(a.image)}" alt="${esc(a.name)}">`
-      : `<span class="badge-initials">${esc(initials(a.name))}</span>`;
-    return `
-    <a class="ach-card" href="${esc(href)}" target="_blank" rel="noopener">
-      <div class="badge-img">${badgeHtml}</div>
-      <div class="ach-info">
-        <div class="ach-issuer">${esc(issuerLabel(a))}</div>
-        <div class="ach-name">${esc(a.name)}</div>
-        <div class="ach-category">${esc(a.category||'Badge')}</div>
-        ${a.date ? `<div class="ach-date">${esc(a.date)}</div>` : ''}
-      </div>
-      <div class="ach-actions">
-        <span class="btn-verify primary">&#10003; ${actionLabel} &#8599;</span>
-      </div>
-    </a>`;
-  }
+  let html = '';
+  VENDOR_CONFIG.forEach(v => {
+    const items = groups[v.key] || [];
+    if(!items.length) return;
+    html += `<div class="vendor-group" data-vendor="${esc(v.key)}">`;
+    html += vendorHeadingHtml(v, items.length);
+    html += `<div class="ach-grid">${items.map(cardHtml).join('')}</div>`;
+    html += `</div>`;
+  });
 
-  grid.innerHTML = filtered.map(cardHtml).join('');
+  container.innerHTML = html;
 
-  /* glow */
-  grid.querySelectorAll('.ach-card').forEach(card=>{
-    card.addEventListener('mousemove', e=>{
+  /* glow effect */
+  container.querySelectorAll('.ach-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX-r.left)+'px');
-      card.style.setProperty('--my', (e.clientY-r.top)+'px');
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
     });
   });
 }
 
-/* ── fetch ── */
 async function load(){
   try{
-    const r = await fetch('/data/data.json',{cache:'no-store'});
+    const r = await fetch('/data/data.json', {cache:'no-store'});
     if(!r.ok) throw new Error('fetch failed');
     const data = await r.json();
-    ALL = (data.achievements||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-    buildFilterTags(ALL);
+    ALL = (data.achievements||[]).slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
     render();
   } catch(e){
-    document.getElementById('achGrid').innerHTML=
+    document.getElementById('achContainer').innerHTML =
       '<div class="empty-state"><span>&#9888;&#65039;</span>Failed to load data.json.</div>';
   }
 }
 
-/* ── search ── */
-document.getElementById('searchInput').addEventListener('input', e=>{
+document.getElementById('searchInput').addEventListener('input', e => {
   searchQ = e.target.value;
   render();
 });
 
-/* ── scroll to top ── */
 const totop = document.getElementById('totop');
-window.addEventListener('scroll', ()=>totop.classList.toggle('show', scrollY>300));
-totop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+window.addEventListener('scroll', () => totop.classList.toggle('show', scrollY > 300));
+totop.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
 
 load();
 </script>

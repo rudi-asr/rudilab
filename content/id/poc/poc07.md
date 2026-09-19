@@ -27,10 +27,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Testing was performed under an authorized assessment
-      with owner-confirmed scope. No accounts were compromised, no data was exfiltrated, and rate limits were
-      respected. The fix was applied by the owner before this sanitized write-up was published with consent.
-      Target and all data are redacted - the organization is not identified in this document.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Pengujian dilakukan dalam asesmen yang diotorisasi dengan ruang lingkup yang dikonfirmasi oleh pemilik. Tidak ada akun yang dikompromikan, tidak ada data yang dieksfiltrasi, dan batas rate limit dihormati. Perbaikan diterapkan oleh pemilik sebelum write-up yang telah disanitasi ini dipublikasikan dengan persetujuan. Target dan semua data disembunyikan - organisasi tidak diidentifikasi dalam dokumen ini.
     </div>
   </header>
 

@@ -25,9 +25,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Testing was black-box from an external network, read-only and
-      non-destructive; the finding is publicly verifiable and required no credentials. Host and stack details are redacted
-      for public release. Ini adalah showcase yang telah disanitasi, bukan laporan rahasia.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Pengujian dilakukan secara black-box dari jaringan eksternal, bersifat read-only dan non-destruktif; temuan ini dapat diverifikasi secara publik dan tidak memerlukan kredensial. Detail host dan stack disembunyikan untuk rilis publik. Ini adalah showcase yang telah disanitasi, bukan laporan rahasia.
     </div>
   </header>
 

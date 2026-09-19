@@ -25,11 +25,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Independent security research under coordinated disclosure. Testing was
-      scope-limited (no denial-of-service, no destructive testing, brute-force attempts capped at &le;6 with delays) and
-      non-destructive - no data was modified, exfiltrated, or deleted. The institution name, domains, IP address, and
-      subdomains are redacted for public release; findings are published as weakness classes, not as a map to a system whose
-      issues remain open. This is a sanitized case study, not the confidential client deliverable.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Riset keamanan mandiri dengan pengungkapan terkoordinasi. Pengujian dibatasi ruang lingkupnya (tanpa denial-of-service, tanpa pengujian destruktif, percobaan brute-force dibatasi maksimal &le;6 dengan jeda) dan non-destruktif - tidak ada data yang dimodifikasi, dieksfiltrasi, atau dihapus. Nama institusi, domain, alamat IP, dan subdomain disembunyikan untuk rilis publik; temuan dipublikasikan sebagai kelas kelemahan, bukan sebagai peta sistem yang masalahnya masih terbuka. Ini adalah studi kasus yang telah disanitasi, bukan deliverable rahasia klien.
     </div>
   </header>
 

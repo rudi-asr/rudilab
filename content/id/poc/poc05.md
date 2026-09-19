@@ -25,10 +25,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> All commands and output below were executed against a live target under
-      written authorization, within an agreed scope (no denial-of-service, no data modification, no credential compromise).
-      Host, product name, and any personal data are redacted for public release. This is a sanitized methodology showcase,
-      not the confidential client deliverable.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Semua perintah dan output di bawah ini dieksekusi terhadap target live dengan otorisasi tertulis, dalam lingkup yang telah disepakati (tanpa denial-of-service, tanpa modifikasi data, tanpa kompromi kredensial). Host, nama produk, dan data pribadi apa pun disembunyikan untuk rilis publik. Ini adalah showcase metodologi yang telah disanitasi, bukan deliverable rahasia klien.
     </div>
   </header>
 

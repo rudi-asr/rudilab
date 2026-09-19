@@ -25,9 +25,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Tested under a bug-bounty program - scope-strict, non-destructive,
-      no-DoS. External access only; a low-privilege authenticated account was used for API-layer checks. No brute-force, no
-      data modification, no destructive operations. Host, ports, product name, and PII are redacted for public release.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Diuji dalam program bug-bounty - ketat ruang lingkup, non-destruktif, tanpa DoS. Hanya akses eksternal; akun terautentikasi dengan hak akses rendah digunakan untuk pemeriksaan lapisan API. Tidak ada brute-force, tidak ada modifikasi data, tidak ada operasi destruktif. Host, port, nama produk, dan PII disembunyikan untuk rilis publik.
     </div>
   </header>
 

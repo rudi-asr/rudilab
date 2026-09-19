@@ -25,11 +25,7 @@ status: "Proven"
     </dl>
     <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Independent research - no commissioned engagement and no authorization
-      letter. Discovery was passive observation of a publicly reachable URL; the path required no credentials. Reproduction
-      (section 04) was performed on a lab host under my own control - no enumeration or retrieval was carried out against the
-      reported system beyond the single request that revealed the listing. The operator was notified before publication and
-      is not identified here.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Riset mandiri - tanpa keterlibatan berbayar dan tanpa surat otorisasi. Penemuan ini merupakan observasi pasif terhadap URL yang dapat diakses publik; path tidak memerlukan kredensial. Reproduksi (bagian 04) dilakukan di host lab di bawah kendali pribadi - tidak ada enumerasi atau pengambilan data yang dilakukan terhadap sistem yang dilaporkan di luar satu permintaan yang mengungkap listing tersebut. Operator telah diberitahu sebelum publikasi dan tidak diidentifikasi di sini.
     </div>
   </header>
 

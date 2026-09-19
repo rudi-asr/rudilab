@@ -178,6 +178,22 @@
 
 {{ partial "topbar.html" . }}
 
+<!-- i18n strings for JS -->
+<script>
+var I18N = {
+  viewDocument:    {{ i18n "view_document" | jsonify }},
+  docLinkPending:  {{ i18n "doc_link_pending" | jsonify }},
+  openDetail:      {{ i18n "open_detail" | jsonify }},
+  backToList:      {{ i18n "back_to_list" | jsonify }},
+  statusLabels: {
+    done:   {{ i18n "status_published" | jsonify }},
+    review: {{ i18n "status_review" | jsonify }},
+    demo:   "Example",
+    Proven: {{ i18n "status_proven" | jsonify }}
+  }
+};
+</script>
+
 <div class="wrap">
 
   <main id="home">
@@ -185,7 +201,7 @@
       <div class="capture-frame" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
         <div class="capture-head">
           <span>capture - identity.pcap</span>
-          <span class="hint">→ view focus</span>
+          <span class="hint">&rarr; view focus</span>
         </div>
         <div class="capture-body">
           <div class="hero-id">
@@ -206,23 +222,15 @@
     </section>
 
     <section id="about">
-      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">01</span><h2>About</h2></div></div>
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">01</span><h2>{{i18n "section_about"}}</h2></div></div>
       <p style="color:var(--muted); font-size:15px; text-align:justify; hyphens:auto;">
         {{i18n "about_p1" | safeHTML}}
       </p>
       <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
-        My security work is grounded on <b style="color:var(--text)">10+ years hands-on inside enterprise infrastructure</b> -
-        the same networks, servers, virtualization stacks, cloud tenants, and DevOps pipelines
-        I now assess for weaknesses. That background is a deliberate advantage: I can read a
-        target the way it was actually built, spot the misconfigurations that plain tool scans
-        miss, and produce write-ups that reproduce cleanly on both a lab VM and the client's own environment.
+        {{i18n "about_p2" | safeHTML}}
       </p>
       <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
-        <b style="color:var(--text)">Thesis:</b> <em>Analysis of network attacks against a server-based
-        intrusion detection system, using the generic forensics framework methodology.</em>
-        Backed further by certifications including
-        <b style="color:var(--text)">CEH, CCNA, Network Security Expert (NSE), and VMware</b>
-        (full list in <a href="#certs">Certifications</a>).
+        {{i18n "about_thesis" | safeHTML}}
       </p>
       <div class="bg-strip" style="margin-top:28px;">
         <span class="lbl"><b>{{i18n "tools_label"}}</b></span>
@@ -267,47 +275,47 @@
 
     <section id="poc">
       <div class="sec-head">
-        <div class="sec-head-l"><span class="sec-tag">02</span><h2>Proof of Concept (PoC)</h2></div>
-        <span class="sec-sub">3 latest - click to open write-up</span>
+        <div class="sec-head-l"><span class="sec-tag">02</span><h2>{{i18n "section_poc"}}</h2></div>
+        <span class="sec-sub">{{i18n "poc_clickhint"}}</span>
       </div>
       <div class="log" id="poc-log"></div>
       <div style="text-align:center; padding:20px 0 4px;">
         <a class="btn ghost" href="poc/collect-poc.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
-          View all PoC write-ups →
+          {{i18n "poc_viewall"}}
         </a>
       </div>
     </section>
 
     <section id="lab">
       <div class="sec-head">
-        <div class="sec-head-l"><span class="sec-tag">03</span><h2>Lab</h2></div>
-        <span class="sec-sub">3 latest - step-by-step lab guides</span>
+        <div class="sec-head-l"><span class="sec-tag">03</span><h2>{{i18n "section_lab"}}</h2></div>
+        <span class="sec-sub">{{i18n "lab_clickhint"}}</span>
       </div>
       <div class="log" id="lab-log"></div>
       <div style="text-align:center; padding:20px 0 4px;">
         <a class="btn ghost" href="/lab/collect-lab.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
-          View all Homelab guides →
+          {{i18n "lab_viewall"}}
         </a>
       </div>
     </section>
 
     <section id="research">
-      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">04</span><h2>Research &amp; Publications</h2></div><span class="sec-sub">3 latest published</span></div>
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">04</span><h2>{{i18n "section_research"}}</h2></div><span class="sec-sub">{{i18n "research_clickhint"}}</span></div>
       <div class="log" id="research-log"></div>
       <div style="text-align:center; padding:20px 0 4px;">
         <a class="btn ghost" href="research/collect-research.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
-          View all Research &amp; Publications →
+          {{i18n "research_viewall"}}
         </a>
       </div>
     </section>
 
     <section id="certs">
-      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">05</span><h2>Certifications</h2></div></div>
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">05</span><h2>{{i18n "section_certifications"}}</h2></div></div>
       <div class="cert-grid" id="cert-grid"></div>
     </section>
 
     <section id="books">
-      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">06</span><h2>Books</h2></div></div>
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">06</span><h2>{{i18n "section_books"}}</h2></div></div>
       <div class="book-grid" id="book-grid"></div>
     </section>
   </main>
@@ -315,7 +323,7 @@
   <section id="poc-detail" style="display:none;">
     <div class="sec-head">
       <div class="sec-head-l"><span class="sec-tag">POC</span><h2 id="poc-detail-title"></h2></div>
-      <span class="sec-sub"><button class="linklike" onclick="location.hash='#poc'">← back to PoC list</button></span>
+      <span class="sec-sub"><button class="linklike" onclick="location.hash='#poc'">{{i18n "back_poc_list"}}</button></span>
     </div>
     <div id="poc-detail-body"></div>
   </section>
@@ -325,15 +333,15 @@
 </div>
 
 <div class="fab-stack">
-  <div class="fab fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</div>
-  <a class="fab fab-wa" id="fabWa" href="#" target="_blank" rel="noopener" title="Chat on WhatsApp">☎</a>
+  <div class="fab fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&uarr;</div>
+  <a class="fab fab-wa" id="fabWa" href="#" target="_blank" rel="noopener" title="Chat on WhatsApp">&#9742;</a>
 </div>
 
 <div class="cert-modal" id="certModal" hidden role="dialog" aria-modal="true" aria-labelledby="certModalTitle">
   <div class="cert-modal-card">
     <div class="cert-modal-head">
-      <strong id="certModalTitle">Certificate preview</strong>
-      <button class="theme-btn" id="certModalClose" type="button" aria-label="Close preview">×</button>
+      <strong id="certModalTitle">{{i18n "cert_preview_title"}}</strong>
+      <button class="theme-btn" id="certModalClose" type="button" aria-label="Close preview">&times;</button>
     </div>
   <div class="cert-preview" id="certPreview" aria-label="Certificate preview"></div>
 </div>
@@ -352,7 +360,7 @@ function esc(s){
 }
 
 function statusLabel(s){
-  return { done: "Published", review: "In review", demo: "Example", Proven: "Proven" }[s] || s;
+  return (I18N.statusLabels[s]) || s;
 }
 
 function renderLog(containerId, items, opts){
@@ -363,11 +371,11 @@ function renderLog(containerId, items, opts){
     if (item.category) metaBits.push(item.category);
     let preview;
     if (opts.openPoc) {
-      preview = `<span class="hint">open detail ↗</span>`;
+      preview = `<span class="hint">${I18N.openDetail}</span>`;
     } else {
       preview = item.driveLink
-        ? `<a href="${esc(item.driveLink)}" target="_blank" rel="noopener">View Document ↗</a>`
-        : `<span style="color:var(--muted)">Document link pending</span>`;
+        ? `<a href="${esc(item.driveLink)}" target="_blank" rel="noopener">${I18N.viewDocument} ↗</a>`
+        : `<span style="color:var(--muted)">${I18N.docLinkPending}</span>`;
     }
     metaBits.push(preview);
     const entryAttrs = opts.openPoc
@@ -474,7 +482,7 @@ function renderPocDetail(item){
     `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="screenshot" loading="lazy"></a>`
   ).join("");
   const dl = item.driveLink
-    ? `<a class="btn" href="${esc(item.driveLink)}" target="_blank" rel="noopener">View document ↗</a>`
+    ? `<a class="btn" href="${esc(item.driveLink)}" target="_blank" rel="noopener">${I18N.viewDocument} ↗</a>`
     : "";
   document.getElementById("poc-detail-body").innerHTML = `
     <div class="capture-frame" style="cursor:default;">
@@ -489,7 +497,7 @@ function renderPocDetail(item){
         ${shots ? `<div class="detail-block"><span class="lbl">Screenshots</span><div class="shot-grid">${shots}</div></div>` : ""}
         <div class="detail-actions">
           ${dl}
-          <a class="btn ghost" href="#poc">← Back to list</a>
+          <a class="btn ghost" href="#poc">${I18N.backToList}</a>
         </div>
       </div>
     </div>`;

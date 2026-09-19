@@ -16,12 +16,13 @@ about_p1: "My core identity is <b style=\"color:var(--text)\">security research<
 
 about_p2: "My security work is grounded on <b style=\"color:var(--text)\">10+ years hands-on inside enterprise infrastructure</b> - the same networks, servers, virtualization stacks, cloud tenants, and DevOps pipelines I now assess for weaknesses. That background is a deliberate advantage: I can read a target the way it was actually built, spot the misconfigurations that plain tool scans miss, and produce write-ups that reproduce cleanly on both a lab VM and the client's own environment."
 
-about_p3: "Backed by certifications including <b style=\"color:var(--text)\">CEH, CCNA, Network Security Expert (NSE), and VMware</b> (full list in <a href=\"#certs\">Certifications</a>)."
+about_thesis: "<b style=\"color:var(--text)\">Thesis:</b> <em>Analysis of network attacks against a server-based intrusion detection system, using the generic forensics framework methodology.</em> Backed further by certifications including <b style=\"color:var(--text)\">CEH, CCNA, Network Security Expert (NSE), and VMware</b> (full list in <a href=\"#certs\">Certifications</a>)."
 
 tools_label: "Security Research Tools"
 capabilities_label: "Security capabilities"
 environments_label: "Environments I've assessed / hardened"
 
+section_about: "About"
 section_poc: "Proof of Concept (PoC)"
 section_lab: "Lab"
 section_research: "Research & Publications"
@@ -33,8 +34,22 @@ poc_subtitle: "Documented vulnerability assessments and security findings."
 lab_subtitle: "Homelab infrastructure setups, security tools, and experiments."
 research_subtitle: "Published research papers and academic contributions."
 
+poc_clickhint: "3 latest - click to open write-up"
+lab_clickhint: "3 latest - step-by-step lab guides"
+research_clickhint: "3 latest published"
+
+poc_viewall: "View all PoC write-ups \u2192"
+lab_viewall: "View all Homelab guides \u2192"
+research_viewall: "View all Research & Publications \u2192"
+
+back_poc_list: "\u2190 back to PoC list"
+cert_preview_title: "Certificate preview"
+
 view_all: "View all"
 view_document: "View Document"
+doc_link_pending: "Document link pending"
+open_detail: "open detail \u2197"
+back_to_list: "\u2190 Back to list"
 search_placeholder: "Search..."
 filter_all: "All"
 

@@ -110,7 +110,7 @@ section[id] { scroll-margin-top: 76px; }
   justify-content: center;
 }
 .nav-toggle:hover { color: var(--accent); border-color: var(--accent); }
-@media (max-width: 700px) {
+@media (max-width: 960px) {
   .nav-toggle { display: inline-flex; }
   .nav {
     position: absolute;
@@ -219,8 +219,11 @@ footer .wrap {
 .foot-back:hover { color: var(--accent); }
 
 /* ── HUGO: Mobile ── */
-@media (max-width: 700px) {
+@media (max-width: 960px) {
   .brand-slug { display: none; }
+  .topbar .wrap { padding: 10px 16px; }
+}
+@media (max-width: 700px) {
   .topbar .wrap { padding: 10px 12px; }
   .brand { font-size: 11px; gap: 5px; }
   .brand-logo { width: 20px; height: 20px; }

@@ -23,7 +23,7 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> Tested under a bug-bounty program - scope-strict, non-destructive,
       no-DoS. External access only; a low-privilege authenticated account was used for API-layer checks. No brute-force, no
@@ -33,13 +33,8 @@ status: "Proven"
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>All backend services of the target - API server, object storage (S3-compatible), and database - are directly
-      reachable from the public internet with no network-layer restriction. Services are bound to
-      <code class="inline">0.0.0.0</code> instead of <code class="inline">127.0.0.1</code>, bypassing the nginx reverse
-      proxy entirely.</p>
-    <p>The reverse proxy does <strong>not</strong> act as a security boundary: while nginx returned
-      <code class="inline">502 Bad Gateway</code>, the backend API remained fully accessible and accepted authenticated
-      sessions directly on its native port.</p>
+    <p>Semua layanan backend target - server API, object storage (kompatibel S3), dan database - dapat dijangkau langsung dari internet tanpa autentikasi.</p>
+    <p>Reverse proxy tidak berfungsi sebagai batas keamanan: meskipun nginx mengembalikan 502 Bad Gateway, backend masih dapat dijangkau melalui port aslinya.</p>
     <p class="muted">Stack fingerprint: Vue.js frontend · FastAPI/Uvicorn backend · MinIO object storage · PostgreSQL -
       confirmed from response headers and open ports.</p>
   </section>
@@ -59,21 +54,9 @@ status: "Proven"
 
   <section id="poc1">
     <div class="sec-head"><span class="sec-num">03</span><h2>PoC 1 - Port exposure verification</h2></div>
-    <p><em>Objective:</em> show that backend service ports are reachable from the public internet.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa port layanan backend dapat dijangkau dari internet publik.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ for port in 80 443 &lt;APP&gt; &lt;API&gt; &lt;CLONE&gt; &lt;S3&gt; &lt;DB&gt;; do
-    nc -zv -w3 TARGET $port 2>&1 | grep -q succeeded \
-      && echo "[$port] EXPOSED" || echo "[$port] CLOSED"
-  done</span>
-<span class="out">[   80] EXPOSED - nginx (default welcome page)
-[  443] EXPOSED - nginx (separate application)
-[&lt;APP&gt;] EXPOSED - nginx TLS (target dashboard)</span>
-<span class="hl-red">[&lt;API&gt;] EXPOSED - FastAPI/Uvicorn (backend API, direct)
-[&lt;CLONE&gt;] EXPOSED - nginx clone (dashboard copy)
-[&lt;S3&gt;] EXPOSED - MinIO S3 API (object storage)
-[&lt;DB&gt;] EXPOSED - PostgreSQL (TCP connect succeeded)</span></pre></div>
-    <p>All four backend ports are reachable externally. The database port is the most critical - direct database access
-      bypasses the entire application layer.</p>
+<p>Semua empat port backend dapat dijangkau dari luar. Port database adalah yang paling kritis - akses data langsung tanpa autentikasi.</p>
   </section>
 
   <section id="poc2">

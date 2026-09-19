@@ -27,8 +27,8 @@ stack:
 
   <section>
     <h2><i>01</i> Overview</h2>
-    <p>This lab runs two intentionally-vulnerable web apps - <b>DVWA</b> (classic PHP, covers SQLi/XSS/CSRF/File Upload/Command Injection) and <b>OWASP Juice Shop</b> (modern Node.js, covers the full OWASP Top 10) - on an isolated Docker network, with mitmproxy for traffic interception.</p>
-    <p class="note">This setup runs on an isolated Docker bridge network. Do not expose it to your LAN or the internet.</p>
+    <p>Lab ini menjalankan dua aplikasi web yang sengaja dibuat rentan - DVWA (PHP klasik, mencakup SQLi/XSS/CSRF/File Upload, RFI) dan OWASP Juice Shop (Node.js modern, mencakup OWASP Top 10) - di balik Caddy sebagai reverse proxy lokal, dengan Caido sebagai proxy pencegat.</p>
+    <p class="note">Konfigurasi ini berjalan di jaringan bridge Docker yang terisolasi. Jangan ekspos ke LAN atau internet Anda.</p>
   </section>
 
   <section>

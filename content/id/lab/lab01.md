@@ -26,8 +26,8 @@ stack:
 
   <section>
     <h2><i>01</i> Overview</h2>
-    <p>Greenbone Vulnerability Manager (GVM) is an open-source vulnerability scanner that checks hosts against thousands of Network Vulnerability Tests (NVTs). This lab deploys the full GVM stack in Docker Compose so you can run authenticated and unauthenticated scans against lab targets without touching a production network.</p>
-    <p class="note">All scanning must be done against hosts you own or have written permission to test.</p>
+    <p>Greenbone Vulnerability Manager (GVM) adalah pemindai kerentanan open-source yang memeriksa host terhadap ribuan CVE. Lab ini menjalankan stack lengkap menggunakan konfigurasi Docker Compose resmi <code>greenbone-community-edition</code>.</p>
+    <p class="note">Semua pemindaian harus dilakukan terhadap host yang Anda miliki atau yang telah memberikan izin tertulis untuk diuji.</p>
   </section>
 
   <section>

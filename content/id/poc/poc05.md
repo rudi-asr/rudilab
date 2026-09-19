@@ -23,7 +23,7 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED - live execution</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> All commands and output below were executed against a live target under
       written authorization, within an agreed scope (no denial-of-service, no data modification, no credential compromise).
@@ -34,13 +34,8 @@ status: "Proven"
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>The target's login interface ships <strong>no browser-side framing protection</strong> (no
-      <code class="inline">X-Frame-Options</code>, no <code class="inline">CSP: frame-ancestors</code>), allowing the login
-      page to be embedded in an attacker-controlled <code class="inline">&lt;iframe&gt;</code> for clickjacking. Independently,
-      the login API enforces <strong>no rate-limiting or lockout</strong>, leaving it open to unthrottled credential
-      brute-force and password spraying. Both were confirmed by live execution.</p>
-    <p class="muted">A secondary review of the public JavaScript bundle surfaced sensitive logic and PII handling that should
-      live server-side - recorded as lower-severity latent risks that amplify the two primary findings.</p>
+    <p>Antarmuka login target tidak dilengkapi perlindungan framing sisi browser (tidak ada <code class="inline">X-Frame-Options</code>, tidak ada direktif <code class="inline">Content-Security-Policy frame-ancestors</code>).</p>
+    <p>Peninjauan sekunder terhadap bundle JavaScript publik menemukan logika sensitif dan penanganan PII yang seharusnya tidak terekspos di sisi klien.</p>
   </section>
 
   <section id="scope">

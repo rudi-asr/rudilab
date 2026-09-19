@@ -23,20 +23,18 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> Testing was black-box from an external network, read-only and
       non-destructive; the finding is publicly verifiable and required no credentials. Host and stack details are redacted
-      for public release. This is a sanitized showcase, not the confidential deliverable.
+      for public release. Ini adalah showcase yang telah disanitasi, bukan laporan rahasia.
     </div>
   </header>
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>The target's TLS certificate had expired before the test date, and its Common Name (CN) did not match the accessed
-      domain. Modern browsers and HTTP clients therefore show security warnings and cannot verify server identity, weakening
-      transport security against an on-path <strong>man-in-the-middle</strong> attacker.</p>
-    <p class="muted">Stack fingerprint: nginx + PHP (version redacted), identified from HTTP response headers.</p>
+    <p>Sertifikat TLS target telah kedaluwarsa sebelum tanggal pengujian, dan Common Name (CN)-nya tidak cocok dengan hostname yang dilayani. Browser modern dan klien HTTP menampilkan peringatan keamanan.</p>
+    <p class="muted">Fingerprint stack: nginx + PHP (versi disembunyikan), diidentifikasi dari header respons HTTP.</p>
     <div class="callout notclaimed" style="margin-top:16px;"><span class="label">Note on severity</span>
       This finding is rated <strong>Medium</strong>, not Critical. Exploitation requires an attacker already in an on-path
       position (AC:High) and a user who dismisses the browser warning (UI:Required). Rating a warning-gated, position-dependent

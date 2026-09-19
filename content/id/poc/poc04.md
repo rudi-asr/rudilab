@@ -23,7 +23,7 @@ status: "Proven"
       <dt>Status</dt>         <dd>CONFIRMED - UNREMEDIATED</dd>
       <dt>Tester</dt>         <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> Independent research - no commissioned engagement and no authorization
       letter. Discovery was passive observation of a publicly reachable URL; the path required no credentials. Reproduction
@@ -35,12 +35,8 @@ status: "Proven"
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>A directory served by a public-sector web application had no index file and no directory-browsing restriction.
-      Requesting the path returned a generated listing of every file inside it, readable by anyone with the URL and without
-      credentials.</p>
-    <p>Alone this is a low-severity misconfiguration. Its real weight depends on what the directory holds: in practice these
-      listings surface database dumps, backup archives, scanned documents, and configuration files placed under the web root
-      for convenience and never intended for public access.</p>
+    <p>Sebuah direktori pada aplikasi web sektor publik tidak memiliki file index dan tidak ada pembatasan directory-browsing yang dikonfigurasi.</p>
+    <p>Sendiri ini adalah miskonfigurasi berkeparahan rendah. Bobot sebenarnya tergantung isi direktori: jika hanya berisi aset statis tanpa data sensitif, dampaknya minimal.</p>
     <p class="muted">The condition was reported to the operator through its official contact channel on 2026-04-28 and
       remained unremediated at the time of publication.</p>
   </section>

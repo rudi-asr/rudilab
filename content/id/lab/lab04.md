@@ -26,7 +26,7 @@ stack:
 
   <section>
     <h2><i>01</i> Overview</h2>
-    <p><b>Suricata</b> is a high-performance IDS/IPS engine. <b>Zeek</b> is a network analysis framework that generates structured logs (conn.log, dns.log, http.log). Both process the same PCAP so you can correlate Suricata alerts with Zeek connection metadata.</p>
+    <p>Suricata adalah mesin IDS/IPS berperforma tinggi. Zeek adalah framework analisis jaringan yang menghasilkan log terstruktur dari traffic jaringan. Keduanya menyediakan visibilitas berbasis alert (rules/signatures Suricata) dan berbasis perilaku (scripts/logs Zeek).</p>
   </section>
 
   <section>

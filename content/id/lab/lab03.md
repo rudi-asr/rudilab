@@ -26,8 +26,8 @@ stack:
 
   <section>
     <h2><i>01</i> Overview</h2>
-    <p>Wazuh is an open-source SIEM and XDR platform. This lab deploys the full stack - <b>Wazuh Manager</b> (rule engine), <b>Wazuh Indexer</b> (OpenSearch backend), and <b>Wazuh Dashboard</b> (Kibana-compatible UI) - using the official Docker Compose setup.</p>
-    <p class="note">Minimum: 4 vCPU, 8 GB RAM, 50 GB disk. On smaller machines lower the Indexer heap size.</p>
+    <p>Wazuh adalah platform SIEM dan XDR open-source. Lab ini mendeploy stack lengkap - Wazuh Manager (rule engine + API), Wazuh Indexer (OpenSearch), dan Wazuh Dashboard (UI berbasis Kibana) - menggunakan konfigurasi Docker Compose resmi.</p>
+    <p class="note">Minimum: 4 vCPU, 8 GB RAM, 50 GB disk. Pada mesin yang lebih kecil, turunkan ukuran heap Indexer.</p>
   </section>
 
   <section>

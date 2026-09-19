@@ -23,24 +23,17 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
-      <strong>Authorization &amp; disclosure.</strong> Testing was performed under authorization, scope-strict and
-      non-destructive. All requests were read-only except the creation of one PoC account. No production data was
-      touched - identifiers used were fake/PoC values. Host, product name, and any personal data are redacted for
-      public release. This is a sanitized showcase, not the confidential deliverable.
+      <strong>Otorisasi &amp; pengungkapan.</strong> Pengujian dilakukan dalam otorisasi, dibatasi ruang lingkup dan bersifat non-destruktif. Semua permintaan hanya baca kecuali pembuatan satu akun PoC. Tidak ada data produksi yang tersentuh - identifier yang digunakan adalah nilai palsu/PoC. Host, nama produk, dan data pribadi disembunyikan untuk rilis publik. Ini adalah showcase yang telah disanitasi, bukan laporan rahasia.
     </div>
   </header>
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>A newly registered account with the <strong>SDR</strong> (Sales Development Representative) role can access
-      organization information and resources that should not be exposed to a new low-privilege user.</p>
-    <p>The endpoint <code class="inline">GET /api/v1/orgs/me/members</code> returns the full list of organization
-      members and their roles to the new account. Separately, <code class="inline">GET /api/v1/research/discover/batches</code>
-      returns existing research batches to a PoC account that has never performed any discovery activity.</p>
-    <p class="muted">Backend fingerprint: FastAPI (Python) + SQLAlchemy + Uvicorn - inferred from the Pydantic error schema.
-      The org-switch IDOR (<code class="inline">POST /api/v1/orgs/switch</code>) returned 403 and is <strong>not</strong> vulnerable (see PoC 4).</p>
+    <p>Akun yang baru didaftarkan dengan peran SDR (Sales Development Representative) dapat mengakses informasi organisasi dan sumber daya yang seharusnya tidak dapat diakses oleh pengguna baru dengan hak akses rendah.</p>
+    <p>Endpoint GET /api/v1/orgs/me/members mengembalikan daftar lengkap anggota organisasi beserta perannya ke akun baru tersebut. Secara terpisah, GET /api/v1/research/discover/batches mengembalikan batch riset yang sudah ada ke akun PoC yang belum pernah melakukan aktivitas discovery apapun.</p>
+    <p class="muted">Fingerprint backend: FastAPI (Python) + SQLAlchemy + Uvicorn - disimpulkan dari skema error Pydantic. IDOR org-switch (POST /api/v1/orgs/switch) mengembalikan 403 dan tidak rentan (lihat PoC 4).</p>
   </section>
 
   <section id="scope">
@@ -69,7 +62,7 @@ status: "Proven"
 
   <section id="poc1">
     <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - Self-registration creates an active account + JWT</h2></div>
-    <p><em>Objective:</em> show that public registration creates an active account and returns an auth token with no further verification or approval.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa pendaftaran publik membuat akun aktif dan mengembalikan token autentikasi tanpa verifikasi atau persetujuan lebih lanjut.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ TARGET="https://TARGET"
 $ EMAIL="poc_$(date +%s)@example.test"
@@ -79,7 +72,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
 <span class="out">HTTP/1.1 200 OK
 
 { "access_token": "eyJ...", ... }</span></pre></div>
-    <p>Public registration produces an authenticated session directly. The JWT is issued without email verification or admin approval.</p>
+    <p>Pendaftaran publik langsung menghasilkan sesi terautentikasi. JWT diterbitkan tanpa verifikasi email atau persetujuan admin.</p>
     <p class="muted"><em>Note:</em> this is not itself a vulnerability absent a requirement prohibiting self-registration - but it is the precondition for PoC 2 and PoC 3.</p>
     <figure><img src="/images/img-poc/poc01/poc01.jpg" alt="PoC login page, account redacted" /><figcaption>Figure 1 - login page with the PoC account redacted.</figcaption></figure>
   </section>

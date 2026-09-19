@@ -23,7 +23,7 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED - UNREMEDIATED</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> Independent security research under coordinated disclosure. Testing was
       scope-limited (no denial-of-service, no destructive testing, brute-force attempts capped at &le;6 with delays) and
@@ -35,12 +35,8 @@ status: "Proven"
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan Eksekutif</h2></div>
-    <p>A higher-education institution's public website - built on WordPress over LiteSpeed, behind an OpenResty anti-bot
-      reverse proxy - was assessed together with two academic portals on the same infrastructure: an academic information
-      system (SIAKAD) and a computer-based testing platform (CBT).</p>
-    <p>The assessment produced <strong>four Medium findings</strong> (including two unthrottled login endpoints on the academic
-      applications), <strong>three Low findings</strong>, and <strong>two informational findings</strong>. No Critical or High
-      findings were identified, and no remote code execution or full compromise was achieved.</p>
+    <p>Situs web publik sebuah institusi pendidikan tinggi - dibangun di atas WordPress dengan LiteSpeed, di balik reverse proxy OpenResty/nginx - dinilai untuk kerentanan keamanan aplikasi web.</p>
+    <p>Penilaian menghasilkan empat temuan Medium (termasuk dua endpoint login tanpa pembatasan percobaan pada portal akademik) dan lima observasi Low/Info.</p>
     <p class="muted">Note on methodology: the site is protected by an effective OpenResty anti-bot layer that blocks automated
       scanners and headless browsers. The advanced test phase used a non-headless browser with a genuine fingerprint to pass
       the challenge, so the full attack surface could be verified. That the control was bypassable by a real browser is

@@ -13,9 +13,7 @@ status: "Proven"
     <div class="kicker">SECURITY RESEARCH CASE STUDY - Authorized assessment &middot; coordinated disclosure</div>
     <div class="poc-id">PoC-07</div>
     <h1>Broken Access Control via LOV Sub-Endpoints</h1>
-    <p>A low-privilege authenticated account reads restricted employee and client data through
-      List-of-Values (LOV) sub-endpoints that skip the authorization check enforced on their parent
-      resources - a Broken Function Level Authorization flaw.</p>
+    <p>Akun terautentikasi dengan hak akses rendah dapat membaca data karyawan dan klien yang dibatasi melalui sub-endpoint List-of-Values (LOV) yang tidak dicakup kontrol akses tingkat menu aplikasi.</p>
     <dl class="meta-grid">
       <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
       <dt>CWE</dt>           <dd>CWE-862 - Missing Authorization</dd>
@@ -27,7 +25,7 @@ status: "Proven"
       <dt>Status</dt>        <dd>CONFIRMED</dd>
       <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
     </dl>
-    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <p class="muted" style="margin-top:4px">Tingkat keparahan dinilai oleh peneliti berdasarkan kondisi yang diamati, bukan penilaian vendor.</p>
     <div class="authz">
       <strong>Authorization &amp; disclosure.</strong> Testing was performed under an authorized assessment
       with owner-confirmed scope. No accounts were compromised, no data was exfiltrated, and rate limits were
@@ -38,10 +36,7 @@ status: "Proven"
 
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
-    <p>The application enforces access per menu permission (for example, a role may hold
-      <code class="inline">master.employee</code> or <code class="inline">master.client</code>). A test account
-      with a low-privilege role was <em>not</em> granted the employee or client menus, and the parent
-      resources correctly rejected it with <code class="inline">403 Forbidden</code>.</p>
+    <p>Aplikasi menerapkan akses berdasarkan izin menu (misalnya, sebuah peran dapat memiliki <code class="inline">master.employee.view</code> tetapi tidak <code class="inline">master.client.view</code>). Namun, endpoint LOV yang mendukung menu tersebut tidak diperiksa secara individual - sesi terautentikasi apapun dapat mengakses semua entri LOV terlepas dari perannya.</p>
     <p>However, several LOV (List-of-Values) sub-endpoints - the lightweight lookups used to populate
       dropdowns - do not enforce the same menu check. They returned <code class="inline">200 OK</code> and
       disclosed data the role was never meant to see: staff identities (name, email, position) and the

@@ -28,11 +28,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 
-/* nav styles in /assets/css/style.css */
-/* ── LAYOUT ── */
 .page{max-width:1160px;margin:0 auto;padding:0 24px 80px}
 
-/* ── PAGE HEADER ── */
 .page-header{padding:36px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
 .page-header h1{font-size:clamp(18px,2.8vw,24px);color:var(--text-strong);font-weight:700;margin-bottom:4px}
 .page-header .sub{color:var(--muted);font-size:12.5px}
@@ -40,7 +37,7 @@ a:hover{text-decoration:underline}
 .backlink:hover{color:var(--accent);text-decoration:none}
 
 /* ── TOOLBAR ── */
-.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.toolbar{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
 .search-wrap{position:relative}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
   color:var(--muted);pointer-events:none;width:15px;height:15px}
@@ -52,25 +49,36 @@ a:hover{text-decoration:underline}
 #searchInput::placeholder{color:var(--muted)}
 #searchInput:focus{border-color:var(--accent)}
 
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filter-label{color:var(--muted);font-size:11.5px;letter-spacing:.08em;flex:none;margin-right:2px}
+.tag-btn{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:20px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tag-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tag-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:700}
+html[data-theme="light"] .tag-btn.active{color:#fff}
+
 /* ── RESULT INFO ── */
 .result-info{font-size:12px;color:var(--muted);margin-bottom:20px;min-height:18px}
 .result-info b{color:var(--accent)}
 
 /* ── VENDOR GROUP ── */
-.vendor-group{margin-bottom:48px}
+.vendor-group{margin-bottom:44px}
 .vendor-group:last-child{margin-bottom:0}
 .vendor-heading{
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:18px;padding-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;padding-bottom:10px;
   border-bottom:1px solid var(--line);
 }
-.vendor-logo{width:32px;height:32px;border-radius:6px;flex:none;
+.vendor-logo{width:30px;height:30px;border-radius:6px;flex:none;
   background:var(--panel-2);border:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.vendor-logo img{width:100%;height:100%;object-fit:contain;padding:4px;}
-.vendor-logo-initials{font-size:12px;font-weight:700;color:var(--accent)}
-.vendor-name{font-size:15px;font-weight:700;color:var(--text-strong);letter-spacing:.02em}
-.vendor-count{font-size:12px;color:var(--muted);margin-left:4px}
+.vendor-logo img{width:100%;height:100%;object-fit:contain;padding:3px;}
+.vendor-logo-initials{font-size:11px;font-weight:700;color:var(--accent)}
+.vendor-name{font-size:14px;font-weight:700;color:var(--text-strong);letter-spacing:.02em}
+.vendor-count{font-size:12px;color:var(--muted);margin-left:2px}
 
 /* ── GRID ── */
 .ach-grid{
@@ -98,7 +106,6 @@ a:hover{text-decoration:underline}
   transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .ach-card:hover::before{opacity:1}
 
-/* badge image */
 .badge-img{width:100px;height:100px;border-radius:50%;overflow:hidden;
   border:2px solid var(--line);background:var(--panel-2);
   display:flex;align-items:center;justify-content:center;flex:none;
@@ -107,13 +114,11 @@ a:hover{text-decoration:underline}
 .badge-img img{width:100%;height:100%;object-fit:cover}
 .badge-initials{font-size:24px;font-weight:700;color:var(--accent);letter-spacing:1px}
 
-/* card info */
 .ach-info{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;width:100%}
 .ach-name{font-size:13.5px;font-weight:700;color:var(--text-strong);line-height:1.38}
 .ach-category{font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .ach-date{font-size:11px;color:var(--muted)}
 
-/* verify button */
 .ach-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%;
   border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
 .btn-verify{
@@ -126,14 +131,9 @@ a:hover{text-decoration:underline}
 .btn-verify.primary{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent)}
 .btn-verify.primary:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 
-/* empty state */
 .empty-state{padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
 .empty-state span{display:block;font-size:28px;margin-bottom:12px;opacity:.4}
 
-/* hidden group */
-.vendor-group.hidden{display:none}
-
-/* scroll to top */
 .totop{position:fixed;right:20px;bottom:24px;width:38px;height:38px;border-radius:6px;
   border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;
   font-family:var(--mono);font-size:15px;display:none;align-items:center;justify-content:center;
@@ -141,7 +141,6 @@ a:hover{text-decoration:underline}
 .totop:hover{color:var(--accent);border-color:var(--accent)}
 .totop.show{display:flex}
 
-/* footer */
 .foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:10px}
 .foot-sig{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .foot-back{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
@@ -162,7 +161,6 @@ a:hover{text-decoration:underline}
     <p class="sub">Certifications, badges, and digital credentials - verified achievements in cybersecurity and networking.</p>
   </div>
 
-  <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="search-wrap">
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
@@ -170,11 +168,13 @@ a:hover{text-decoration:underline}
       </svg>
       <input id="searchInput" type="text" placeholder="Search achievements..." autocomplete="off">
     </div>
+    <div class="filter-row">
+      <span class="filter-label">FILTER:</span>
+      <div id="filterTags"></div>
+    </div>
   </div>
 
   <div class="result-info" id="resultInfo"></div>
-
-  <!-- VENDOR GROUPS - rendered by JS -->
   <div id="achContainer"><div class="empty-state"><span>&#9203;</span>Loading...</div></div>
 </div>
 
@@ -190,6 +190,11 @@ a:hover{text-decoration:underline}
 </footer>
 
 <script>
+/* redirect /achievements/index.html -> /achievements/ */
+if (location.pathname.endsWith('/index.html')) {
+  location.replace(location.pathname.replace('/index.html', '/'));
+}
+
 function esc(s){
   return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -197,17 +202,16 @@ function initials(name){
   return (name||'').split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
 }
 
-/* Vendor display config - tambah entry baru di sini saat ada vendor baru */
 const VENDOR_CONFIG = [
-  { key: 'cisco',   label: 'Cisco',              match: ['Cisco'],                        logo: null },
-  { key: 'htb',     label: 'Hack The Box (HTB)', match: ['Hack The Box','Hack The Box Academy'], logo: null },
-  { key: 'thm',     label: 'TryHackMe',          match: ['TryHackMe'],                    logo: null },
-  { key: 'other',   label: 'Other',              match: [],                               logo: null },
+  { key:'cisco', label:'Cisco',              match:['Cisco'] },
+  { key:'htb',   label:'Hack The Box (HTB)', match:['Hack The Box','Hack The Box Academy'] },
+  { key:'thm',   label:'TryHackMe',          match:['TryHackMe'] },
+  { key:'other', label:'Other',              match:[] },
 ];
 
 function vendorOf(issuer){
   for(const v of VENDOR_CONFIG){
-    if(v.match.some(m => (issuer||'').toLowerCase().includes(m.toLowerCase()))) return v.key;
+    if(v.match.some(m=>(issuer||'').toLowerCase().includes(m.toLowerCase()))) return v.key;
   }
   return 'other';
 }
@@ -215,8 +219,63 @@ function vendorOf(issuer){
 const CREDLY_PROFILE = 'https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly';
 
 let ALL = [];
-let searchQ = '';
+let activeTag = null;
+let searchQ   = '';
 
+/* ── build filter tags dari data ── */
+function buildFilterTags(items){
+  /* kumpulkan semua issuer + kategori unik */
+  const counts = {};
+  items.forEach(a => {
+    [a.issuer && vendorLabel(a.issuer), a.category].filter(Boolean).forEach(t => {
+      counts[t] = (counts[t]||0) + 1;
+    });
+  });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+
+  const wrap = document.getElementById('filterTags');
+  wrap.innerHTML = '';
+
+  const all = document.createElement('button');
+  all.className = 'tag-btn active';
+  all.textContent = 'All';
+  all.dataset.tag = '';
+  all.addEventListener('click', () => setTag(''));
+  wrap.appendChild(all);
+
+  sorted.forEach(([tag]) => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn';
+    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.addEventListener('click', () => setTag(tag));
+    wrap.appendChild(btn);
+  });
+}
+
+function vendorLabel(issuer){
+  for(const v of VENDOR_CONFIG){
+    if(v.match.some(m=>(issuer||'').toLowerCase().includes(m.toLowerCase()))) return v.label;
+  }
+  return issuer;
+}
+
+function tagsOf(a){
+  const t = [];
+  if(a.issuer)   t.push(vendorLabel(a.issuer));
+  if(a.category) t.push(a.category);
+  return t;
+}
+
+function setTag(tag){
+  activeTag = tag || null;
+  document.querySelectorAll('#filterTags .tag-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tag === (tag||''));
+  });
+  render();
+}
+
+/* ── render ── */
 function cardHtml(a){
   const href = a.credlyLink || a.credentialUrl || CREDLY_PROFILE;
   const actionLabel = a.credlyLink ? 'View on Credly &#8599;' : 'View Credential &#8599;';
@@ -241,9 +300,7 @@ function vendorHeadingHtml(v, count){
   const initl = v.label.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
   return `
   <div class="vendor-heading">
-    <div class="vendor-logo">
-      <span class="vendor-logo-initials">${esc(initl)}</span>
-    </div>
+    <div class="vendor-logo"><span class="vendor-logo-initials">${esc(initl)}</span></div>
     <span class="vendor-name">${esc(v.label)}</span>
     <span class="vendor-count">(${count})</span>
   </div>`;
@@ -253,21 +310,22 @@ function render(){
   const container = document.getElementById('achContainer');
   const q = searchQ.toLowerCase().trim();
 
-  const filtered = ALL.filter(a =>
-    !q ||
-    (a.name||'').toLowerCase().includes(q) ||
-    (a.issuer||'').toLowerCase().includes(q) ||
-    (a.category||'').toLowerCase().includes(q)
-  );
+  const filtered = ALL.filter(a => {
+    const matchTag = !activeTag || tagsOf(a).includes(activeTag);
+    const matchQ   = !q ||
+      (a.name||'').toLowerCase().includes(q) ||
+      (a.issuer||'').toLowerCase().includes(q) ||
+      (a.category||'').toLowerCase().includes(q);
+    return matchTag && matchQ;
+  });
 
-  /* update result info */
   const info = document.getElementById('resultInfo');
   info.innerHTML = filtered.length === ALL.length
     ? `Showing <b>${ALL.length}</b> achievement${ALL.length===1?'':'s'}`
     : `Showing <b>${filtered.length}</b> of <b>${ALL.length}</b> achievements`;
 
   if(!filtered.length){
-    container.innerHTML = `<div class="empty-state"><span>&#128269;</span>No achievements match your search.</div>`;
+    container.innerHTML = `<div class="empty-state"><span>&#128269;</span>No achievements match your filter.</div>`;
     return;
   }
 
@@ -282,7 +340,7 @@ function render(){
 
   let html = '';
   VENDOR_CONFIG.forEach(v => {
-    const items = groups[v.key] || [];
+    const items = groups[v.key]||[];
     if(!items.length) return;
     html += `<div class="vendor-group" data-vendor="${esc(v.key)}">`;
     html += vendorHeadingHtml(v, items.length);
@@ -292,37 +350,37 @@ function render(){
 
   container.innerHTML = html;
 
-  /* glow effect */
   container.querySelectorAll('.ach-card').forEach(card => {
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+      card.style.setProperty('--my', (e.clientY-r.top)+'px');
     });
   });
 }
 
 async function load(){
   try{
-    const r = await fetch('/data/data.json', {cache:'no-store'});
+    const r = await fetch('/data/data.json',{cache:'no-store'});
     if(!r.ok) throw new Error('fetch failed');
     const data = await r.json();
-    ALL = (data.achievements||[]).slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    ALL = (data.achievements||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    buildFilterTags(ALL);
     render();
-  } catch(e){
-    document.getElementById('achContainer').innerHTML =
+  }catch(e){
+    document.getElementById('achContainer').innerHTML=
       '<div class="empty-state"><span>&#9888;&#65039;</span>Failed to load data.json.</div>';
   }
 }
 
-document.getElementById('searchInput').addEventListener('input', e => {
+document.getElementById('searchInput').addEventListener('input', e=>{
   searchQ = e.target.value;
   render();
 });
 
 const totop = document.getElementById('totop');
-window.addEventListener('scroll', () => totop.classList.toggle('show', scrollY > 300));
-totop.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+window.addEventListener('scroll', ()=>totop.classList.toggle('show', scrollY>300));
+totop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
 
 load();
 </script>

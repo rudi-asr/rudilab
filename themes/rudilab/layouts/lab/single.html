@@ -1,9 +1,276 @@
-{{ define "main" }}
-<div class="wrap">
-  {{ .Content }}
-</div>
-{{ end }}
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Title }} - Rudi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
+  {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{{ define "footer_sig" }}// Lab-{{ .Params.lab_num }} - rudilab.my.id - Rudi - 2026{{ end }}
-{{ define "footer_back_href" }}/lab/{{ end }}
-{{ define "footer_back_label" }}&larr; back to Lab{{ end }}
+<meta name="description" content="Step-by-step GVM/OpenVAS vulnerability scanning lab with Docker Compose.">
+
+
+
+<style>
+:root{--bg:#0a0d12;--panel:#111722;--panel-2:#0d121a;--line:#1d2532;--text:#c3cede;--text-strong:#e9f0f8;--muted:#75839a;--accent:#5ad1a0;--warn:#e0a94a;--crit:#e06c75;--mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;}
+html[data-theme="light"]{--bg:#f6f8fa;--panel:#ffffff;--panel-2:#f0f3f6;--line:#d8dee6;--text:#33404f;--text-strong:#111820;--muted:#66748a;--accent:#0f8a63;--warn:#9a6b12;--crit:#b03a44;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14.5px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+/* nav styles in /assets/css/style.css */
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+.backlink{display:inline-block;margin:24px 0 0;color:var(--muted);font-size:12.5px}.backlink:hover{color:var(--accent);text-decoration:none}
+header.doc{padding:28px 0 8px}
+h1{font-size:clamp(20px,3.2vw,28px);color:var(--text-strong);font-weight:700;margin:0 0 8px;line-height:1.3}
+.docmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:18px 0 44px}
+.docmeta div{background:var(--panel);padding:11px 14px}
+.docmeta dt{color:var(--muted);font-size:10.5px;letter-spacing:.1em;margin-bottom:4px}
+.docmeta dd{margin:0;color:var(--text-strong);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:3px;font-size:12px;border:1px solid}
+.badge.beginner{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.badge.intermediate{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 9%,transparent)}
+section{margin-bottom:52px}
+h2{font-size:15.5px;color:var(--text-strong);font-weight:700;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:10px}
+h2 i{font-style:normal;color:var(--accent);font-size:11.5px;letter-spacing:.07em;flex:none}
+h3{font-size:14px;color:var(--text-strong);font-weight:600;margin:24px 0 8px}
+p{margin:0 0 14px;line-height:1.78}
+ul,ol{margin:0 0 16px;padding-left:22px}li{margin-bottom:7px}
+pre{background:var(--panel-2);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:4px;padding:16px 18px;overflow-x:auto;font-size:12.8px;line-height:1.65;margin:0 0 18px;color:var(--text);white-space:pre}
+.note{border-left:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 6%,transparent);padding:12px 16px;color:var(--muted);font-size:13px;border-radius:0 4px 4px 0;margin:0 0 18px}
+footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--muted);font-size:12.5px;margin-top:40px}
+.fab-top{position:fixed;right:22px;bottom:22px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.fab-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+@media(max-width:600px){.wrap{padding:0 16px}pre{font-size:12px}}
+</style>
+</head>
+<body>
+{{ partial "topbar.html" . }}
+<div class="wrap">
+  <a class="backlink" href="/lab/collect-lab.html">&larr; back to Homelab index</a>
+  
+  <header class="doc">
+    <h1>Homelab-01 - Vulnerability Scanning Lab<br>GVM / OpenVAS with Docker Compose</h1>
+    <dl class="docmeta">
+      <div><dt>CATEGORY</dt><dd>Vulnerability Scanning</dd></div>
+      <div><dt>DIFFICULTY</dt><dd><span class="badge beginner">BEGINNER</span></dd></div>
+      <div><dt>STACK</dt><dd>GVM &middot; OpenVAS &middot; Docker Compose &middot; PostgreSQL</dd></div>
+      <div><dt>DATE</dt><dd>2026-09-01</dd></div>
+      <div><dt>TIME EST.</dt><dd>~45 minutes</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2><i>01</i> Overview</h2>
+    <p>Greenbone Vulnerability Manager (GVM) is an open-source vulnerability scanner that checks hosts against thousands of Network Vulnerability Tests (NVTs). This lab deploys the full GVM stack in Docker Compose so you can run authenticated and unauthenticated scans against lab targets without touching a production network.</p>
+    <p class="note">All scanning must be done against hosts you own or have written permission to test.</p>
+  </section>
+
+  <section>
+    <h2><i>02</i> Prerequisites</h2>
+    <ul>
+      <li>Docker Engine &ge; 24 and Docker Compose v2</li>
+      <li>At least 4 GB RAM free (GVM is memory-hungry during feed sync)</li>
+      <li>A lab target - e.g. a Metasploitable2 container on an isolated network</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><i>03</i> docker-compose.yml</h2>
+<pre>version: "3.9"
+
+# Greenbone Community Containers - single-host GVM stack
+
+services:
+
+  vuln-tests:
+    image: greenbone/vulnerability-tests
+    environment:
+      STORAGE_PATH: /var/lib/openvas/22.04/vt-data/nasl
+    volumes:
+      - vt_data_vol:/mnt
+    command: sync
+
+  notus-data:
+    image: greenbone/notus-data
+    volumes:
+      - notus_data_vol:/mnt
+    command: sync
+
+  scap-data:
+    image: greenbone/scap-data
+    volumes:
+      - scap_data_vol:/mnt
+    command: sync
+
+  cert-bund-data:
+    image: greenbone/cert-bund-data
+    volumes:
+      - cert_data_vol:/mnt
+    command: sync
+
+  dfn-cert-data:
+    image: greenbone/dfn-cert-data
+    volumes:
+      - cert_data_vol:/mnt
+    command: sync
+    depends_on:
+      - cert-bund-data
+
+  data-objects:
+    image: greenbone/data-objects
+    volumes:
+      - data_objects_vol:/mnt
+    command: sync
+
+  pg-gvm:
+    image: greenbone/pg-gvm:stable
+    restart: on-failure
+    volumes:
+      - psql_data_vol:/var/lib/postgresql
+      - psql_socket_vol:/var/run/postgresql
+
+  gvmd:
+    image: greenbone/gvmd:stable
+    restart: on-failure
+    volumes:
+      - gvmd_data_vol:/var/lib/gvm
+      - scap_data_vol:/var/lib/gvm/scap-data/
+      - cert_data_vol:/var/lib/gvm/cert-data/
+      - data_objects_vol:/var/lib/gvm/data-objects/gvmd
+      - vt_data_vol:/var/lib/openvas/plugins
+      - psql_data_vol:/var/lib/postgresql
+      - gvmd_socket_vol:/run/gvmd
+      - ospd_openvas_socket_vol:/run/ospd
+      - notus_data_vol:/var/lib/notus
+      - psql_socket_vol:/var/run/postgresql
+    depends_on:
+      pg-gvm:
+        condition: service_started
+
+  gsa:
+    image: greenbone/gsa:stable
+    restart: on-failure
+    ports:
+      - "9392:80"
+    volumes:
+      - gvmd_socket_vol:/run/gvmd
+    depends_on:
+      - gvmd
+
+  ospd-openvas:
+    image: greenbone/ospd-openvas:stable
+    restart: on-failure
+    init: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    security_opt:
+      - seccomp=unconfined
+      - apparmor=unconfined
+    command:
+      - ospd-openvas
+      - -f
+      - --config
+      - /etc/gvm/ospd-openvas.conf
+      - --notus-feed-dir
+      - /var/lib/notus/advisories
+      - -m
+      - "666"
+    volumes:
+      - gpg_data_vol:/etc/openvas/gnupg
+      - vt_data_vol:/var/lib/openvas/plugins
+      - notus_data_vol:/var/lib/notus
+      - ospd_openvas_socket_vol:/run/ospd
+      - redis_socket_vol:/run/redis/
+
+  notus-scanner:
+    image: greenbone/notus-scanner:stable
+    restart: on-failure
+    volumes:
+      - notus_data_vol:/var/lib/notus
+      - gpg_data_vol:/etc/openvas/gnupg
+    environment:
+      NOTUS_SCANNER_MQTT_NAME: notus-scanner
+      NOTUS_SCANNER_PRODUCTS_DIRECTORY: /var/lib/notus/products
+
+  mqtt-broker:
+    restart: on-failure
+    image: eclipse-mosquitto:2.0
+    volumes:
+      - mosquitto_data_vol:/mosquitto/data
+      - mosquitto_logs_vol:/mosquitto/log
+    command:
+      - /usr/sbin/mosquitto
+      - -c
+      - /mosquitto/config/mosquitto.conf
+
+  redis-server:
+    image: greenbone/redis-server
+    restart: on-failure
+    volumes:
+      - redis_socket_vol:/run/redis
+
+volumes:
+  gpg_data_vol:
+  scap_data_vol:
+  cert_data_vol:
+  data_objects_vol:
+  gvmd_data_vol:
+  vt_data_vol:
+  notus_data_vol:
+  psql_data_vol:
+  psql_socket_vol:
+  gvmd_socket_vol:
+  ospd_openvas_socket_vol:
+  redis_socket_vol:
+  mosquitto_data_vol:
+  mosquitto_logs_vol:</pre>
+  </section>
+
+  <section>
+    <h2><i>04</i> Start &amp; First Login</h2>
+<pre># 1. Pull images and start
+docker compose up -d
+
+# 2. Wait for gvmd (~3-5 min first run)
+docker compose logs -f gvmd | grep -i "finished"
+
+# 3. Create admin user (one-time)
+docker compose exec -u gvmd gvmd gvmd   --create-user=admin   --password=changeme123
+
+# 4. Open dashboard
+open http://localhost:9392
+# Login: admin / changeme123</pre>
+  </section>
+
+  <section>
+    <h2><i>05</i> Run First Scan (CLI)</h2>
+<pre># Install gvm-tools
+pip install gvm-tools
+
+# Check version via API
+gvm-cli --gmp-username admin --gmp-password changeme123   socket --socketpath /run/gvmd/gvmd.sock   --xml "&lt;get_version/&gt;"
+
+# Force feed update
+docker compose exec -u gvmd gvmd greenbone-feed-sync</pre>
+  </section>
+
+  <section>
+    <h2><i>06</i> Tear Down</h2>
+<pre># Stop (keep data)
+docker compose stop
+
+# Full cleanup including volumes
+docker compose down -v</pre>
+  </section>
+
+</div>
+{{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

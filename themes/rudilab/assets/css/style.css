@@ -198,36 +198,30 @@ footer .wrap {
 }
 .fab-top:hover { color: var(--accent); border-color: var(--accent); }
 
-
-/* ── HUGO ADDITIONS ── */
-
-/* Lang toggle */
+/* ── HUGO: Lang toggle ── */
 .lang-wrap { display: flex; gap: 5px; align-items: center; }
 .lang-btn {
   background: none; border: 1px solid var(--line); color: var(--muted);
   padding: 4px 10px; border-radius: 6px; cursor: pointer;
-  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em;
+  font-family: var(--mono); font-size: 11.5px;
   transition: color .15s, border-color .15s; text-decoration: none;
   display: inline-block;
 }
 .lang-btn:hover { color: var(--accent); border-color: var(--accent); }
 .lang-btn.active { color: var(--accent); border-color: var(--accent); }
 .lang-btn.dim { opacity: 0.35; cursor: default; pointer-events: none; }
-
-/* Brand slug - hide on small screens */
 .brand-slug { white-space: nowrap; }
+
+/* ── HUGO: Footer ── */
+.foot-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+.foot-sig  { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.foot-back { font-family: var(--mono); font-size: 12px; color: var(--muted); text-decoration: none; }
+.foot-back:hover { color: var(--accent); }
+
+/* ── HUGO: Mobile ── */
 @media (max-width: 700px) {
   .brand-slug { display: none; }
   .topbar .wrap { padding: 10px 12px; }
   .brand { font-size: 11px; gap: 5px; }
   .brand-logo { width: 20px; height: 20px; }
 }
-
-/* Footer row */
-.foot-row {
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 14px;
-}
-.foot-sig  { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.foot-back { font-family: var(--mono); font-size: 12px; color: var(--muted); text-decoration: none; }
-.foot-back:hover { color: var(--accent); }

@@ -8,7 +8,30 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-02.pcap</span> &rarr; expired TLS certificate &amp; hostname mismatch</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-02</div>
+    <h1>TLS Certificate Expired &amp; Hostname Mismatch</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE</dt>           <dd>CWE-295 - Improper Certificate Validation</dd>
+      <dt>Category</dt>      <dd>Cryptography / Transport</dd>
+      <dt>OWASP</dt>         <dd>A02:2021 - Cryptographic Failures</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - web application</dd>
+      <dt>Test Date</dt>     <dd>2026-08-29</dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Testing was black-box from an external network, read-only and
+      non-destructive; the finding is publicly verifiable and required no credentials. Host and stack details are redacted
+      for public release. This is a sanitized showcase, not the confidential deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Summary</h2></div>
     <p>The target's TLS certificate had expired before the test date, and its Common Name (CN) did not match the accessed
       domain. Modern browsers and HTTP clients therefore show security warnings and cannot verify server identity, weakening

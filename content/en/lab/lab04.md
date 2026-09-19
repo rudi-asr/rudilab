@@ -11,7 +11,20 @@ stack:
   - "Docker Compose"
 ---
 
-<section>
+<a class="backlink" href="/lab/collect-lab.html">&larr; back to Homelab index</a>
+  
+  <header class="doc">
+    <h1>Homelab-04 - Network IDS / Forensics Lab<br>Suricata + Zeek</h1>
+    <dl class="docmeta">
+      <div><dt>CATEGORY</dt><dd>Network Forensics</dd></div>
+      <div><dt>DIFFICULTY</dt><dd><span class="badge intermediate">INTERMEDIATE</span></dd></div>
+      <div><dt>STACK</dt><dd>Suricata &middot; Zeek &middot; Docker Compose</dd></div>
+      <div><dt>DATE</dt><dd>2026-09-04</dd></div>
+      <div><dt>TIME EST.</dt><dd>~50 minutes</dd></div>
+    </dl>
+  </header>
+
+  <section>
     <h2><i>01</i> Overview</h2>
     <p><b>Suricata</b> is a high-performance IDS/IPS engine. <b>Zeek</b> is a network analysis framework that generates structured logs (conn.log, dns.log, http.log). Both process the same PCAP so you can correlate Suricata alerts with Zeek connection metadata.</p>
   </section>

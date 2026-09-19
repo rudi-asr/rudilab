@@ -8,7 +8,32 @@ severity: "Low-Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-04.pcap</span> &rarr; public directory listing / information disclosure</div>
+    <div class="kicker">SECURITY RESEARCH CASE STUDY - Independent research · not a commissioned pentest</div>
+    <div class="poc-id">PoC-04</div>
+    <h1>Directory Listing / Information Disclosure</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>       <dd class="sev-med">Low-Medium</dd>
+      <dt>CWE Primary</dt>    <dd>CWE-548 - Exposure of Information Through Directory Listing</dd>
+      <dt>CWE Secondary</dt>  <dd>CWE-16 - Configuration</dd>
+      <dt>OWASP</dt>          <dd>A05:2021 - Security Misconfiguration</dd>
+      <dt>Affected Host</dt>  <dd><span class="redacted-tag">REDACTED</span> - public-sector web application</dd>
+      <dt>Report Date</dt>    <dd>2026-04-28</dd>
+      <dt>Status</dt>         <dd>CONFIRMED - UNREMEDIATED</dd>
+      <dt>Tester</dt>         <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Independent research - no commissioned engagement and no authorization
+      letter. Discovery was passive observation of a publicly reachable URL; the path required no credentials. Reproduction
+      (section 04) was performed on a lab host under my own control - no enumeration or retrieval was carried out against the
+      reported system beyond the single request that revealed the listing. The operator was notified before publication and
+      is not identified here.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>A directory served by a public-sector web application had no index file and no directory-browsing restriction.
       Requesting the path returned a generated listing of every file inside it, readable by anyone with the URL and without
@@ -142,7 +167,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>cmd</span></div>
 <pre><span class="cmd">&gt; appcmd set config /section:directoryBrowse /enabled:false</span></pre></div>
     <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediasi</th><th>Priority</th></tr></thead><tbody>
+    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
       <tr><td>1</td><td>Disable directory browsing on the affected vhost</td><td class="sev high">HIGH</td></tr>
       <tr><td>2</td><td>Audit the exposed directory and relocate non-public files</td><td class="sev high">HIGH</td></tr>
       <tr><td>3</td><td>Deny direct access to backup/dump extensions</td><td class="sev med">MEDIUM</td></tr>

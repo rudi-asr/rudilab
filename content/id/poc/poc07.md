@@ -8,7 +8,35 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-07.pcap</span> &rarr; authz bypass via LOV sub-endpoints</div>
+    <div class="kicker">SECURITY RESEARCH CASE STUDY - Authorized assessment &middot; coordinated disclosure</div>
+    <div class="poc-id">PoC-07</div>
+    <h1>Broken Access Control via LOV Sub-Endpoints</h1>
+    <p>A low-privilege authenticated account reads restricted employee and client data through
+      List-of-Values (LOV) sub-endpoints that skip the authorization check enforced on their parent
+      resources - a Broken Function Level Authorization flaw.</p>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE</dt>           <dd>CWE-862 - Missing Authorization</dd>
+      <dt>CWE Secondary</dt> <dd>CWE-200 - Exposure of Sensitive Information</dd>
+      <dt>OWASP</dt>         <dd>A01:2021 - Broken Access Control / API5:2023 - BFLA</dd>
+      <dt>Category</dt>      <dd>Web Application / API Authorization</dd>
+      <dt>Test Date</dt>     <dd>2026-09-16</dd>
+      <dt>Target</dt>        <dd><span class="redacted-tag">REDACTED</span> - internal ERP</dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Testing was performed under an authorized assessment
+      with owner-confirmed scope. No accounts were compromised, no data was exfiltrated, and rate limits were
+      respected. The fix was applied by the owner before this sanitized write-up was published with consent.
+      Target and all data are redacted - the organization is not identified in this document.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>The application enforces access per menu permission (for example, a role may hold
       <code class="inline">master.employee</code> or <code class="inline">master.client</code>). A test account
@@ -108,7 +136,7 @@ employees.get('/lov', listEmployeesLov)
 
 <span class="cmt">// least-privilege lookup: id + label only, no PII</span>
 return rows.map(e =&gt; ({ id:e.id, label:e.name }))</pre></div>
-    <div class="callout fix"><span class="label">Remediasi</span>
+    <div class="callout fix"><span class="label">Remediation</span>
       Framework shown is illustrative - apply the equivalent guard in your stack. Add a regression test:
       a role without the menu must receive 403 on the parent <em>and</em> every sub-endpoint
       (<code class="inline">/lov</code>, <code class="inline">/tiers</code>).

@@ -11,7 +11,20 @@ stack:
   - "Docker Compose"
 ---
 
-<section>
+<a class="backlink" href="/lab/collect-lab.html">&larr; back to Homelab index</a>
+  
+  <header class="doc">
+    <h1>Homelab-03 - SIEM Lab<br>Wazuh Manager + Indexer + Dashboard</h1>
+    <dl class="docmeta">
+      <div><dt>CATEGORY</dt><dd>SIEM / Blue Team</dd></div>
+      <div><dt>DIFFICULTY</dt><dd><span class="badge intermediate">INTERMEDIATE</span></dd></div>
+      <div><dt>STACK</dt><dd>Wazuh 4.x &middot; OpenSearch &middot; Docker Compose</dd></div>
+      <div><dt>DATE</dt><dd>2026-09-03</dd></div>
+      <div><dt>TIME EST.</dt><dd>~60 minutes</dd></div>
+    </dl>
+  </header>
+
+  <section>
     <h2><i>01</i> Overview</h2>
     <p>Wazuh is an open-source SIEM and XDR platform. This lab deploys the full stack - <b>Wazuh Manager</b> (rule engine), <b>Wazuh Indexer</b> (OpenSearch backend), and <b>Wazuh Dashboard</b> (Kibana-compatible UI) - using the official Docker Compose setup.</p>
     <p class="note">Minimum: 4 vCPU, 8 GB RAM, 50 GB disk. On smaller machines lower the Indexer heap size.</p>

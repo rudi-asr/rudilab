@@ -8,7 +8,32 @@ severity: "Medium (highest) - 9 findings"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-06.pcap</span> &rarr; WordPress institutional site + academic portals</div>
+    <div class="kicker">SECURITY RESEARCH CASE STUDY - Independent research &middot; coordinated disclosure</div>
+    <div class="poc-id">PoC-06</div>
+    <h1>WordPress Institutional Site &amp; Academic Portal Assessment</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium (highest) &middot; 9 findings total</dd>
+      <dt>Breakdown</dt>     <dd>4 Medium &middot; 3 Low &middot; 2 Info</dd>
+      <dt>CWE</dt>           <dd>CWE-79, CWE-307, CWE-918, CWE-200, CWE-693</dd>
+      <dt>OWASP</dt>         <dd>A05:2021 &middot; A07:2021</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - Indonesian higher-education institution (WordPress + academic portals)</dd>
+      <dt>Report Date</dt>   <dd>2026-09-06</dd>
+      <dt>Status</dt>        <dd>CONFIRMED - UNREMEDIATED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Independent security research under coordinated disclosure. Testing was
+      scope-limited (no denial-of-service, no destructive testing, brute-force attempts capped at &le;6 with delays) and
+      non-destructive - no data was modified, exfiltrated, or deleted. The institution name, domains, IP address, and
+      subdomains are redacted for public release; findings are published as weakness classes, not as a map to a system whose
+      issues remain open. This is a sanitized case study, not the confidential client deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Executive Summary</h2></div>
     <p>A higher-education institution's public website - built on WordPress over LiteSpeed, behind an OpenResty anti-bot
       reverse proxy - was assessed together with two academic portals on the same infrastructure: an academic information

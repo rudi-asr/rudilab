@@ -12,8 +12,21 @@ stack:
   - "mitmproxy"
 ---
 
-<section>
-    <h2><i>01</i> Gambaran Umum</h2>
+<a class="backlink" href="/lab/collect-lab.html">&larr; back to Homelab index</a>
+  
+  <header class="doc">
+    <h1>Homelab-02 - Web App Pentest Lab<br>DVWA + Juice Shop + Proxy</h1>
+    <dl class="docmeta">
+      <div><dt>CATEGORY</dt><dd>Web Application Security</dd></div>
+      <div><dt>DIFFICULTY</dt><dd><span class="badge beginner">BEGINNER</span></dd></div>
+      <div><dt>STACK</dt><dd>DVWA &middot; OWASP Juice Shop &middot; mitmproxy &middot; Docker Compose</dd></div>
+      <div><dt>DATE</dt><dd>2026-09-02</dd></div>
+      <div><dt>TIME EST.</dt><dd>~30 minutes</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2><i>01</i> Overview</h2>
     <p>This lab runs two intentionally-vulnerable web apps - <b>DVWA</b> (classic PHP, covers SQLi/XSS/CSRF/File Upload/Command Injection) and <b>OWASP Juice Shop</b> (modern Node.js, covers the full OWASP Top 10) - on an isolated Docker network, with mitmproxy for traffic interception.</p>
     <p class="note">This setup runs on an isolated Docker bridge network. Do not expose it to your LAN or the internet.</p>
   </section>

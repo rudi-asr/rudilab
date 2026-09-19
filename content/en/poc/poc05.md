@@ -8,7 +8,31 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-05.pcap</span> &rarr; missing anti-framing &amp; login rate-limit</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-05</div>
+    <h1>Missing Anti-Framing Headers &amp; Absent Login Rate-Limiting</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE Primary</dt>   <dd>CWE-1021 - Improper Restriction of Rendered UI Layers</dd>
+      <dt>CWE Secondary</dt> <dd>CWE-307 - Improper Restriction of Excessive Authentication Attempts</dd>
+      <dt>OWASP</dt>         <dd>A05:2021 - Security Misconfiguration</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - production web dashboard</dd>
+      <dt>Test Date</dt>     <dd>2026-09-03</dd>
+      <dt>Status</dt>        <dd>CONFIRMED - live execution</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> All commands and output below were executed against a live target under
+      written authorization, within an agreed scope (no denial-of-service, no data modification, no credential compromise).
+      Host, product name, and any personal data are redacted for public release. This is a sanitized methodology showcase,
+      not the confidential client deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Summary</h2></div>
     <p>The target's login interface ships <strong>no browser-side framing protection</strong> (no
       <code class="inline">X-Frame-Options</code>, no <code class="inline">CSP: frame-ancestors</code>), allowing the login

@@ -8,7 +8,30 @@ severity: "High"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-03.pcap</span> &rarr; backend services reachable from the public internet</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Bug Bounty / Authorized Testing</div>
+    <div class="poc-id">PoC-03</div>
+    <h1>Backend Services Exposed to Public Internet</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-high">High</dd>
+      <dt>CWE</dt>           <dd>CWE-668 - Exposure of Resource to Wrong Sphere</dd>
+      <dt>Category</dt>      <dd>Security Misconfiguration - Network Exposure</dd>
+      <dt>OWASP</dt>         <dd>A05:2021 - Security Misconfiguration</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - web application stack</dd>
+      <dt>Test Date</dt>     <dd><span class="redacted-tag">REDACTED</span></dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Tested under a bug-bounty program - scope-strict, non-destructive,
+      no-DoS. External access only; a low-privilege authenticated account was used for API-layer checks. No brute-force, no
+      data modification, no destructive operations. Host, ports, product name, and PII are redacted for public release.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>All backend services of the target - API server, object storage (S3-compatible), and database - are directly
       reachable from the public internet with no network-layer restriction. Services are bound to
@@ -192,7 +215,7 @@ listen_addresses = 'localhost'                   # postgresql.conf</span></pre><
 iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
 # preferred: enforce at the cloud provider security-group level</span></pre></div>
     <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediasi</th><th>Priority</th></tr></thead><tbody>
+    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
       <tr><td>1</td><td>Bind PostgreSQL to loopback; block DB port from internet</td><td class="sev high">HIGH</td></tr>
       <tr><td>2</td><td>Bind FastAPI and the nginx clone to loopback</td><td class="sev high">HIGH</td></tr>
       <tr><td>3</td><td>Bind MinIO to loopback / internal network</td><td class="sev high">HIGH</td></tr>

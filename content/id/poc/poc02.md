@@ -8,7 +8,30 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-02.pcap</span> &rarr; expired TLS certificate &amp; hostname mismatch</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-02</div>
+    <h1>TLS Certificate Expired &amp; Hostname Mismatch</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE</dt>           <dd>CWE-295 - Improper Certificate Validation</dd>
+      <dt>Category</dt>      <dd>Cryptography / Transport</dd>
+      <dt>OWASP</dt>         <dd>A02:2021 - Cryptographic Failures</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - web application</dd>
+      <dt>Test Date</dt>     <dd>2026-08-29</dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Testing was black-box from an external network, read-only and
+      non-destructive; the finding is publicly verifiable and required no credentials. Host and stack details are redacted
+      for public release. This is a sanitized showcase, not the confidential deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>The target's TLS certificate had expired before the test date, and its Common Name (CN) did not match the accessed
       domain. Modern browsers and HTTP clients therefore show security warnings and cannot verify server identity, weakening
@@ -83,7 +106,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Dampak &amp; Attack Scenario</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Impact &amp; Attack Scenario</h2></div>
     <p>With an invalid certificate, an attacker in an on-path position (e.g. a shared network, ARP poisoning) can target
       users habituated to dismissing TLS warnings. Once a user clicks through the warning, transport confidentiality and
       integrity are no longer guaranteed.</p>
@@ -130,7 +153,7 @@ ssl_certificate_key /etc/letsencrypt/live/TARGET/privkey.pem;
 ssl_protocols TLSv1.2 TLSv1.3;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;</span></pre></div>
     <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediasi</th><th>Priority</th></tr></thead><tbody>
+    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
       <tr><td>1</td><td>Renew TLS certificate with correct CN/SAN</td><td class="sev high">HIGH</td></tr>
       <tr><td>2</td><td>Enable Certbot auto-renewal</td><td class="sev high">HIGH</td></tr>
       <tr><td>3</td><td>Implement HSTS header</td><td class="sev med">MEDIUM</td></tr>
@@ -148,7 +171,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
   <section id="conclusion">
     <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
     <p>An expired certificate combined with a hostname mismatch removes the guarantees of transport encryption and server
-      authentication for users who click through the warning. Remediasi is fast and free with Let's Encrypt Certbot and
+      authentication for users who click through the warning. Remediation is fast and free with Let's Encrypt Certbot and
       should be paired with auto-renewal and expiry monitoring. The realistic risk is Medium - meaningful, but gated by an
       on-path position and a user action.</p>
   </section>

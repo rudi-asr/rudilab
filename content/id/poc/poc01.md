@@ -8,7 +8,31 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-01.pcap</span> &rarr; low-privilege account reads restricted org resources</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-01</div>
+    <h1>Broken Access Control / Improper Resource Isolation</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE Primary</dt>   <dd>CWE-862 - Missing Authorization</dd>
+      <dt>CWE Secondary</dt> <dd>CWE-200 - Exposure of Sensitive Information</dd>
+      <dt>OWASP</dt>         <dd>A01:2021 - Broken Access Control</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - SaaS web application</dd>
+      <dt>Test Date</dt>     <dd>2026-08-20</dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Testing was performed under authorization, scope-strict and
+      non-destructive. All requests were read-only except the creation of one PoC account. No production data was
+      touched - identifiers used were fake/PoC values. Host, product name, and any personal data are redacted for
+      public release. This is a sanitized showcase, not the confidential deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>A newly registered account with the <strong>SDR</strong> (Sales Development Representative) role can access
       organization information and resources that should not be exposed to a new low-privilege user.</p>
@@ -124,7 +148,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
     <section id="cvss">
     <div class="sec-head"><span class="sec-num">09</span><h2>Penilaian Keparahan</h2></div>
     <p>Severity is researcher-assessed based on the observed conditions: the flaw is network-accessible with no complex
-      preconditions, but requires a registered low-privilege account. Dampak is limited to disclosure of the member list
+      preconditions, but requires a registered low-privilege account. Impact is limited to disclosure of the member list
       and resource metadata, with no evidence of data modification or availability impact.</p>
   </section>
 
@@ -200,7 +224,7 @@ def get_batches(
       <tr><td>GET /orgs/me/prospects</td><td>Yes</td><td>Yes (team)</td><td>Yes (assigned only)</td></tr>
     </tbody></table></div>
     <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediasi</th><th>Priority</th></tr></thead><tbody>
+    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
       <tr><td>1</td><td>Authorization filter for /orgs/me/members</td><td class="sev high">HIGH</td></tr>
       <tr><td>2</td><td>Authorization filter for /research/.../batches</td><td class="sev high">HIGH</td></tr>
       <tr><td>3</td><td>Implement RBAC permission matrix for SDR</td><td class="sev high">HIGH</td></tr>

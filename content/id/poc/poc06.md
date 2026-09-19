@@ -8,8 +8,33 @@ severity: "Medium (highest) - 9 findings"
 status: "Proven"
 ---
 
-<section id="summary">
-    <div class="sec-head"><span class="sec-num">01</span><h2>Executive Ringkasan</h2></div>
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-06.pcap</span> &rarr; WordPress institutional site + academic portals</div>
+    <div class="kicker">SECURITY RESEARCH CASE STUDY - Independent research &middot; coordinated disclosure</div>
+    <div class="poc-id">PoC-06</div>
+    <h1>WordPress Institutional Site &amp; Academic Portal Assessment</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium (highest) &middot; 9 findings total</dd>
+      <dt>Breakdown</dt>     <dd>4 Medium &middot; 3 Low &middot; 2 Info</dd>
+      <dt>CWE</dt>           <dd>CWE-79, CWE-307, CWE-918, CWE-200, CWE-693</dd>
+      <dt>OWASP</dt>         <dd>A05:2021 &middot; A07:2021</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - Indonesian higher-education institution (WordPress + academic portals)</dd>
+      <dt>Report Date</dt>   <dd>2026-09-06</dd>
+      <dt>Status</dt>        <dd>CONFIRMED - UNREMEDIATED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Independent security research under coordinated disclosure. Testing was
+      scope-limited (no denial-of-service, no destructive testing, brute-force attempts capped at &le;6 with delays) and
+      non-destructive - no data was modified, exfiltrated, or deleted. The institution name, domains, IP address, and
+      subdomains are redacted for public release; findings are published as weakness classes, not as a map to a system whose
+      issues remain open. This is a sanitized case study, not the confidential client deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan Eksekutif</h2></div>
     <p>A higher-education institution's public website - built on WordPress over LiteSpeed, behind an OpenResty anti-bot
       reverse proxy - was assessed together with two academic portals on the same infrastructure: an academic information
       system (SIAKAD) and a computer-based testing platform (CBT).</p>
@@ -76,7 +101,7 @@ status: "Proven"
 <span class="hl-red">Stable tag: &lt;affected-version&gt;   # within CVE affected range; patch is the next point release</span></pre></div>
     <p>Version confirmed against the plugin's public readme, then matched to the CVE's affected range. Front-end asset loading
       confirms the plugin is active.</p>
-    <div class="callout impact"><span class="label">Dampak</span>
+    <div class="callout impact"><span class="label">Impact</span>
       An attacker with Contributor+ access could steal an admin session cookie, deface pages, or escalate to admin. Chains with
       A2 (XML-RPC brute-force amplification) and A3 (admin username known).
     </div>
@@ -86,7 +111,7 @@ status: "Proven"
         <li>No script was injected and no session was stolen; the finding is version-confirmed, not weaponized.</li>
       </ul>
     </div>
-    <div class="callout fix"><span class="label">Remediasi</span>
+    <div class="callout fix"><span class="label">Remediation</span>
       Update the plugin to the patched release and enable plugin auto-update. Disable public registration or keep the default
       role strictly at subscriber.
     </div>
@@ -140,11 +165,11 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
     <figure><img src="/images/img-poc/poc06/poc06.jpg" alt="SIAKAD directory listing, contents redacted" /><figcaption>Figure 1 - SIAKAD directory listing exposed on the academic system, contents redacted.</figcaption></figure>
     <p class="muted">Negative checks: <code class="inline">.git/config</code> returned 403; <code class="inline">config.php</code>,
       <code class="inline">.env</code>, and DB-connection files returned 404 - not leaked.</p>
-    <div class="callout impact"><span class="label">Dampak</span>
+    <div class="callout impact"><span class="label">Impact</span>
       Unthrottled credential brute-force against student/lecturer/admin accounts. Directory listing discloses internal
       structure. Academic data is potentially exposed if an account is compromised.
     </div>
-    <div class="callout fix"><span class="label">Remediasi</span>
+    <div class="callout fix"><span class="label">Remediation</span>
       Add rate-limiting, CAPTCHA, and account lockout on the login form; add a CSRF token; disable directory listing
       (e.g. <code class="inline">Options -Indexes</code>).
     </div>
@@ -175,18 +200,18 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
     <div class="sec-head"><span class="sec-num">09</span><h2>A3-A5 - Low-severity findings</h2></div>
     <h3>A3 - User enumeration via REST API [Low]</h3>
     <p>The WordPress REST users endpoint returns registered users without authentication, exposing the admin username. Confirmed
-      via the author-query redirect behaviour (existing author returns 200, non-existing returns 404). Dampak: half the
-      admin credential is known, enabling targeted brute-force (worsened by A2) and password spraying. Remediasi: restrict
+      via the author-query redirect behaviour (existing author returns 200, non-existing returns 404). Impact: half the
+      admin credential is known, enabling targeted brute-force (worsened by A2) and password spraying. Remediation: restrict
       <code class="inline">/wp/v2/users</code> to authenticated users, disable the author-query redirect, and rename the admin
       account to something non-obvious.</p>
     <h3>A4 - Plugin/theme version disclosure [Low]</h3>
     <p>Plugin and theme metadata files (readme/style) are publicly readable, revealing exact installed versions and making
-      CVE-matching trivial. Remediasi: block public access to <code class="inline">readme.txt</code> and
+      CVE-matching trivial. Remediation: block public access to <code class="inline">readme.txt</code> and
       <code class="inline">changelog.txt</code> at the server (deny rule per file pattern).</p>
     <h3>A5 - Incomplete security headers [Low]</h3>
     <p>Public pages lack HSTS, <code class="inline">X-Content-Type-Options</code>, and <code class="inline">Referrer-Policy</code>.
       (The login page correctly sets framing protection.) Missing HSTS enables downgrade attacks; missing nosniff enables MIME
-      sniffing; missing referrer policy can leak URLs. Remediasi: add the three headers at the server.</p>
+      sniffing; missing referrer policy can leak URLs. Remediation: add the three headers at the server.</p>
   </section>
 
   <section id="info">
@@ -219,7 +244,7 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
   </section>
 
   <section id="priority">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Remediasi Priority</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Remediation Priority</h2></div>
     <table><thead><tr><th>#</th><th>Finding</th><th>Action</th><th>Priority</th></tr></thead><tbody>
       <tr><td>P1</td><td>A8 + A9 - unthrottled logins</td><td>CAPTCHA, rate-limiting, lockout on all SIAKAD &amp; CBT login forms</td><td class="sev high">HIGH</td></tr>
       <tr><td>P2</td><td>A2 - XML-RPC</td><td>Disable xmlrpc.php entirely or block at the WAF/LiteSpeed layer</td><td class="sev med">MEDIUM</td></tr>

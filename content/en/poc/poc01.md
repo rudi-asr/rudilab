@@ -8,7 +8,31 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-01.pcap</span> &rarr; low-privilege account reads restricted org resources</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-01</div>
+    <h1>Broken Access Control / Improper Resource Isolation</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE Primary</dt>   <dd>CWE-862 - Missing Authorization</dd>
+      <dt>CWE Secondary</dt> <dd>CWE-200 - Exposure of Sensitive Information</dd>
+      <dt>OWASP</dt>         <dd>A01:2021 - Broken Access Control</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - SaaS web application</dd>
+      <dt>Test Date</dt>     <dd>2026-08-20</dd>
+      <dt>Status</dt>        <dd>CONFIRMED</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> Testing was performed under authorization, scope-strict and
+      non-destructive. All requests were read-only except the creation of one PoC account. No production data was
+      touched - identifiers used were fake/PoC values. Host, product name, and any personal data are redacted for
+      public release. This is a sanitized showcase, not the confidential deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Summary</h2></div>
     <p>A newly registered account with the <strong>SDR</strong> (Sales Development Representative) role can access
       organization information and resources that should not be exposed to a new low-privilege user.</p>

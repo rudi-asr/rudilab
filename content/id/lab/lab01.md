@@ -11,14 +11,27 @@ stack:
   - "PostgreSQL"
 ---
 
-<section>
-    <h2><i>01</i> Gambaran Umum</h2>
+<a class="backlink" href="/lab/collect-lab.html">&larr; back to Homelab index</a>
+  
+  <header class="doc">
+    <h1>Homelab-01 - Vulnerability Scanning Lab<br>GVM / OpenVAS with Docker Compose</h1>
+    <dl class="docmeta">
+      <div><dt>CATEGORY</dt><dd>Vulnerability Scanning</dd></div>
+      <div><dt>DIFFICULTY</dt><dd><span class="badge beginner">BEGINNER</span></dd></div>
+      <div><dt>STACK</dt><dd>GVM &middot; OpenVAS &middot; Docker Compose &middot; PostgreSQL</dd></div>
+      <div><dt>DATE</dt><dd>2026-09-01</dd></div>
+      <div><dt>TIME EST.</dt><dd>~45 minutes</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2><i>01</i> Overview</h2>
     <p>Greenbone Vulnerability Manager (GVM) is an open-source vulnerability scanner that checks hosts against thousands of Network Vulnerability Tests (NVTs). This lab deploys the full GVM stack in Docker Compose so you can run authenticated and unauthenticated scans against lab targets without touching a production network.</p>
     <p class="note">All scanning must be done against hosts you own or have written permission to test.</p>
   </section>
 
   <section>
-    <h2><i>02</i> Prasyarat</h2>
+    <h2><i>02</i> Prerequisites</h2>
     <ul>
       <li>Docker Engine &ge; 24 and Docker Compose v2</li>
       <li>At least 4 GB RAM free (GVM is memory-hungry during feed sync)</li>

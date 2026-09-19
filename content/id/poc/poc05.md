@@ -8,7 +8,31 @@ severity: "Medium"
 status: "Proven"
 ---
 
-<section id="summary">
+<header class="doc">
+    <div class="capture-line">capture - <span class="blink">poc-05.pcap</span> &rarr; missing anti-framing &amp; login rate-limit</div>
+    <div class="kicker">PENETRATION TEST FINDINGS REPORT - Authorized Testing</div>
+    <div class="poc-id">PoC-05</div>
+    <h1>Missing Anti-Framing Headers &amp; Absent Login Rate-Limiting</h1>
+    <dl class="meta-grid">
+      <dt>Severity</dt>      <dd class="sev-med">Medium</dd>
+      <dt>CWE Primary</dt>   <dd>CWE-1021 - Improper Restriction of Rendered UI Layers</dd>
+      <dt>CWE Secondary</dt> <dd>CWE-307 - Improper Restriction of Excessive Authentication Attempts</dd>
+      <dt>OWASP</dt>         <dd>A05:2021 - Security Misconfiguration</dd>
+      <dt>Affected Host</dt> <dd><span class="redacted-tag">REDACTED</span> - production web dashboard</dd>
+      <dt>Test Date</dt>     <dd>2026-09-03</dd>
+      <dt>Status</dt>        <dd>CONFIRMED - live execution</dd>
+      <dt>Tester</dt>        <dd>Rudi - Offensive Security</dd>
+    </dl>
+    <p class="muted" style="margin-top:4px">Severity is researcher-assessed based on observed conditions, not a vendor rating.</p>
+    <div class="authz">
+      <strong>Authorization &amp; disclosure.</strong> All commands and output below were executed against a live target under
+      written authorization, within an agreed scope (no denial-of-service, no data modification, no credential compromise).
+      Host, product name, and any personal data are redacted for public release. This is a sanitized methodology showcase,
+      not the confidential client deliverable.
+    </div>
+  </header>
+
+  <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>The target's login interface ships <strong>no browser-side framing protection</strong> (no
       <code class="inline">X-Frame-Options</code>, no <code class="inline">CSP: frame-ancestors</code>), allowing the login
@@ -84,7 +108,7 @@ Connection: keep-alive</span>
     <p>The login form renders fully inside the attacker's iframe. An attacker can overlay decoy UI to trick an authenticated
       user into unintended actions on the real interface (UI redress / clickjacking).</p>
     <figure><img src="poc-05-clickjack.png" alt="Target login page rendered inside an attacker-controlled iframe; product name and logo redacted" /><figcaption>Figure 1 - the target login page rendered inside an attacker-controlled iframe (product name and logo redacted). The red dashed border marks the attacker page's iframe container.</figcaption></figure>
-    <div class="callout fix"><span class="label">Remediasi</span>
+    <div class="callout fix"><span class="label">Remediation</span>
       Return <code class="inline">Content-Security-Policy: frame-ancestors 'none'</code> (or an explicit allow-list) and
       <code class="inline">X-Frame-Options: DENY</code> for legacy browsers on every response. Add
       <code class="inline">Strict-Transport-Security</code> and <code class="inline">X-Content-Type-Options: nosniff</code>.
@@ -132,7 +156,7 @@ superadmin / admin -> 401</span>
       privileged network position.</span></p>
     <p><strong>Server version disclosure.</strong> The <code class="inline">Server</code> header, error pages, and SSH banner
       expose exact versions, handing an attacker a precise target to match against known CVEs. <span class="muted">Rated
-      Info: reconnaissance value only.</span> Remediasi: <code class="inline">server_tokens off</code> and minimize banners.</p>
+      Info: reconnaissance value only.</span> Remediation: <code class="inline">server_tokens off</code> and minimize banners.</p>
   </section>
 
   <section id="fplus">

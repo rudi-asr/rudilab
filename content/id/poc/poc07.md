@@ -37,27 +37,43 @@ status: "Proven"
     <p>Namun, beberapa sub-endpoint LOV (List-of-Values) - pencarian ringan yang digunakan untuk mengisi dropdown menu - tidak dicakup oleh pemeriksaan izin menu. Endpoint ini mengembalikan data penuh terlepas dari peran pemanggil.</p>
   </section>
 
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Peta Risiko</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Kelas Kerentanan</th><th>Endpoint Terdampak</th><th>CWE</th><th>Status Perbaikan</th></tr>
+    </thead><tbody>
+      <tr>
+        <td>F-01</td>
+        <td class="sev-med">Medium</td>
+        <td>Broken Function Level Authorization</td>
+        <td><code class="inline">/employees/lov</code>, <code class="inline">/clients/lov</code>, <code class="inline">/clients/tiers</code></td>
+        <td>CWE-862 / CWE-200</td>
+        <td class="ok">Diperbaiki - per pemilik</td>
+      </tr>
+    </tbody></table>
+  </section>
+
   <section id="preconditions">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Prasyarat</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Prasyarat</h2></div>
     <ul class="tight">
-      <li>A single valid, low-privilege authenticated account (obtained legitimately).</li>
-      <li>The account's role lacks the menu for the target resource (e.g. <code class="inline">master.employee</code>).</li>
-      <li>The LOV / derived sub-endpoints are reachable (they back the front-end dropdowns).</li>
+      <li>Satu akun terautentikasi dengan hak akses rendah yang diperoleh secara sah.</li>
+      <li>Peran akun tidak memiliki menu untuk resource yang dituju (misal <code class="inline">master.employee</code>).</li>
+      <li>Sub-endpoint LOV dapat dijangkau (mendukung dropdown di front-end).</li>
     </ul>
   </section>
 
   <section id="poc">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Langkah-langkah PoC</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Langkah-langkah PoC</h2></div>
     <ol class="tight">
-      <li>Authenticate as the low-privilege user and obtain a valid <code class="inline">accessToken</code>.</li>
-      <li>Confirm the parent resource is correctly denied:
+      <li>Autentikasi sebagai pengguna hak akses rendah dan dapatkan <code class="inline">accessToken</code> yang valid.</li>
+      <li>Konfirmasi resource induk ditolak dengan benar:
         <code class="inline">GET /employees</code> &rarr; <code class="inline">403 Forbidden</code>.</li>
-      <li>Call the LOV sub-endpoint with the same token: <code class="inline">GET /employees/lov</code>.</li>
-      <li>Observe <code class="inline">200 OK</code> returning a list of identities (name, email, position).</li>
-      <li>Repeat for related resources: <code class="inline">GET /clients/lov</code>,
+      <li>Panggil sub-endpoint LOV dengan token yang sama: <code class="inline">GET /employees/lov</code>.</li>
+      <li>Amati <code class="inline">200 OK</code> yang mengembalikan daftar identitas (nama, email, jabatan).</li>
+      <li>Ulangi untuk resource terkait: <code class="inline">GET /clients/lov</code>,
         <code class="inline">GET /clients/tiers</code> &rarr; <code class="inline">200 OK</code>.</li>
-      <li>Confirm record-level access is still enforced:
-        <code class="inline">GET /employees/{id}</code> &rarr; <code class="inline">403</code> (correct).</li>
+      <li>Konfirmasi akses tingkat record masih dibatasi:
+        <code class="inline">GET /employees/{id}</code> &rarr; <code class="inline">403</code> (benar).</li>
     </ol>
     <p class="muted">Transkrip yang disanitasi (identitas dan target dihapus):</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>http</span></div>
@@ -80,21 +96,20 @@ GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Dampak</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Dampak</h2></div>
     <p>Pengungkapan PII internal (nama staf, email, jabatan) dan daftar entitas bisnis ke peran yang seharusnya tidak memiliki akses tersebut. Dalam lingkungan yang diatur, ini dapat memicu kewajiban pelaporan pelanggaran data.</p>
-    <div class="callout impact"><span class="label">Impact</span>
-      Unauthorized read of staff identities and client records by a denied role; enables phishing and
-      OSINT against the organization. No integrity or availability impact observed.
+    <div class="callout impact"><span class="label">Dampak</span>
+      Pembacaan tidak sah atas identitas staf dan data klien oleh peran yang seharusnya ditolak; memungkinkan phishing dan OSINT terhadap organisasi. Tidak ada dampak terhadap integritas atau ketersediaan yang teramati.
     </div>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Akar Masalah</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Akar Masalah</h2></div>
     <p>Otorisasi diterapkan per-endpoint, secara manual, dan hanya terhubung ke handler resource induk. Sub-path (endpoint LOV) melewati pemeriksaan ini.</p>
   </section>
 
   <section id="solution">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Solution</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Solusi</h2></div>
     <p>Terapkan otorisasi di level router/resource agar berlaku untuk setiap sub-path, dan kembalikan 403 jika sesi yang membuat permintaan tidak memiliki izin untuk resource yang diminta.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>before - vulnerable</span></div>
 <pre><span class="cmt">// guard only on the parent; sub-routes slip through</span>
@@ -114,24 +129,22 @@ employees.get('/lov', listEmployeesLov)
 
 <span class="cmt">// least-privilege lookup: id + label only, no PII</span>
 return rows.map(e =&gt; ({ id:e.id, label:e.name }))</pre></div>
-    <div class="callout fix"><span class="label">Remediation</span>
-      Framework shown is illustrative - apply the equivalent guard in your stack. Add a regression test:
-      a role without the menu must receive 403 on the parent <em>and</em> every sub-endpoint
-      (<code class="inline">/lov</code>, <code class="inline">/tiers</code>).
+    <div class="callout fix"><span class="label">Remediasi</span>
+      Framework yang ditampilkan bersifat ilustratif - terapkan guard setara di stack Anda. Tambahkan regression test: peran tanpa menu harus menerima 403 pada resource induk <em>dan</em> setiap sub-endpoint (<code class="inline">/lov</code>, <code class="inline">/tiers</code>).
     </div>
   </section>
 
   <section id="disclosure">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Kronologi Pengungkapan</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Kronologi Pengungkapan</h2></div>
     <ul class="tight">
-      <li><strong>Day 0</strong> - Finding identified during an authorized assessment; reported to the system owner.</li>
-      <li><strong>Coordinated</strong> - Per owner communication, the fix was applied (authorization guard extended to sub-endpoints and LOV payloads minimized); not independently re-verified by the researcher.</li>
-      <li><strong>Publication</strong> - This sanitized write-up published with owner consent. Target and all data redacted.</li>
+      <li><strong>Hari 0</strong> - Temuan diidentifikasi selama asesmen yang diotorisasi; dilaporkan kepada pemilik sistem.</li>
+      <li><strong>Terkoordinasi</strong> - Berdasarkan komunikasi dengan pemilik, perbaikan telah diterapkan (guard otorisasi diperluas ke sub-endpoint dan payload LOV diminimalkan); tidak diverifikasi ulang secara independen oleh peneliti.</li>
+      <li><strong>Publikasi</strong> - Write-up yang telah disanitasi ini dipublikasikan dengan persetujuan pemilik. Target dan semua data disembunyikan.</li>
     </ul>
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Referensi</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Referensi</h2></div>
     <ul class="tight">
       <li><a href="https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/" rel="noopener">OWASP Top 10 - A01 Broken Access Control</a></li>
       <li><a href="https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/" rel="noopener">OWASP API Security - API5:2023 Broken Function Level Authorization</a></li>

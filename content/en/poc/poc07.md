@@ -48,8 +48,24 @@ status: "Proven"
       client list. Access control is enforced on the parent resource but missed on the sub-resource.</p>
   </section>
 
+  <section id="riskmap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Risk Map</h2></div>
+    <table><thead>
+      <tr><th>ID</th><th>Severity</th><th>Class</th><th>Affected Endpoints</th><th>CWE</th><th>Fix Status</th></tr>
+    </thead><tbody>
+      <tr>
+        <td>F-01</td>
+        <td class="sev-med">Medium</td>
+        <td>Broken Function Level Authorization</td>
+        <td><code class="inline">/employees/lov</code>, <code class="inline">/clients/lov</code>, <code class="inline">/clients/tiers</code></td>
+        <td>CWE-862 / CWE-200</td>
+        <td class="ok">Fixed - per owner</td>
+      </tr>
+    </tbody></table>
+  </section>
+
   <section id="preconditions">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Preconditions</h2></div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Preconditions</h2></div>
     <ul class="tight">
       <li>A single valid, low-privilege authenticated account (obtained legitimately).</li>
       <li>The account's role lacks the menu for the target resource (e.g. <code class="inline">master.employee</code>).</li>
@@ -58,7 +74,7 @@ status: "Proven"
   </section>
 
   <section id="poc">
-    <div class="sec-head"><span class="sec-num">03</span><h2>PoC Steps</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>PoC Steps</h2></div>
     <ol class="tight">
       <li>Authenticate as the low-privilege user and obtain a valid <code class="inline">accessToken</code>.</li>
       <li>Confirm the parent resource is correctly denied:
@@ -93,7 +109,7 @@ GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
   </section>
 
   <section id="impact">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Impact</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Impact</h2></div>
     <p>Disclosure of internal PII (staff names, emails, positions) and the business entity list to a role
       that is explicitly denied that data. In practice this fuels targeted phishing and internal OSINT, and
       supplies input for account-enumeration attempts. It did not lead to account takeover during testing
@@ -106,7 +122,7 @@ GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
   </section>
 
   <section id="rootcause">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Root Cause</h2></div>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Root Cause</h2></div>
     <p>Authorization is applied per-endpoint, by hand, and only wired onto the parent resource handler.
       Derived sub-endpoints (<code class="inline">/lov</code>, <code class="inline">/tiers</code>) were registered
       without the same menu guard. Because the check is not enforced centrally at the router/resource
@@ -115,7 +131,7 @@ GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
   </section>
 
   <section id="solution">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Solution</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Solution</h2></div>
     <p>Enforce authorization at the router/resource level so it applies to every sub-path, and return
       only the minimum fields a lookup needs.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>before - vulnerable</span></div>
@@ -144,7 +160,7 @@ return rows.map(e =&gt; ({ id:e.id, label:e.name }))</pre></div>
   </section>
 
   <section id="disclosure">
-    <div class="sec-head"><span class="sec-num">07</span><h2>Disclosure Timeline</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Disclosure Timeline</h2></div>
     <ul class="tight">
       <li><strong>Day 0</strong> - Finding identified during an authorized assessment; reported to the system owner.</li>
       <li><strong>Coordinated</strong> - Per owner communication, the fix was applied (authorization guard extended to sub-endpoints and LOV payloads minimized); not independently re-verified by the researcher.</li>
@@ -153,7 +169,7 @@ return rows.map(e =&gt; ({ id:e.id, label:e.name }))</pre></div>
   </section>
 
   <section id="refs">
-    <div class="sec-head"><span class="sec-num">08</span><h2>References</h2></div>
+    <div class="sec-head"><span class="sec-num">09</span><h2>References</h2></div>
     <ul class="tight">
       <li><a href="https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/" rel="noopener">OWASP Top 10 - A01 Broken Access Control</a></li>
       <li><a href="https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/" rel="noopener">OWASP API Security - API5:2023 Broken Function Level Authorization</a></li>

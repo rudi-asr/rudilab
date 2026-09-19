@@ -69,72 +69,73 @@ section[id] { scroll-margin-top: 76px; }
 
 /* ── BRAND ── */
 .brand {
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em;
+  color: var(--muted); text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  min-width: 0; flex-shrink: 1;
 }
-.brand b { color: var(--text); }
+.brand b { color: var(--text); white-space: nowrap; }
+.brand-slug { white-space: nowrap; }
 .brand-logo { width: 26px; height: 26px; flex: none; display: block; }
 [data-theme="light"] .brand { color: #1a2a45; font-weight: 700; }
 [data-theme="light"] .brand b { color: #000; }
 
 /* ── NAV ── */
-.top-right { display: flex; align-items: center; gap: 16px; }
+.top-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .nav {
-  display: flex;
-  gap: 12px;
-  font-family: var(--mono);
-  font-size: 12.5px;
+  display: flex; gap: 12px; align-items: center;
+  font-family: var(--mono); font-size: 12.5px;
 }
 .nav a {
-  color: var(--muted);
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
+  color: var(--muted); text-decoration: none;
+  letter-spacing: 0.03em; white-space: nowrap;
 }
-.nav a:hover { color: var(--accent); }
+.nav a:hover, .nav a.active { color: var(--accent); }
 [data-theme="light"] .nav a { color: #1a2a45; font-weight: 700; }
 [data-theme="light"] .nav { background: transparent; }
 
+/* lang-btn di dalam nav - separator kiri di desktop */
+.nav-lang-wrap {
+  display: flex; gap: 6px; align-items: center;
+  margin-left: 4px; padding-left: 10px;
+  border-left: 1px solid var(--line);
+}
+
 /* ── MOBILE NAV ── */
 .nav-toggle {
-  display: none;
-  background: none;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-  align-items: center;
-  justify-content: center;
+  display: none; background: none;
+  border: 1px solid var(--line); color: var(--muted);
+  width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
+  font-size: 16px; line-height: 1; flex-shrink: 0;
+  align-items: center; justify-content: center;
 }
 .nav-toggle:hover { color: var(--accent); border-color: var(--accent); }
 @media (max-width: 700px) {
+  /* Sembunyikan "// sec-research.log" di HP agar brand tidak tabrakan */
+  .brand-slug { display: none; }
+
   .nav-toggle { display: inline-flex; }
   .nav {
-    position: absolute;
-    top: 56px; right: 16px; left: 16px;
-    flex-direction: column;
-    gap: 0;
-    background: rgba(13,19,32,0.96);
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    position: absolute; top: 56px; right: 0; left: 0;
+    flex-direction: column; gap: 0;
+    background: rgba(13,19,32,0.97);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
     padding: 6px 0;
     box-shadow: 0 12px 28px rgba(0,0,0,0.4);
-    display: none;
-    z-index: 25;
+    display: none; z-index: 25;
   }
   [data-theme="light"] .nav { background: rgba(255,255,255,0.98); }
   .nav.open { display: flex; }
-  .nav a { padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .nav a { padding: 10px 20px; border-bottom: 1px solid var(--line); font-size: 13px; width: 100%; }
   .nav a:last-child { border-bottom: none; }
+
+  /* Lang wrap di mobile: baris terakhir di dropdown */
+  .nav-lang-wrap {
+    display: flex; gap: 8px; padding: 10px 20px;
+    border-left: none; margin-left: 0;
+    border-top: 1px solid var(--line); width: 100%;
+  }
 }
 
 /* ── THEME BUTTON ── */

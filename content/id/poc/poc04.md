@@ -90,11 +90,11 @@ status: "Proven"
 <span class="out">&lt;h1&gt;Index of /uploads/&lt;/h1&gt;</span></pre></div>
     <h3>representative response (synthetic - no real filenames)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>html</span></div>
-<pre><span class="out">&lt;h1&gt;Index of /uploads/&lt;/h1&gt;&lt;hr&gt;&lt;pre&gt;&lt;a href="https://../"&gt;../&lt;/a&gt;</span>
-<span class="hl-red">&lt;a href="https://arsip-2024.zip"&gt;arsip-2024.zip&lt;/a&gt;      12-Jan-2024 09:14  48M
-&lt;a href="https://config.bak"&gt;config.bak&lt;/a&gt;              03-Mar-2024 22:01  14K
-&lt;a href="https://daftar-peserta.xlsx"&gt;daftar-peserta.xlsx&lt;/a&gt; 17-Jun-2024 11:48 212K
-&lt;a href="https://dump.sql"&gt;dump.sql&lt;/a&gt;                  17-Jun-2024 11:52  96M</span>
+<pre><span class="out">&lt;h1&gt;Index of /uploads/&lt;/h1&gt;&lt;hr&gt;&lt;pre&gt;&lt;a href="../"&gt;../&lt;/a&gt;</span>
+<span class="hl-red">&lt;a href="arsip-2024.zip"&gt;arsip-2024.zip&lt;/a&gt;      12-Jan-2024 09:14  48M
+&lt;a href="config.bak"&gt;config.bak&lt;/a&gt;              03-Mar-2024 22:01  14K
+&lt;a href="daftar-peserta.xlsx"&gt;daftar-peserta.xlsx&lt;/a&gt; 17-Jun-2024 11:48 212K
+&lt;a href="dump.sql"&gt;dump.sql&lt;/a&gt;                  17-Jun-2024 11:52  96M</span>
 <span class="out">&lt;/pre&gt;&lt;hr&gt;</span></pre></div>
     <p>Every entry in a listing of this kind is a direct download link. No enumeration, brute force, or tooling is required
       to obtain the files, and search engines crawl and cache these pages - so exposure is not limited to whoever knows the URL.</p>
@@ -139,7 +139,7 @@ status: "Proven"
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">08</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>before - vulnerable pattern (Apache)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>apache</span></div>
 <pre><span class="hl-red">&lt;Directory /var/www/html&gt;
@@ -202,7 +202,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Kesimpulan</h2></div>
     <p>A publicly reachable directory on a government information system returns a full file index to unauthenticated
       visitors. The finding is low to medium in isolation, and its real severity depends on the contents of that directory,
       which were deliberately not examined. The remediation is a single configuration directive, supported by relocating
@@ -235,7 +235,3 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

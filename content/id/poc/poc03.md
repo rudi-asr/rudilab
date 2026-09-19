@@ -202,7 +202,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">13</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>bind services to loopback</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>config</span></div>
 <pre><span class="cmd">uvicorn main:app --host 127.0.0.1 --port &lt;API&gt;   # FastAPI
@@ -229,7 +229,7 @@ iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">14</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">14</span><h2>Kesimpulan</h2></div>
     <p>The application's authentication and write-authorization boundaries are solid - sensitive endpoints require valid
       sessions, SQL injection is mitigated, and low-privilege writes are correctly blocked. No exploitable IDOR or privilege
       escalation was confirmed. However, the network exposure of the backend stack is a systemic risk that undermines all
@@ -249,7 +249,3 @@ iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

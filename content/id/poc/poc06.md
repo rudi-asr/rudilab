@@ -256,7 +256,7 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">13</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">13</span><h2>Kesimpulan</h2></div>
     <p>The strongest issues are the two academic portals' login endpoints, which accept unlimited authentication attempts and
       guard exam and student data - these are the priority. The WordPress layer contributes an XSS-vulnerable plugin version,
       an open XML-RPC that amplifies brute-force and enables SSRF, and reconnaissance-grade disclosures (admin username, plugin
@@ -283,7 +283,3 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

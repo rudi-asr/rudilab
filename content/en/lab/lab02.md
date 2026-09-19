@@ -117,6 +117,3 @@ sqlmap -u "http://localhost:8080/DVWA/vulnerabilities/sqli/?id=1&Submit=Submit" 
 
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-</body>
-</html>

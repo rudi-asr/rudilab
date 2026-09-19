@@ -254,7 +254,3 @@ def get_batches(
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

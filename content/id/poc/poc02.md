@@ -140,7 +140,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>renew &amp; auto-renew</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ certbot --nginx -d TARGET          # renew with correct CN/SAN
@@ -169,7 +169,7 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Kesimpulan</h2></div>
     <p>An expired certificate combined with a hostname mismatch removes the guarantees of transport encryption and server
       authentication for users who click through the warning. Remediation is fast and free with Let's Encrypt Certbot and
       should be paired with auto-renewal and expiry monitoring. The realistic risk is Medium - meaningful, but gated by an
@@ -187,7 +187,3 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

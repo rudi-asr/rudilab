@@ -208,7 +208,7 @@ superadmin / admin -> 401</span>
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">10</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Kesimpulan</h2></div>
     <p>Two Medium findings - clickjacking via missing framing headers and an unthrottled login endpoint - were proven by live
       execution. The front-end architecture issues (client-side role logic, PII in URLs, localStorage) are latent risks that
       amplify the impact if either Medium finding is exploited. No production data was modified, no credentials were
@@ -228,7 +228,3 @@ superadmin / admin -> 401</span>
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

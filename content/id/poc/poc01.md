@@ -161,7 +161,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
   </section>
 
   <section id="fix">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Solution &amp; Recommendations</h2></div>
+    <div class="sec-head"><span class="sec-num">11</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>before - vulnerable pattern</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>python</span></div>
 <pre><span class="hl-red"># VULNERABLE: returns all members without an org filter
@@ -235,7 +235,7 @@ def get_batches(
   </section>
 
   <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Conclusion</h2></div>
+    <div class="sec-head"><span class="sec-num">12</span><h2>Kesimpulan</h2></div>
     <p>A new SDR account can read information that should not be exposed: the organization member list (PoC 2) and existing
       research batches (PoC 3). Both endpoints perform an authentication check but lack an adequate authorization check. The
       org-switch IDOR was not proven - the endpoint correctly returns 403 - and is excluded as a finding. All testing was
@@ -254,7 +254,3 @@ def get_batches(
 </div>
 <div id="ftr"></div>
 <button class="fab-top" id="fabTop" title="Back to top">&#8593;</button>
-
-
-</body>
-</html>

@@ -94,11 +94,9 @@ section[id] { scroll-margin-top: 76px; }
 [data-theme="light"] .nav a { color: #1a2a45; font-weight: 700; }
 [data-theme="light"] .nav { background: transparent; }
 
-/* lang-btn di dalam nav - separator kiri di desktop */
-.nav-lang-wrap {
-  display: flex; gap: 6px; align-items: center;
-  margin-left: 4px; padding-left: 10px;
-  border-left: 1px solid var(--line);
+/* lang-wrap - SELALU tampil, di luar .nav */
+.lang-wrap {
+  display: flex; gap: 5px; align-items: center;
 }
 
 /* ── MOBILE NAV ── */
@@ -132,12 +130,6 @@ section[id] { scroll-margin-top: 76px; }
   .nav a { padding: 10px 20px; border-bottom: 1px solid var(--line); font-size: 13px; width: 100%; }
   .nav a:last-child { border-bottom: none; }
 
-  /* Lang wrap di mobile: baris terakhir di dropdown */
-  .nav-lang-wrap {
-    display: flex; gap: 8px; padding: 10px 20px;
-    border-left: none; margin-left: 0;
-    border-top: 1px solid var(--line); width: 100%;
-  }
 }
 
 /* ── THEME BUTTON ── */
@@ -380,6 +372,7 @@ footer .wrap {
 }
 .lang-btn:hover { color: var(--accent); border-color: var(--accent); }
 .lang-btn.active { color: var(--accent); border-color: var(--accent); }
+.lang-btn.dim { opacity: 0.35; cursor: default; }
 
 /* ── ARTICLE PAGES (poc/lab single pages) ── */
 .article-wrap { max-width: 880px; margin: 0 auto; padding: 44px 24px 80px; }

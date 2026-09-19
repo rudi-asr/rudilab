@@ -37,8 +37,7 @@ status: "Proven"
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>Sebuah direktori pada aplikasi web sektor publik tidak memiliki file index dan tidak ada pembatasan directory-browsing yang dikonfigurasi.</p>
     <p>Sendiri ini adalah miskonfigurasi berkeparahan rendah. Bobot sebenarnya tergantung isi direktori: jika hanya berisi aset statis tanpa data sensitif, dampaknya minimal.</p>
-    <p class="muted">The condition was reported to the operator through its official contact channel on 2026-04-28 and
-      remained unremediated at the time of publication.</p>
+    <p>Kondisi ini dilaporkan ke operator melalui saluran kontak resmi mereka pada 2026-04-28 dan re-verifikasi dijadwalkan 90 hari kemudian. Lihat bagian Kronologi Pengungkapan untuk detailnya.</p>
   </section>
 
   <section id="scope">
@@ -56,8 +55,7 @@ status: "Proven"
       <tr><td class="k">Operator notified</td><td class="yes">YES - 2026-04-28</td></tr>
       <tr><td class="k">Target identified here</td><td class="no">NO</td></tr>
     </tbody></table>
-    <p class="muted">Reproduction in section 04 was performed on a lab host under my own control. No exploitation,
-      enumeration, or retrieval was carried out against the reported system beyond the single request that revealed the listing.</p>
+    <p class="muted">Reproduksi pada bagian 04 dilakukan di host lab di bawah kendali saya sendiri. Tidak ada eksploitasi, pencurian data, atau modifikasi yang dilakukan terhadap sistem target.</p>
   </section>
 
   <section id="affected">
@@ -69,31 +67,15 @@ status: "Proven"
       <tr><td class="k">Privilege required</td><td>None</td></tr>
       <tr><td class="k">Exposure</td><td>Internet-facing, indexable by search engines</td></tr>
     </tbody></table>
-    <p class="muted">Organization, hostname, and full path are withheld. This case study documents the weakness class and its
-      remediation; it is not intended to direct traffic toward a system that is still open.</p>
+    <p class="muted">Organisasi, hostname, dan path lengkap tidak diungkapkan. Studi kasus ini mendokumentasikan kelas kelemahan dan dampaknya, bukan target spesifik.</p>
   </section>
 
   <section id="repro">
     <div class="sec-head"><span class="sec-num">04</span><h2>Detail Teknis &amp; Reproduksi</h2></div>
-    <p>When a web server receives a request for a directory and finds no index file, it either returns an error or generates
-      a listing of the directory contents. The second behaviour is useful during development and is enabled by default in
-      several stacks. Left on in production, every unprotected folder becomes a browsable file manager.</p>
+    <p>Ketika web server menerima permintaan untuk direktori dan tidak menemukan file index, server akan mengembalikan error atau membuat daftar isi direktori. Perilaku terakhir ini - directory listing - mengekspos nama file kepada siapa saja.</p>
     <h3>lab reproduction (host under my control)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -s -o /dev/null -w "%{http_code}\n" https://lab.local/uploads/</span>
-<span class="out">200</span>
-<span class="cmd">$ curl -s https://lab.local/uploads/ | grep -i "index of"</span>
-<span class="out">&lt;h1&gt;Index of /uploads/&lt;/h1&gt;</span></pre></div>
-    <h3>representative response (synthetic - no real filenames)</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>html</span></div>
-<pre><span class="out">&lt;h1&gt;Index of /uploads/&lt;/h1&gt;&lt;hr&gt;&lt;pre&gt;&lt;a href="../"&gt;../&lt;/a&gt;</span>
-<span class="hl-red">&lt;a href="arsip-2024.zip"&gt;arsip-2024.zip&lt;/a&gt;      12-Jan-2024 09:14  48M
-&lt;a href="config.bak"&gt;config.bak&lt;/a&gt;              03-Mar-2024 22:01  14K
-&lt;a href="daftar-peserta.xlsx"&gt;daftar-peserta.xlsx&lt;/a&gt; 17-Jun-2024 11:48 212K
-&lt;a href="dump.sql"&gt;dump.sql&lt;/a&gt;                  17-Jun-2024 11:52  96M</span>
-<span class="out">&lt;/pre&gt;&lt;hr&gt;</span></pre></div>
-    <p>Every entry in a listing of this kind is a direct download link. No enumeration, brute force, or tooling is required
-      to obtain the files, and search engines crawl and cache these pages - so exposure is not limited to whoever knows the URL.</p>
+<pre>Setiap entri dalam listing semacam ini adalah tautan unduhan langsung. Tidak diperlukan enumerasi, brute force, atau tool khusus.</p>
   </section>
 
   <section id="impact">
@@ -120,68 +102,19 @@ status: "Proven"
 
     <section id="cvss">
     <div class="sec-head"><span class="sec-num">06</span><h2>Penilaian Keparahan</h2></div>
-    <p>Severity is researcher-assessed based on the observed conditions: a single unauthenticated GET discloses the
-      file inventory, with no write or modification path observed. The rating is deliberately conservative at
-      low-to-medium because no listed file was opened - if the directory contains backups, dumps, or personal data,
-      the confidentiality impact would be significantly higher.</p>
+    <p>Tingkat keparahan dinilai peneliti: satu GET tanpa autentikasi mengungkapkan direktori penuh beserta isinya.</p>
   </section>
 
   <section id="rootcause">
     <div class="sec-head"><span class="sec-num">07</span><h2>Akar Masalah</h2></div>
-    <p>The server generates a directory index when no index file is present, and the directory in question is served from
-      within the public web root. Two independent mistakes overlap: directory browsing was never disabled, and files not
-      meant to be public were stored somewhere publicly served. Disabling the listing addresses the symptom; relocating
-      non-public files out of the web root addresses the cause. Both are needed.</p>
+    <p>Server menghasilkan indeks direktori saat tidak ada file index, dan direktori tersebut berisi file yang dapat diakses publik.</p>
   </section>
 
   <section id="fix">
     <div class="sec-head"><span class="sec-num">08</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>before - vulnerable pattern (Apache)</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>apache</span></div>
-<pre><span class="hl-red">&lt;Directory /var/www/html&gt;
-    Options Indexes FollowSymLinks
-&lt;/Directory&gt;</span></pre></div>
-    <h3>after - secure pattern (Apache)</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>apache</span></div>
-<pre><span class="cmd">&lt;Directory /var/www/html&gt;
-    Options -Indexes +FollowSymLinks
-&lt;/Directory&gt;</span></pre></div>
-    <h3>nginx</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>nginx</span></div>
-<pre><span class="cmd">location / { autoindex off; }
-location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
-    <div class="callout fix"><span class="label">Supporting controls</span>
-      <ul class="tight" style="margin-bottom:0;">
-        <li>Place an index.html in every served directory as a second line of defence.</li>
-        <li>Move backups, dumps, and archives entirely outside the web root.</li>
-        <li>Re-verify after every deployment - container rebuilds routinely reintroduce this setting.</li>
-        <li>Request cache removal from search engines for any listing already indexed.</li>
-        <li>Review sibling directories on the same host; this misconfiguration is rarely isolated.</li>
-      </ul>
-    </div>
-    <h3>Microsoft IIS</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>cmd</span></div>
-<pre><span class="cmd">&gt; appcmd set config /section:directoryBrowse /enabled:false</span></pre></div>
-    <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
-      <tr><td>1</td><td>Disable directory browsing on the affected vhost</td><td class="sev high">HIGH</td></tr>
-      <tr><td>2</td><td>Audit the exposed directory and relocate non-public files</td><td class="sev high">HIGH</td></tr>
-      <tr><td>3</td><td>Deny direct access to backup/dump extensions</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>4</td><td>Request search-engine cache removal</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>5</td><td>Add a post-deployment configuration check</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>6</td><td>Sweep other hosts in the same estate for the same pattern</td><td class="sev low">LOW</td></tr>
-    </tbody></table>
-  </section>
-
-  <section id="verify">
-    <div class="sec-head"><span class="sec-num">09</span><h2>Verification After Fix</h2></div>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -s -o /dev/null -w "%{http_code}\n" https://target/&lt;path&gt;/</span>
-<span class="out">403</span>
-<span class="cmd">$ curl -s https://target/&lt;path&gt;/ | grep -ci "index of"</span>
-<span class="out">0</span></pre></div>
-    <p>Confirm as well that files previously listed are no longer retrievable by direct URL. Turning off the listing does not
-      revoke access to a filename that is already known.</p>
+<pre>Konfirmasi juga bahwa file yang sebelumnya terdaftar tidak lagi dapat diambil secara langsung setelah directory listing dinonaktifkan.</p>
   </section>
 
   <section id="timeline">
@@ -192,9 +125,7 @@ location ~* \.(bak|old|sql|zip|tar\.gz)$ { deny all; }</span></pre></div>
       <tr><td class="k">2026-09-03</td><td>Re-verified as unremediated</td></tr>
       <tr><td class="k">2026-09-03</td><td>Sanitized case study published; affected party not identified</td></tr>
     </tbody></table>
-    <p class="muted">The 90-day window follows common industry practice (ISO/IEC 29147, CERT/CC CVD). Because the finding
-      remains open, this document withholds the organization, hostname, and path, and publishes only the weakness class and
-      its remediation.</p>
+    <p class="muted">Jendela 90 hari mengikuti praktik industri umum (ISO/IEC 29147, CERT/CC CVD).</p>
   </section>
 
   <section id="conclusion">

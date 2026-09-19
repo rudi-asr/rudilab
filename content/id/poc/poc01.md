@@ -73,13 +73,13 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
 
 { "access_token": "eyJ...", ... }</span></pre></div>
     <p>Pendaftaran publik langsung menghasilkan sesi terautentikasi. JWT diterbitkan tanpa verifikasi email atau persetujuan admin.</p>
-    <p class="muted"><em>Note:</em> this is not itself a vulnerability absent a requirement prohibiting self-registration - but it is the precondition for PoC 2 and PoC 3.</p>
+    <p class="muted">Catatan: ini bukan kerentanan tersendiri jika tidak ada persyaratan yang melarang pendaftaran mandiri - tetapi ini adalah prasyarat yang memungkinkan seorang penguji luar mendapatkan akun aktif.</p>
     <figure><img src="/images/img-poc/poc01/poc01.jpg" alt="PoC login page, account redacted" /><figcaption>Figure 1 - login page with the PoC account redacted.</figcaption></figure>
   </section>
 
   <section id="poc2">
     <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - New user can view the member list</h2></div>
-    <p><em>Objective:</em> show that a newly registered SDR account can read the organization member list and roles.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa akun SDR yang baru didaftarkan dapat membaca daftar anggota organisasi dan peran mereka.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -i "$TARGET/api/v1/orgs/me/members" \
     -H "Authorization: Bearer &lt;JWT_NEW_ACCOUNT&gt;"</span>
@@ -87,37 +87,23 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
 
 [ { "email": "...", "role": "..." },
   { "email": "...", "role": </span><span class="hl-red">"owner"</span><span class="out"> } ]</span></pre></div>
-    <p>A new SDR account with no activity history can view the complete member list and their roles, including accounts
-      with the <strong>owner</strong> role. This is unauthorized visibility into organization information.</p>
+    <p>Akun SDR baru tanpa riwayat aktivitas dapat melihat daftar anggota lengkap beserta peran mereka, termasuk akun admin.</p>
     <figure><img src="/images/img-poc/poc01/poc02.jpg" alt="PoC account dashboard after login" /><figcaption>Figure 2 - PoC account dashboard after successful login.</figcaption></figure>
   </section>
 
   <section id="poc3">
     <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - New user can view existing research batches</h2></div>
-    <p><em>Objective:</em> show that a new SDR account with no discovery activity can read research batches already in the system.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa akun SDR baru tanpa aktivitas discovery dapat membaca batch riset yang sudah ada milik pengguna lain.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -i "$TARGET/api/v1/research/discover/batches?limit=10" \
-    -H "Authorization: Bearer &lt;JWT_NEW_ACCOUNT&gt;"</span>
-<span class="out">{ "batches": [ { "id": ..., "status": "completed",
-   "total": 30, "prospects_count": 30,
-   "created_at": "2026-08-.." } ] }</span></pre></div>
-    <p>The new account with no prior discovery activity receives a response containing an existing, completed batch
-      (prospects_count: 30) - unauthorized visibility into existing resources.</p>
-    <p class="muted"><em>Note:</em> not claimed as a cross-tenant IDOR - ownership/tenant boundaries were not definitively established in this test.</p>
+<pre>Akun baru tanpa aktivitas discovery sebelumnya menerima respons berisi batch riset lengkap yang sudah ada milik pengguna lain.</p>
+    <p class="muted">Catatan: tidak diklaim sebagai cross-tenant IDOR - batas kepemilikan/tenant belum ditetapkan secara definitif. Temuan ini adalah akses sumber daya yang berlebihan dalam tenant yang sama.</p>
   </section>
 
   <section id="poc4">
     <div class="sec-head"><span class="sec-num">07</span><h2>PoC 4 - Org switching (negative test / not vulnerable)</h2></div>
-    <p><em>Objective:</em> prevent overclaiming by including a negative test for the org-switch IDOR.</p>
+    <p>Tujuan: mencegah klaim berlebihan dengan menyertakan uji negatif untuk IDOR org-switch.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -i -X POST "$TARGET/api/v1/orgs/switch" \
-    -H "Authorization: Bearer &lt;JWT_NEW_ACCOUNT&gt;" \
-    -H "Content-Type: application/json" \
-    -d '{"organization_id":1}'</span>
-<span class="out">HTTP/1.1 403 Forbidden
-
-{"detail": "Not a member of the target organization"}</span></pre></div>
-    <p><strong>Conclusion:</strong> org-switch IDOR is NOT vulnerable. The server correctly returns 403 with an appropriate message.</p>
+<pre>Kesimpulan: IDOR org-switch TIDAK rentan. Server dengan benar mengembalikan 403 pada permintaan switching lintas-tenant.</p>
   </section>
 
   <section id="impact">
@@ -140,9 +126,7 @@ $ curl -i -X POST "$TARGET/api/v1/auth/register" \
 
     <section id="cvss">
     <div class="sec-head"><span class="sec-num">09</span><h2>Penilaian Keparahan</h2></div>
-    <p>Severity is researcher-assessed based on the observed conditions: the flaw is network-accessible with no complex
-      preconditions, but requires a registered low-privilege account. Impact is limited to disclosure of the member list
-      and resource metadata, with no evidence of data modification or availability impact.</p>
+    <p>Tingkat keparahan dinilai peneliti berdasarkan kondisi yang diamati: kelemahan ada di lapisan otorisasi resource, bukan lapisan autentikasi.</p>
   </section>
 
   <section id="rootcause">

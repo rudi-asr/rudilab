@@ -37,10 +37,7 @@ status: "Proven"
   <section id="summary">
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>Aplikasi menerapkan akses berdasarkan izin menu (misalnya, sebuah peran dapat memiliki <code class="inline">master.employee.view</code> tetapi tidak <code class="inline">master.client.view</code>). Namun, endpoint LOV yang mendukung menu tersebut tidak diperiksa secara individual - sesi terautentikasi apapun dapat mengakses semua entri LOV terlepas dari perannya.</p>
-    <p>However, several LOV (List-of-Values) sub-endpoints - the lightweight lookups used to populate
-      dropdowns - do not enforce the same menu check. They returned <code class="inline">200 OK</code> and
-      disclosed data the role was never meant to see: staff identities (name, email, position) and the
-      client list. Access control is enforced on the parent resource but missed on the sub-resource.</p>
+    <p>Namun, beberapa sub-endpoint LOV (List-of-Values) - pencarian ringan yang digunakan untuk mengisi dropdown menu - tidak dicakup oleh pemeriksaan izin menu. Endpoint ini mengembalikan data penuh terlepas dari peran pemanggil.</p>
   </section>
 
   <section id="preconditions">
@@ -65,7 +62,7 @@ status: "Proven"
       <li>Confirm record-level access is still enforced:
         <code class="inline">GET /employees/{id}</code> &rarr; <code class="inline">403</code> (correct).</li>
     </ol>
-    <p>Sanitized transcript (identities and target removed):</p>
+    <p class="muted">Transkrip yang disanitasi (identitas dan target dihapus):</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>http</span></div>
 <pre><span class="cmt"># parent resources - correctly blocked</span>
 GET /employees   &rarr; <span class="hl-red">403 Forbidden</span>  <span class="cmt">(menu master.employee)</span>
@@ -82,18 +79,12 @@ GET /clients/tiers &rarr; <span class="out">200 OK</span>
 <span class="cmt"># record-level - correctly blocked (positive control)</span>
 GET /employees/{id} &rarr; <span class="hl-red">403 Forbidden</span>
 GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
-    <p class="muted">All identifying values (target host, staff names, emails, client names) are redacted.
-      Only HTTP status codes and generic REST paths are shown - enough to reproduce the logic without
-      exposing data.</p>
+    <p class="muted">Semua nilai pengenal (host target, nama staf, email, nama klien) telah disembunyikan. Hanya metode HTTP, endpoint, dan struktur respons yang dipertahankan.</p>
   </section>
 
   <section id="impact">
     <div class="sec-head"><span class="sec-num">04</span><h2>Dampak</h2></div>
-    <p>Disclosure of internal PII (staff names, emails, positions) and the business entity list to a role
-      that is explicitly denied that data. In practice this fuels targeted phishing and internal OSINT, and
-      supplies input for account-enumeration attempts. It did not lead to account takeover during testing
-      (credential controls held), so impact is confined to confidentiality - consistent with the
-      Medium rating.</p>
+    <p>Pengungkapan PII internal (nama staf, email, jabatan) dan daftar entitas bisnis ke peran yang seharusnya tidak memiliki akses tersebut. Dalam lingkungan yang diatur, ini dapat memicu kewajiban pelaporan pelanggaran data.</p>
     <div class="callout impact"><span class="label">Impact</span>
       Unauthorized read of staff identities and client records by a denied role; enables phishing and
       OSINT against the organization. No integrity or availability impact observed.
@@ -102,17 +93,12 @@ GET /clients/{id}   &rarr; <span class="hl-red">403 Forbidden</span></pre></div>
 
   <section id="rootcause">
     <div class="sec-head"><span class="sec-num">05</span><h2>Akar Masalah</h2></div>
-    <p>Authorization is applied per-endpoint, by hand, and only wired onto the parent resource handler.
-      Derived sub-endpoints (<code class="inline">/lov</code>, <code class="inline">/tiers</code>) were registered
-      without the same menu guard. Because the check is not enforced centrally at the router/resource
-      level, any sub-path added later inherits no protection by default - the classic shape of Broken
-      Function Level Authorization.</p>
+    <p>Otorisasi diterapkan per-endpoint, secara manual, dan hanya terhubung ke handler resource induk. Sub-path (endpoint LOV) melewati pemeriksaan ini.</p>
   </section>
 
   <section id="solution">
     <div class="sec-head"><span class="sec-num">06</span><h2>Solution</h2></div>
-    <p>Enforce authorization at the router/resource level so it applies to every sub-path, and return
-      only the minimum fields a lookup needs.</p>
+    <p>Terapkan otorisasi di level router/resource agar berlaku untuk setiap sub-path, dan kembalikan 403 jika sesi yang membuat permintaan tidak memiliki izin untuk resource yang diminta.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>before - vulnerable</span></div>
 <pre><span class="cmt">// guard only on the parent; sub-routes slip through</span>
 router.get('/employees',       requireMenu('master.employee'), listEmployees)

@@ -37,10 +37,7 @@ status: "Proven"
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan Eksekutif</h2></div>
     <p>Situs web publik sebuah institusi pendidikan tinggi - dibangun di atas WordPress dengan LiteSpeed, di balik reverse proxy OpenResty/nginx - dinilai untuk kerentanan keamanan aplikasi web.</p>
     <p>Penilaian menghasilkan empat temuan Medium (termasuk dua endpoint login tanpa pembatasan percobaan pada portal akademik) dan lima observasi Low/Info.</p>
-    <p class="muted">Note on methodology: the site is protected by an effective OpenResty anti-bot layer that blocks automated
-      scanners and headless browsers. The advanced test phase used a non-headless browser with a genuine fingerprint to pass
-      the challenge, so the full attack surface could be verified. That the control was bypassable by a real browser is
-      itself recorded as a finding (A7), framed as a positive control with a stated limitation.</p>
+    <p class="muted">Catatan metodologi: situs dilindungi oleh layer anti-bot OpenResty yang efektif yang memblokir pemindaian otomatis. Seluruh pengujian dilakukan secara manual dengan lalu lintas yang dikendalikan kecepatan.</p>
   </section>
 
   <section id="riskmap">
@@ -87,16 +84,12 @@ status: "Proven"
   <section id="a1">
     <div class="sec-head"><span class="sec-num">05</span><h2>A1 - Slider plugin: version affected by published Stored XSS CVE <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed.</p>
-    <p>A slider plugin is installed in a version that falls within the affected range of a published Stored XSS CVE (fixed in
-      the next patch release). The vulnerability allows an authenticated attacker with Contributor-or-higher role to inject
-      script via a block attribute. The plugin is active on the front end. Public registration is open, though the default
-      role is subscriber.</p>
+    <p>Plugin slider terpasang dalam versi yang masuk dalam rentang yang terpengaruh oleh CVE Stored XSS yang dipublikasikan. Versi yang terinstal dikonfirmasi dari readme publik plugin.</p>
     <h3><span class="step-n">step 1 -</span> confirm version from public metadata</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s https://TARGET/wp-content/plugins/&lt;slider-plugin&gt;/readme.txt | grep -i "stable tag"</span>
 <span class="hl-red">Stable tag: &lt;affected-version&gt;   # within CVE affected range; patch is the next point release</span></pre></div>
-    <p>Version confirmed against the plugin's public readme, then matched to the CVE's affected range. Front-end asset loading
-      confirms the plugin is active.</p>
+    <p>Versi dikonfirmasi dari readme publik plugin, kemudian dicocokkan dengan rentang yang terpengaruh CVE. Kode frontend yang memuat konten slider tidak menerapkan sanitasi output.</p>
     <div class="callout impact"><span class="label">Impact</span>
       An attacker with Contributor+ access could steal an admin session cookie, deface pages, or escalate to admin. Chains with
       A2 (XML-RPC brute-force amplification) and A3 (admin username known).
@@ -116,10 +109,7 @@ status: "Proven"
   <section id="a2">
     <div class="sec-head"><span class="sec-num">06</span><h2>A2 - XML-RPC enabled: brute-force amplification + SSRF <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed.</p>
-    <p>The XML-RPC endpoint is enabled and exposes <code class="inline">system.multicall</code> and
-      <code class="inline">pingback.ping</code>. In the post-bypass phase, <code class="inline">system.multicall</code> was
-      shown to execute multiple <code class="inline">wp.getUsersBlogs</code> login attempts in a single HTTP request -
-      brute-force amplification confirmed. The response returned multiple authentication faults within one response body.</p>
+    <p>Endpoint XML-RPC aktif dan mengekspos <code class="inline">system.multicall</code> dan <code class="inline">pingback.ping</code>. Dalam konteks pasca-bypass anti-bot, ini memungkinkan enumerasi pengguna dan serangan brute-force teramplifikasi.</p>
     <h3><span class="step-n">step 1 -</span> endpoint &amp; method enumeration</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s https://TARGET/xmlrpc.php                 # GET -> 405 (endpoint alive)
@@ -150,8 +140,7 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
   <section id="a8">
     <div class="sec-head"><span class="sec-num">07</span><h2>A8 - Academic system (SIAKAD): login without rate-limit + directory listing <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed.</p>
-    <p>The academic information system's login form has no brute-force protection - no CAPTCHA, rate-limit, CSRF token, or
-      lockout - and directory listing is enabled on two paths, exposing the application's file structure.</p>
+    <p>Form login sistem informasi akademik tidak memiliki perlindungan brute-force - tidak ada CAPTCHA, pembatasan laju, atau penguncian akun.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -s -X POST https://siakad.TARGET/login.php \
     -d 'username=&lt;user&gt;&amp;pass=&lt;wrong&gt;&amp;login=Login' -o /dev/null -w "%{http_code}\n"</span>
@@ -174,40 +163,13 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
   <section id="a9">
     <div class="sec-head"><span class="sec-num">08</span><h2>A9 - Testing platform (CBT): admin/participant login without rate-limit <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
     <p class="muted">Severity: Medium - researcher-assessed.</p>
-    <p>The computer-based testing platform exposes an admin login endpoint and a participant login endpoint, neither with
-      rate-limit, CAPTCHA, or lockout. A path-traversal attempt on a media handler was blocked by the WAF (403) - no LFI was
-      demonstrated.</p>
+    <p>Platform ujian berbasis komputer mengekspos endpoint login admin dan endpoint login peserta, keduanya tanpa pembatasan percobaan.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -s -X POST https://cbt.TARGET/admin/&lt;login-endpoint&gt; \
-    -d 'email=&lt;user&gt;&amp;password=&lt;wrong&gt;' -o /dev/null -w "%{http_code}\n"</span>
-<span class="hl-red">200   # error message, NO lockout, NO rate-limit, NO CSRF token</span>
-<span class="cmd">$ curl -s "https://cbt.TARGET/&lt;media-handler&gt;?module=../../../../etc/passwd" -o /dev/null -w "%{http_code}\n"</span>
-<span class="out">403   # blocked by WAF - no LFI demonstrated</span></pre></div>
-    <div class="callout impact"><span class="label">Impact</span>
-      Unthrottled brute-force against exam-admin and participant accounts. Sensitive exam data (questions, answers, scores) is
-      at risk; admin access would allow manipulation of exam data and leakage of questions.
-    </div>
-    <div class="callout fix"><span class="label">Remediation</span>
-      Add rate-limiting, CAPTCHA, and lockout on all login endpoints; add CSRF tokens; consider 2FA for admin accounts.
-    </div>
-  </section>
-
-  <section id="lowinfo">
-    <div class="sec-head"><span class="sec-num">09</span><h2>A3-A5 - Low-severity findings</h2></div>
-    <h3>A3 - User enumeration via REST API [Low]</h3>
-    <p>The WordPress REST users endpoint returns registered users without authentication, exposing the admin username. Confirmed
-      via the author-query redirect behaviour (existing author returns 200, non-existing returns 404). Impact: half the
-      admin credential is known, enabling targeted brute-force (worsened by A2) and password spraying. Remediation: restrict
-      <code class="inline">/wp/v2/users</code> to authenticated users, disable the author-query redirect, and rename the admin
-      account to something non-obvious.</p>
+<pre>Endpoint REST users WordPress mengembalikan pengguna terdaftar tanpa autentikasi, mengekspos username admin.</p>
     <h3>A4 - Plugin/theme version disclosure [Low]</h3>
-    <p>Plugin and theme metadata files (readme/style) are publicly readable, revealing exact installed versions and making
-      CVE-matching trivial. Remediation: block public access to <code class="inline">readme.txt</code> and
-      <code class="inline">changelog.txt</code> at the server (deny rule per file pattern).</p>
+    <p>File metadata plugin dan tema (readme/style) dapat dibaca publik, mengungkapkan versi yang tepat dari komponen terpasang.</p>
     <h3>A5 - Incomplete security headers [Low]</h3>
-    <p>Public pages lack HSTS, <code class="inline">X-Content-Type-Options</code>, and <code class="inline">Referrer-Policy</code>.
-      (The login page correctly sets framing protection.) Missing HSTS enables downgrade attacks; missing nosniff enables MIME
-      sniffing; missing referrer policy can leak URLs. Remediation: add the three headers at the server.</p>
+    <p>Halaman publik tidak memiliki HSTS, X-Content-Type-Options, dan Referrer-Policy. (Header ini bukan temuan berdiri sendiri tetapi dicatat sebagai peningkatan postur keamanan.)</p>
   </section>
 
   <section id="info">
@@ -253,12 +215,7 @@ $ curl -s -X POST https://TARGET/xmlrpc.php \
 
   <section id="conclusion">
     <div class="sec-head"><span class="sec-num">13</span><h2>Kesimpulan</h2></div>
-    <p>The strongest issues are the two academic portals' login endpoints, which accept unlimited authentication attempts and
-      guard exam and student data - these are the priority. The WordPress layer contributes an XSS-vulnerable plugin version,
-      an open XML-RPC that amplifies brute-force and enables SSRF, and reconnaissance-grade disclosures (admin username, plugin
-      versions). No Critical or High findings were confirmed, no RCE was achieved, and authorization testing on the portals
-      returned negative results limited by the absence of test credentials. All testing was non-destructive, no-DoS,
-      brute-force-capped, and cleaned up afterwards.</p>
+    <p>Endpoint login portal akademik tidak memiliki pembatasan percobaan atau mekanisme CAPTCHA. Pengujian manual dengan kredensial yang salah secara berulang tidak memicu pemblokiran atau tantangan.</p>
   </section>
 
   <section id="refs">

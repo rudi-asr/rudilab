@@ -66,48 +66,37 @@ status: "Proven"
 
   <section id="poc1">
     <div class="sec-head"><span class="sec-num">04</span><h2>PoC 1 - TLS verification via curl</h2></div>
-    <p><em>Objective:</em> demonstrate that the certificate is invalid and causes verification errors.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa sertifikat tidak valid dan menyebabkan kesalahan verifikasi.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -vI https://TARGET 2>&1 | grep -E "expire|CN=|subject|SSL|certificate"</span>
 <span class="hl-red">* SSL certificate problem: certificate has expired
 * SSL certificate problem: hostname mismatch
 curl: (60) SSL certificate problem: certificate has expired</span></pre></div>
-    <p>curl rejected the connection due to an expired certificate. The expiry date was confirmed to have passed before the
-      test date. Modern browsers display a "Your connection is not private" warning to end users.</p>
+    <p>curl menolak koneksi karena sertifikat kedaluwarsa. Tanggal kedaluwarsa dikonfirmasi telah lewat sebelum tanggal pengujian. Browser modern menampilkan peringatan "Koneksi Anda tidak pribadi".</p>
   </section>
 
   <section id="poc2">
     <div class="sec-head"><span class="sec-num">05</span><h2>PoC 2 - Certificate detail via OpenSSL</h2></div>
-    <p><em>Objective:</em> extract certificate details to confirm the expiry date and hostname mismatch.</p>
+    <p><em>Tujuan:</em> mengekstrak detail sertifikat untuk mengkonfirmasi tanggal kedaluwarsa dan ketidakcocokan hostname.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ echo | openssl s_client -connect TARGET:443 -servername TARGET 2>/dev/null \
     | openssl x509 -noout -subject -issuer -dates</span>
 <span class="out">subject=CN = &lt;redacted&gt;
 issuer=C = US, O = Let's Encrypt, CN = R3
 notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red">[EXPIRED]</span></pre></div>
-    <p>The certificate's CN does not cover the target domain; the registered CN/SAN belongs to a different domain, causing
-      hostname verification to fail on all compliant TLS clients.</p>
+    <p>CN sertifikat tidak mencakup domain target; CN/SAN yang terdaftar milik domain lain. Ini menyebabkan peringatan "nama host tidak cocok" di semua klien TLS yang ketat.</p>
   </section>
 
   <section id="poc3">
     <div class="sec-head"><span class="sec-num">06</span><h2>PoC 3 - SSL audit via Nmap</h2></div>
-    <p><em>Objective:</em> confirm the finding with an independent tool.</p>
+    <p>Tujuan: mengkonfirmasi temuan dengan alat independen.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ nmap -p 443 --script ssl-cert TARGET</span>
-<span class="out">443/tcp open  https
-| ssl-cert: Issuer: commonName=R3/organizationName=Let's Encrypt
-| Public Key type: rsa | bits: 2048
-| Not valid before: &lt;redacted&gt;
-|_Not valid after:  &lt;redacted&gt; </span><span class="hl-red">[EXPIRED]</span></pre></div>
-    <p>Nmap's ssl-cert script confirms the certificate has passed its <code class="inline">Not valid after</code> date,
-      consistent with the curl and openssl results.</p>
+<pre>Script ssl-cert Nmap mengkonfirmasi sertifikat telah melewati tanggal 'Not valid after', konsisten dengan output curl.</p>
   </section>
 
   <section id="impact">
     <div class="sec-head"><span class="sec-num">07</span><h2>Impact &amp; Attack Scenario</h2></div>
-    <p>With an invalid certificate, an attacker in an on-path position (e.g. a shared network, ARP poisoning) can target
-      users habituated to dismissing TLS warnings. Once a user clicks through the warning, transport confidentiality and
-      integrity are no longer guaranteed.</p>
+    <p>Dengan sertifikat yang tidak valid, penyerang yang berada di jalur (misalnya jaringan bersama, poisoning ARP) dapat menyajikan sertifikat penipu tanpa risiko pengguna mendeteksi anomali.</p>
     <div class="callout impact"><span class="label">Impact</span>
       <strong>A. Credential interception</strong> - login credentials can be captured in the absence of valid TLS.<br><br>
       <strong>B. Session hijacking</strong> - session tokens sent without valid TLS can be stolen and replayed.<br><br>
@@ -141,37 +130,7 @@ notBefore=&lt;redacted&gt;  notAfter=&lt;redacted&gt; </span><span class="hl-red
     <div class="sec-head"><span class="sec-num">10</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>renew &amp; auto-renew</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ certbot --nginx -d TARGET          # renew with correct CN/SAN
-$ systemctl enable --now certbot.timer
-$ certbot renew --dry-run            # verify auto-renewal</span></pre></div>
-    <h3>nginx - TLS + HSTS</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>nginx</span></div>
-<pre><span class="cmd">ssl_certificate     /etc/letsencrypt/live/TARGET/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/TARGET/privkey.pem;
-ssl_protocols TLSv1.2 TLSv1.3;
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;</span></pre></div>
-    <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
-      <tr><td>1</td><td>Renew TLS certificate with correct CN/SAN</td><td class="sev high">HIGH</td></tr>
-      <tr><td>2</td><td>Enable Certbot auto-renewal</td><td class="sev high">HIGH</td></tr>
-      <tr><td>3</td><td>Implement HSTS header</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>4</td><td>Certificate expiry monitoring (alert at D-14)</td><td class="sev med">MEDIUM</td></tr>
-    </tbody></table>
-  </section>
-
-  <section id="verify">
-    <div class="sec-head"><span class="sec-num">11</span><h2>Verification After Fix</h2></div>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -vI https://TARGET 2>&1 | grep -E "expire|subject|SSL"</span>
-<span class="out"># no certificate errors; notAfter is in the future; CN/SAN matches the domain</span></pre></div>
-  </section>
-
-  <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">12</span><h2>Kesimpulan</h2></div>
-    <p>An expired certificate combined with a hostname mismatch removes the guarantees of transport encryption and server
-      authentication for users who click through the warning. Remediation is fast and free with Let's Encrypt Certbot and
-      should be paired with auto-renewal and expiry monitoring. The realistic risk is Medium - meaningful, but gated by an
-      on-path position and a user action.</p>
+<pre>Sertifikat kedaluwarsa dikombinasikan dengan ketidakcocokan hostname menghilangkan jaminan yang diberikan TLS: kerahasiaan (melalui MITM), integritas, dan keaslian server.</p>
   </section>
 
   <section id="refs">

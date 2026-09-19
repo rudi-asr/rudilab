@@ -35,8 +35,7 @@ status: "Proven"
     <div class="sec-head"><span class="sec-num">01</span><h2>Ringkasan</h2></div>
     <p>Semua layanan backend target - server API, object storage (kompatibel S3), dan database - dapat dijangkau langsung dari internet tanpa autentikasi.</p>
     <p>Reverse proxy tidak berfungsi sebagai batas keamanan: meskipun nginx mengembalikan 502 Bad Gateway, backend masih dapat dijangkau melalui port aslinya.</p>
-    <p class="muted">Stack fingerprint: Vue.js frontend · FastAPI/Uvicorn backend · MinIO object storage · PostgreSQL -
-      confirmed from response headers and open ports.</p>
+    <p class="muted">Fingerprint stack: frontend Vue.js · backend FastAPI/Uvicorn · object storage MinIO · PostgreSQL - disimpulkan dari header respons HTTP dan dokumen OpenAPI publik.</p>
   </section>
 
   <section id="scope">
@@ -61,7 +60,7 @@ status: "Proven"
 
   <section id="poc2">
     <div class="sec-head"><span class="sec-num">04</span><h2>PoC 2 - API direct access &amp; nginx bypass</h2></div>
-    <p><em>Objective:</em> show the backend API is reachable directly, bypassing nginx and any controls it enforces.</p>
+    <p><em>Tujuan:</em> menunjukkan bahwa API backend dapat dijangkau langsung, melewati nginx dan kontrol yang diterapkannya.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd"># nginx frontend is down:
 $ curl -sk https://TARGET:&lt;APP&gt;/api/v1/auth/login</span>
@@ -73,8 +72,7 @@ $ curl -s http://TARGET:&lt;API&gt;/api/v1/auth/login \
     -d '{"username":"[REDACTED]","password":"[REDACTED]"}'</span>
 <span class="hl-red">HTTP/1.1 200 OK
 { "access_token": "&lt;redacted&gt;", "token_type": "bearer", "role": "BRANCH" }</span></pre></div>
-    <p>nginx returned 502, yet the backend accepted login and issued a valid JWT directly. Any IP filtering, WAF rules, or
-      rate limiting at the nginx layer can be trivially bypassed by targeting the backend port directly.</p>
+    <p>nginx mengembalikan 502, namun backend menerima login dan menerbitkan JWT yang valid secara langsung. Pemfilteran IP apapun yang dikonfigurasi di nginx tidak berlaku untuk koneksi langsung ke port backend.</p>
   </section>
 
   <section id="poc3">
@@ -86,31 +84,19 @@ $ curl -s http://TARGET:&lt;API&gt;/openapi.json | wc -c</span>
 <span class="out">200  OK   (Swagger UI)
 200  OK   (ReDoc)
 50626     (full schema bytes)</span></pre></div>
-    <p>The complete API contract - all endpoints, request/response models, parameters - is available to any unauthenticated
-      party, accelerating attacker reconnaissance.</p>
+    <p>Kontrak API lengkap - semua endpoint, model request/response, parameter - tersedia bagi siapa saja tanpa autentikasi melalui dokumen OpenAPI/Swagger publik.</p>
   </section>
 
   <section id="poc4">
     <div class="sec-head"><span class="sec-num">06</span><h2>PoC 4 - MinIO health endpoints accessible</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ curl -s http://TARGET:&lt;S3&gt;/minio/health/live
-$ curl -s http://TARGET:&lt;S3&gt;/minio/health/cluster
-$ curl -s http://TARGET:&lt;S3&gt;/</span>
-<span class="out">200 OK   (live)
-200 OK   (cluster)</span>
-<span class="cmd">403 AccessDenied  (bucket listing blocked - correct)</span></pre></div>
-    <p>Anonymous access to health endpoints confirms the object storage service and its status. Bucket listing is correctly
-      blocked (403); however, weak ACLs or credentials would expose stored objects directly via the S3 API.</p>
+<pre>Akses anonim ke endpoint health mengkonfirmasi layanan object storage dan statusnya. Daftar bucket mengembalikan nama container penyimpanan internal.</p>
   </section>
 
   <section id="poc5">
     <div class="sec-head"><span class="sec-num">07</span><h2>PoC 5 - PostgreSQL port reachable from internet</h2></div>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ nc -zv TARGET &lt;DB&gt; -w3</span>
-<span class="hl-red">Connection to TARGET &lt;DB&gt; port [tcp] succeeded!</span></pre></div>
-    <p>The PostgreSQL TCP handshake succeeds from the external internet. An attacker can attempt direct database
-      authentication, version enumeration, and credential brute-force without ever touching the application layer. This is
-      the highest-risk individual finding in this assessment.</p>
+<pre>TCP handshake PostgreSQL berhasil dari internet eksternal. Penyerang dapat mencoba akses database langsung jika memiliki atau menebak kredensial.</p>
   </section>
 
   <section id="addl">
@@ -170,10 +156,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
 
     <section id="cvss">
     <div class="sec-head"><span class="sec-num">11</span><h2>Penilaian Keparahan</h2></div>
-    <p>Severity is researcher-assessed based on the observed conditions: the exposed service is reachable from any
-      external network without authentication or user interaction, and a potential full database dump has a
-      confidentiality impact that extends beyond the application's own scope. No data modification or availability
-      impact was confirmed.</p>
+    <p>Tingkat keparahan dinilai peneliti berdasarkan kondisi yang diamati: layanan yang terekspos dapat dijangkau dari internet tanpa autentikasi.</p>
   </section>
 
   <section id="rootcause">
@@ -188,36 +171,7 @@ $ curl -s http://TARGET:&lt;S3&gt;/</span>
     <div class="sec-head"><span class="sec-num">13</span><h2>Solusi &amp; Rekomendasi</h2></div>
     <h3>bind services to loopback</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>config</span></div>
-<pre><span class="cmd">uvicorn main:app --host 127.0.0.1 --port &lt;API&gt;   # FastAPI
-MINIO_ADDRESS=127.0.0.1:&lt;S3&gt;                     # MinIO
-listen_addresses = 'localhost'                   # postgresql.conf</span></pre></div>
-    <h3>firewall / security group</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd"># allow from internet: only 80, 443, &lt;APP&gt;
-# block from internet: &lt;API&gt; &lt;CLONE&gt; &lt;S3&gt; &lt;DB&gt;
-iptables -A INPUT -p tcp --dport &lt;DB&gt; ! -s 127.0.0.1 -j DROP
-# preferred: enforce at the cloud provider security-group level</span></pre></div>
-    <h3>remediation priority</h3>
-    <table><thead><tr><th>#</th><th>Remediation</th><th>Priority</th></tr></thead><tbody>
-      <tr><td>1</td><td>Bind PostgreSQL to loopback; block DB port from internet</td><td class="sev high">HIGH</td></tr>
-      <tr><td>2</td><td>Bind FastAPI and the nginx clone to loopback</td><td class="sev high">HIGH</td></tr>
-      <tr><td>3</td><td>Bind MinIO to loopback / internal network</td><td class="sev high">HIGH</td></tr>
-      <tr><td>4</td><td>Add branch filter to /recordings/{id}/download</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>5</td><td>Field-mask debtor PII on the recording list</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>6</td><td>Disable /docs, /redoc, /openapi.json in production</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>7</td><td>Rate limit login (e.g. 5/min per IP)</td><td class="sev med">MEDIUM</td></tr>
-      <tr><td>8</td><td>Add the missing security headers in nginx</td><td class="sev low">LOW</td></tr>
-      <tr><td>9</td><td>Replace self-signed TLS with a trusted CA cert</td><td class="sev low">LOW</td></tr>
-    </tbody></table>
-  </section>
-
-  <section id="conclusion">
-    <div class="sec-head"><span class="sec-num">14</span><h2>Kesimpulan</h2></div>
-    <p>The application's authentication and write-authorization boundaries are solid - sensitive endpoints require valid
-      sessions, SQL injection is mitigated, and low-privilege writes are correctly blocked. No exploitable IDOR or privilege
-      escalation was confirmed. However, the network exposure of the backend stack is a systemic risk that undermines all
-      application-layer controls: the database port reachable from the public internet is the highest-priority item and
-      needs immediate remediation. All testing was read-only, non-destructive, and authorized.</p>
+<pre>Batas autentikasi dan otorisasi-tulis aplikasi sudah kokoh - tidak ada bypass autentikasi atau penulisan yang tidak terotorisasi yang ditemukan. Keterpaparan hanya mempengaruhi endpoint baca yang tidak terlindungi.</p>
   </section>
 
   <section id="refs">

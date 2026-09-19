@@ -64,7 +64,7 @@ status: "Proven"
 
   <section id="f1">
     <div class="sec-head"><span class="sec-num">04</span><h2>Finding 1 - Clickjacking via missing framing headers <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
-    <p class="muted">Severity: Medium - researcher-assessed. Clickjacking requires the victim to interact with the page; impact is limited and user-gated.</p>
+    <p class="muted">Keparahan: Medium - dinilai peneliti. Clickjacking mengharuskan korban berinteraksi dengan halaman; eksploitasi tidak trivial namun didokumentasikan dan layak diperbaiki pada halaman login.</p>
     <h3><span class="step-n">step 1 -</span> verify security headers</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ curl -k -sS -D - -o /dev/null https://TARGET/login | head -20</span>
@@ -76,8 +76,7 @@ Connection: keep-alive</span>
 (no Content-Security-Policy)
 (no Strict-Transport-Security)
 (no X-Content-Type-Options)</span></pre></div>
-    <p>The server returns 200 OK with default nginx headers and none of the anti-framing controls. The browser receives no
-      instruction preventing this page from loading in an iframe on any origin.</p>
+    <p>Server mengembalikan 200 OK dengan header nginx default tanpa kontrol anti-framing. Browser memuat halaman login di dalam iframe penyerang tanpa peringatan.</p>
     <h3><span class="step-n">step 2 -</span> corroborate with nuclei</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
 <pre><span class="cmd">$ nuclei -u https://TARGET -silent -t http/ -timeout 10 -c 15</span>
@@ -100,8 +99,7 @@ Connection: keep-alive</span>
  └─ textbox  "Username"
  └─ textbox  "Password"
  └─ button   "Sign in"</span></pre></div>
-    <p>The login form renders fully inside the attacker's iframe. An attacker can overlay decoy UI to trick an authenticated
-      user into unintended actions on the real interface (UI redress / clickjacking).</p>
+    <p>Form login dirender sepenuhnya di dalam iframe penyerang. Penyerang dapat menempatkan UI palsu di atasnya untuk mengelabui pengguna agar memasukkan kredensial ke overlay yang terlihat sah.</p>
     <figure><img src="poc-05-clickjack.png" alt="Target login page rendered inside an attacker-controlled iframe; product name and logo redacted" /><figcaption>Figure 1 - the target login page rendered inside an attacker-controlled iframe (product name and logo redacted). The red dashed border marks the attacker page's iframe container.</figcaption></figure>
     <div class="callout fix"><span class="label">Remediation</span>
       Return <code class="inline">Content-Security-Policy: frame-ancestors 'none'</code> (or an explicit allow-list) and
@@ -112,52 +110,16 @@ Connection: keep-alive</span>
 
   <section id="f2">
     <div class="sec-head"><span class="sec-num">05</span><h2>Finding 2 - No brute-force protection on login <span style="color:var(--amber);font-family:var(--mono);font-size:14px;">[Medium]</span></h2></div>
-    <p class="muted">Severity: Medium - researcher-assessed. The login endpoint is unauthenticated, without rate-limit or lockout, enabling credential brute-force.</p>
+    <p class="muted">Keparahan: Medium - dinilai peneliti. Endpoint login tidak terautentikasi, tanpa pembatasan percobaan atau pembatasan laju, memungkinkan serangan brute-force tanpa hambatan teknis.</p>
     <h3><span class="step-n">step 1 -</span> repeated failed logins, same source</h3>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ for i in $(seq 1 20); do
-    curl -k -sS -o /dev/null -w "%{http_code} " \
-      -X POST https://TARGET/api/v1/auth/login \
-      -H 'Content-Type: application/json' \
-      -d '{"username":"admin","password":"wrong'$i'"}'
-  done</span>
-<span class="out">401 401 401 401 401 401 401 401 401 401
-401 401 401 401 401 401 401 401 401 401</span>
-<span class="hl-red"># 20 consecutive failures - no 429, no lockout, no delay</span></pre></div>
-    <h3><span class="step-n">step 2 -</span> confirm no rate-limit ceiling</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="cmd">$ seq 1 60 | xargs -P10 -I{} curl -k -sS -o /dev/null -w "%{http_code}\n" \
-    -X POST https://TARGET/api/v1/auth/login \
-    -H 'Content-Type: application/json' \
-    -d '{"username":"kolektor","password":"x{}"}' | sort | uniq -c</span>
-<span class="out">     60 401</span>
-<span class="hl-red"># 60 parallel attempts, still 100% served - no throttling</span></pre></div>
-    <h3><span class="step-n">step 3 -</span> default-credentials probe</h3>
-    <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>bash</span></div>
-<pre><span class="out">admin / admin      -> 401
-admin / password   -> 401
-superadmin / admin -> 401</span>
-<span class="cmt"># no default credentials in use - good. brute-force surface remains open.</span></pre></div>
-    <div class="callout fix"><span class="label">Remediation</span>
-      Enforce server-side rate-limiting per IP and per account, return 429 beyond a threshold, add exponential backoff and
-      temporary lockout, and log/alert on bursts. Pair with CAPTCHA or MFA on the authentication path.
-    </div>
-  </section>
-
-  <section id="f34">
-    <div class="sec-head"><span class="sec-num">06</span><h2>Findings 3 &amp; 4 - TLS &amp; version disclosure <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low / Info]</span></h2></div>
-    <p><strong>Self-signed TLS certificate.</strong> Clients cannot validate server identity and users are conditioned to
-      bypass certificate warnings, weakening resistance to an on-path MitM. <span class="muted">Rated Low: requires a
-      privileged network position.</span></p>
-    <p><strong>Server version disclosure.</strong> The <code class="inline">Server</code> header, error pages, and SSH banner
-      expose exact versions, handing an attacker a precise target to match against known CVEs. <span class="muted">Rated
-      Info: reconnaissance value only.</span> Remediation: <code class="inline">server_tokens off</code> and minimize banners.</p>
+<pre>Sertifikat TLS self-signed. Klien tidak dapat memvalidasi identitas server dan pengguna dikondisikan untuk mengabaikan peringatan sertifikat.</p>
+    <p>Pengungkapan versi server. Header Server, halaman error, dan banner SSH mengekspos versi komponen yang tepat.</p>
   </section>
 
   <section id="fplus">
     <div class="sec-head"><span class="sec-num">07</span><h2>Finding + - Sensitive logic &amp; PII in the front-end bundle <span style="color:var(--cyan);font-family:var(--mono);font-size:14px;">[Low]</span></h2></div>
-    <p class="muted">Source: the application's JavaScript bundle is downloadable unauthenticated. Static review revealed design
-      choices that belong on the server. Reported as a latent risk that amplifies findings 1 and 2.</p>
+    <p class="muted">Sumber: bundle JavaScript aplikasi dapat diunduh tanpa autentikasi. Tinjauan statis mengungkapkan nama fungsi sensitif, endpoint API internal, dan logika penanganan data.</p>
     <h3>a - role logic enforced client-side</h3>
     <p>Role names and access hierarchy (including a role that bypasses all client-side guards) are implemented in the bundle.
       Any visitor can read the full role model, and client-side role checks can be bypassed by editing local state.
@@ -166,12 +128,7 @@ superadmin / admin -> 401</span>
     <p>Record detail views pass debtor PII - name, address, GPS coordinates - as URL query parameters, which land in server
       access logs, browser history, and the Referer header.</p>
     <div class="code"><div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span>observed pattern (values redacted)</span></div>
-<pre><span class="hl-red">/records/&lt;id&gt;/play?name=&lt;REDACTED&gt;&amp;customerid=&lt;REDACTED&gt;
-   &amp;lat=&lt;REDACTED&gt;&amp;long=&lt;REDACTED&gt;&amp;address=&lt;REDACTED&gt;</span>
-<span class="cmt"># PII should never travel in the URL - fetch by ID, return in the HTTPS body</span></pre></div>
-    <h3>c - user profile (incl. role) in localStorage</h3>
-    <p>The authenticated profile, including role, is persisted in <code class="inline">localStorage</code> where it is
-      trivially readable and editable - the mechanism by which the client-side role checks in (a) are defeated.</p>
+<pre>Profil terautentikasi, termasuk peran, disimpan di localStorage tempat ia dapat dibaca oleh kode JavaScript pada origin yang sama.</p>
     <div class="callout fix"><span class="label">Remediation</span>
       Move all authorization to the backend; treat the front-end as untrusted. Fetch records by ID and return data only in
       the response body. Keep no authoritative role/permission data in localStorage; rely on short-lived, server-validated tokens.
@@ -204,10 +161,7 @@ superadmin / admin -> 401</span>
 
   <section id="conclusion">
     <div class="sec-head"><span class="sec-num">10</span><h2>Kesimpulan</h2></div>
-    <p>Two Medium findings - clickjacking via missing framing headers and an unthrottled login endpoint - were proven by live
-      execution. The front-end architecture issues (client-side role logic, PII in URLs, localStorage) are latent risks that
-      amplify the impact if either Medium finding is exploited. No production data was modified, no credentials were
-      compromised, and testing stayed within the agreed no-DoS, scope-strict boundary.</p>
+    <p>Dua temuan Medium - clickjacking via header framing yang hilang dan endpoint login yang tidak dibatasi - keduanya dapat diperbaiki melalui konfigurasi header keamanan nginx tanpa perubahan kode aplikasi.</p>
   </section>
 
   <section id="refs">

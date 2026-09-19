@@ -47,7 +47,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--muted);f
 {{ partial "topbar.html" . }}
 
 {{/* Konten dari .md file - EN pakai content/en/poc/pocNN.md, ID pakai content/id/poc/pocNN.md */}}
-{{ .Content }}
+<div class="wrap" style="max-width:1100px;margin:0 auto;padding:0 28px">{{ .Content }}</div>
 
 {{ $js := resources.Get "js/site.js" | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" defer></script>

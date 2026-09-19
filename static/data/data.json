@@ -280,7 +280,7 @@
       "category": "Buku Ajar",
       "note": "Penerbit Mafy",
       "link": "https://penerbitmafy.com/produk/pengantar-sistem-komputer-dari-representasi-data-hingga-sistem-komputer-terintegrasi/",
-      "cover": "images/books/pengantar-sistem-komputer.png"
+      "cover": "/images/books/pengantar-sistem-komputer.png"
     }
   ],
   "homelab": [

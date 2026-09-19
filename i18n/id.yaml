@@ -1,6 +1,7 @@
 # id.yaml - Bahasa Indonesia strings
-# Tambahkan/edit terjemahan di sini; key yang tidak ada otomatis fallback ke EN
+# Key yang tidak ada di sini otomatis fallback ke EN
 
+# ── NAV ──
 nav_about: "Tentang"
 nav_poc: "PoC"
 nav_lab: "Lab"
@@ -9,14 +10,25 @@ nav_achievements: "Pencapaian"
 nav_certifications: "Sertifikasi"
 nav_books: "Buku"
 
-hero_h1: "Keamanan Ofensif | Penetration Tester | Keamanan Infrastruktur"
-hero_role: "Keamanan Ofensif | Penetration Tester | Keamanan Infrastruktur"
-hero_lede: >
-  Peneliti keamanan yang berfokus pada offensive security, pengujian penetrasi aplikasi web,
-  dan penguatan infrastruktur. Mendokumentasikan penilaian kerentanan nyata,
-  eksperimen homelab, dan riset yang telah dipublikasikan.
+# ── HERO ──
+# Judul teknis dibiarkan EN (tidak pantas diterjemahkan)
+hero_h1: "Offensive Security | Penetration Tester | Infrastructure Security"
+hero_role: "Offensive Security | Penetration Tester | Infrastructure Security"
+hero_lede: "Saya meneliti dan membuktikan kerentanan keamanan. Pekerjaan saya mencakup riset keamanan, penilaian kerentanan, dan penetration testing."
 
-section_poc: "Bukti Konsep (PoC)"
+# ── ABOUT ──
+about_p1: "Identitas utama saya adalah <b style=\"color:var(--text)\">riset keamanan</b> - menemukan, memvalidasi, dan menjelaskan isu keamanan dengan fokus pada pemahaman teknis yang mendalam. Tersedia untuk <b style=\"color:var(--text)\">keterlibatan jarak jauh secara global</b>, dengan pelaporan yang ramah asinkron."
+
+about_p2: "Pekerjaan keamanan saya didasari oleh <b style=\"color:var(--text)\">pengalaman langsung 10+ tahun di dalam infrastruktur enterprise</b> - jaringan, server, virtualisasi, cloud tenant, dan pipeline DevOps yang sama kini saya nilai kelemahannya. Latar belakang ini adalah keunggulan yang disengaja: saya bisa membaca target sesuai cara ia dibangun, menemukan miskonfigurasi yang luput dari tool scan biasa, dan menghasilkan laporan yang dapat direproduksi di VM lab maupun lingkungan klien."
+
+about_p3: "Didukung oleh sertifikasi termasuk <b style=\"color:var(--text)\">CEH, CCNA, Network Security Expert (NSE), dan VMware</b> (daftar lengkap di <a href=\"#certs\">Sertifikasi</a>)."
+
+tools_label: "Alat Riset Keamanan"
+capabilities_label: "Kemampuan Keamanan"
+environments_label: "Lingkungan yang Saya Nilai / Hardening"
+
+# ── SECTIONS ──
+section_poc: "Proof of Concept (PoC)"
 section_lab: "Lab"
 section_research: "Riset & Publikasi"
 section_certifications: "Sertifikasi"
@@ -25,21 +37,25 @@ section_books: "Buku"
 
 poc_subtitle: "Penilaian kerentanan dan temuan keamanan yang terdokumentasi."
 lab_subtitle: "Infrastruktur homelab, alat keamanan, dan eksperimen."
-research_subtitle: "Makalah riset yang dipublikasikan dan kontribusi akademik."
+research_subtitle: "Makalah riset yang telah dipublikasikan dan kontribusi akademik."
 
+# ── UI ──
 view_all: "Lihat semua"
 view_document: "Lihat Dokumen"
 search_placeholder: "Cari..."
 filter_all: "Semua"
 
+# ── META FIELDS ──
+# Istilah teknis dibiarkan EN
 date: "Tanggal"
 target: "Target"
 category: "Kategori"
-severity: "Tingkat Keparahan"
+severity: "Severity"
 impact: "Dampak"
 status: "Status"
 difficulty: "Kesulitan"
 
+# ── STATUS BADGES ──
 status_proven: "Terbukti"
 status_published: "Dipublikasikan"
 status_review: "Dalam Tinjauan"

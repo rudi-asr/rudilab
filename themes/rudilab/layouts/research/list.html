@@ -1,55 +1,229 @@
-{{ define "main" }}
-{{ $data := .Site.Data.data }}
-<div class="page">
-  <div class="page-header">
-    <h1>{{ i18n "section_research" }}</h1>
-    <p>{{ i18n "research_subtitle" }}</p>
-  </div>
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
-  </div>
-  <div class="filter-tags">
-    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
-    {{ $seen := slice }}
-    {{ range $data.research }}
-      {{ $j := .journal }}
-      {{ if and $j (not (in $seen $j)) }}
-        {{ $seen = $seen | append $j }}
-        <button data-filter="{{ $j | lower }}">{{ $j }}</button>
-      {{ end }}
-    {{ end }}
-    <button data-filter="done">{{ i18n "status_published" }}</button>
-    <button data-filter="review">{{ i18n "status_review" }}</button>
-  </div>
-  <div class="r-grid">
-    {{ range $data.research }}
-    {{ $item := . }}
-    <div class="card" data-card data-tag="{{ .journal | lower }} {{ .status }}">
-      <div class="card-meta" style="display:flex;justify-content:space-between;align-items:center">
-        <span class="card-date">{{ .date }}</span>
-        <span class="status {{ .status }}">{{ if eq .status "done" }}{{ i18n "status_published" }}{{ else }}{{ i18n "status_review" }}{{ end }}</span>
-      </div>
-      <div class="card-full-title">
-        {{ if .driveLink }}
-        <a href="{{ .driveLink }}" target="_blank" rel="noopener">{{ .full_title | default .title }}</a>
-        {{ else }}{{ .full_title | default .title }}{{ end }}
-      </div>
-      {{ with .authors }}<div class="card-authors">{{ . }}</div>{{ end }}
-      <div class="card-journal">{{ .journal_name | default .journal }}{{ with .volume }} - {{ . }}{{ end }}</div>
-      <div class="card-links">
-        {{ with .doi }}
-        <a class="card-link" href="https://doi.org/{{ . }}" target="_blank" rel="noopener">DOI: {{ . }} &nearr;</a>
-        {{ end }}
-        {{ with .driveLink }}
-        <a class="card-link" href="{{ . }}" target="_blank" rel="noopener">{{ i18n "view_document" }} &nearr;</a>
-        {{ end }}
-      </div>
-    </div>
-    {{ end }}
-  </div>
-</div>
-{{ end }}
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{- i18n "section_research" }} - Rudi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
+  {{/* CSS Hugo pipes */}}
+  {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <style>
+:root{--bg:#0a0d12;--panel:#111722;--panel-2:#0d121a;--line:#1d2532;--text:#c3cede;--text-strong:#e9f0f8;--muted:#75839a;--accent:#5ad1a0;--warn:#e0a94a;--crit:#e06c75;--mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;}
+html[data-theme="light"]{--bg:#f6f8fa;--panel:#ffffff;--panel-2:#f0f3f6;--line:#d8dee6;--text:#33404f;--text-strong:#111820;--muted:#66748a;--accent:#0f8a63;--warn:#9a6b12;--crit:#b03a44;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+/* nav styles in /assets/css/style.css */
+.page{max-width:1160px;margin:0 auto;padding:0 24px 80px}
+.page-header{padding:36px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.page-header h1{font-size:clamp(18px,2.8vw,24px);color:var(--text-strong);font-weight:700;margin-bottom:4px}
+.page-header .sub{color:var(--muted);font-size:12.5px}
+.backlink{display:inline-block;color:var(--muted);font-size:12.5px;margin-bottom:20px}.backlink:hover{color:var(--accent);text-decoration:none}
+.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;width:15px;height:15px}
+#searchInput{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text-strong);font-family:var(--mono);font-size:13px;padding:10px 14px 10px 36px;border-radius:7px;outline:none;transition:border-color .15s}
+#searchInput::placeholder{color:var(--muted)}
+#searchInput:focus{border-color:var(--accent)}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filter-label{color:var(--muted);font-size:11.5px;letter-spacing:.08em;flex:none}
+.tag-btn{background:none;border:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tag-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tag-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:700}
+html[data-theme="light"] .tag-btn.active{color:#fff}
+.result-info{font-size:12px;color:var(--muted);margin-bottom:18px;min-height:18px}
+.result-info b{color:var(--accent)}
+.r-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(max-width:560px){.r-grid{grid-template-columns:1fr}}
+.r-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 24px;display:flex;flex-direction:column;gap:8px;transition:border-color .18s,transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.r-card::before{content:'';position:absolute;inset:0;border-radius:10px;background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--accent) 6%,transparent),transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.r-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.r-card:hover::before{opacity:1}
+.r-card:hover .card-title{color:var(--accent)}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.status-badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:3px;border:1px solid;letter-spacing:.06em;white-space:nowrap;flex:none}
+.status-published{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.status-review{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+.card-date{font-size:11px;color:var(--muted)}
+.card-title{font-size:14px;font-weight:700;color:var(--text-strong);line-height:1.38;transition:color .15s;margin-top:2px}
+.card-desc{font-size:12.5px;color:var(--text);line-height:1.6;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.mtag{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--panel-2);white-space:nowrap;cursor:pointer;transition:all .15s}
+.mtag:hover,.mtag.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.card-links{display:flex;align-items:center;justify-content:flex-end;border-top:1px solid var(--line);padding-top:10px;margin-top:2px;gap:18px}
+.card-links a{font-size:12px;white-space:nowrap}
+.card-links a.doi{color:var(--muted)}
+.card-links a.doi:hover{color:var(--accent)}
+.card-full-title{font-size:15px;font-weight:700;color:var(--text-strong);line-height:1.45}
+.card-full-title a{color:var(--text-strong);text-decoration:none}
+.card-full-title a:hover{color:var(--accent);text-decoration:underline}
+[data-theme="light"] .card-full-title a{color:#000000}
+[data-theme="light"] .card-full-title a:hover{color:#1255b8}
+.card-authors{font-size:12px;color:var(--muted);line-height:1.5}
+.card-journal{font-size:11.5px;color:var(--accent);font-family:var(--mono);padding-bottom:2px}
+[data-theme="light"] .card-full-title{color:#000000;font-weight:700}
+[data-theme="light"] .card-authors{color:#1a2a45}
+[data-theme="light"] .card-journal{color:#1255b8}
+.card-links a.doc{color:var(--accent);font-weight:700}
+.empty-state{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty-state span{display:block;font-size:28px;margin-bottom:12px;opacity:.4}
+footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--muted);font-size:12.5px}
+.totop{position:fixed;right:20px;bottom:24px;width:38px;height:38px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-size:15px;display:none;align-items:center;justify-content:center}
+.totop:hover{color:var(--accent);border-color:var(--accent)}.totop.show{display:flex}
+</style>
+</head>
+<body>
 
-{{ define "footer_sig" }}// Research - rudilab.my.id - Rudi - 2026{{ end }}
-{{ define "footer_back_href" }}/{{ end }}
-{{ define "footer_back_label" }}&larr; back to homepage{{ end }}
+{{ partial "topbar.html" . }}
+
+<div class="page">
+  <a class="backlink" href="/">&#8592; back to homepage</a>
+
+  <div class="page-header">
+    <h1>Research &amp; Publications</h1>
+    <p class="sub">Published research and publications - DOI and full-text document links included. Click a tag to filter.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search title, journal, keyword…" autocomplete="off">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">FILTER:</span>
+      <div id="filterTags"></div>
+    </div>
+  </div>
+
+  <div class="result-info" id="resultInfo"></div>
+  <div class="r-grid" id="rGrid"><div class="empty-state"><span>&#8987;</span>Loading…</div></div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <span class="foot-sig">// Research - rudilab.my.id - Rudi - 2026</span>
+      <a class="foot-back" href="/">← back to homepage</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+let ALL_R=[];
+let activeTag=null;
+let searchQ='';
+
+function tagsOf(p){
+  const t=[];
+  if(p.status==='done') t.push('Published');
+  else if(p.status==='review') t.push('In review');
+  if(p.journal) t.push(p.journal);
+  if(p.category) t.push(p.category);
+  return t;
+}
+
+function buildFilters(rs){
+  const counts={};
+  rs.forEach(p=>tagsOf(p).forEach(t=>{counts[t]=(counts[t]||0)+1;}));
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const wrap=document.getElementById('filterTags');
+  wrap.innerHTML='';
+  const all=document.createElement('button');
+  all.className='tag-btn active';all.textContent='All';all.dataset.tag='';
+  all.addEventListener('click',()=>setTag(''));
+  wrap.appendChild(all);
+  sorted.forEach(([tag])=>{
+    const b=document.createElement('button');
+    b.className='tag-btn';b.textContent=tag;b.dataset.tag=tag;
+    b.addEventListener('click',()=>setTag(tag));
+    wrap.appendChild(b);
+  });
+}
+
+function setTag(tag){
+  activeTag=tag||null;
+  document.querySelectorAll('#filterTags .tag-btn').forEach(b=>b.classList.toggle('active',b.dataset.tag===(tag||'')));
+  render();
+}
+
+function statusLabel(s){
+  return { done: "Published", review: "In review", demo: "Example" }[s] || s;
+}
+
+function statusClass(s){
+  return s==='done' ? 'published' : (s==='review' ? 'review' : 'published');
+}
+
+function render(){
+  const grid=document.getElementById('rGrid');
+  const q=searchQ.toLowerCase().trim();
+  const filtered=ALL_R.filter(p=>{
+    const mt=!activeTag||tagsOf(p).includes(activeTag);
+    const mq=!q||(p.title||'').toLowerCase().includes(q)||(p.full_title||'').toLowerCase().includes(q)||(p.authors||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q)||(p.journal_name||p.journal||'').toLowerCase().includes(q)||(p.key||'').toLowerCase().includes(q)||(p.doi||'').toLowerCase().includes(q);
+    return mt&&mq;
+  });
+  document.getElementById('resultInfo').innerHTML=
+    filtered.length===ALL_R.length
+      ?`Showing <b>${ALL_R.length}</b> publication${ALL_R.length===1?'':'s'}`
+      :`Showing <b>${filtered.length}</b> of <b>${ALL_R.length}</b> publications`;
+  if(!filtered.length){grid.innerHTML='<div class="empty-state"><span>&#128269;</span>No publications match your filter.</div>';return;}
+  grid.innerHTML=filtered.map(p=>{
+    const tags=tagsOf(p);
+    const doiLink=p.doi
+      ?`<a class="doi" href="https://doi.org/${esc(p.doi)}" target="_blank" rel="noopener">DOI: ${esc(p.doi)}</a>`
+      :`<span style="color:var(--muted);font-size:12px;">DOI pending</span>`;
+    const docLink=p.driveLink
+      ?`<a class="doc" href="${esc(p.driveLink)}" target="_blank" rel="noopener">View Document ↗</a>`
+      :`<span style="color:var(--muted);font-size:12px;">Document pending</span>`;
+    return `
+    <div class="r-card">
+      <div class="card-top">
+        <span class="status-badge status-${statusClass(p.status)}">${esc(statusLabel(p.status))}</span>
+        <span class="card-date">${esc(p.date)}</span>
+      </div>
+      <div class="card-full-title">${p.driveLink ? `<a href="${esc(p.driveLink)}" target="_blank" rel="noopener">${esc(p.full_title||p.title)}</a>` : esc(p.full_title||p.title)}</div>
+      <div class="card-authors">${esc(p.authors||'')}</div>
+      <div class="card-journal">${[p.journal_name||p.journal, p.volume].filter(Boolean).join(' - ')}</div>
+      <div class="card-meta">${tags.map(t=>`<span class="mtag${activeTag===t?' active':''}" data-tag="${esc(t)}">${esc(t)}</span>`).join('')}</div>
+      <div class="card-links">
+        ${doiLink}
+        ${docLink}
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.mtag').forEach(el=>{
+    el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setTag(activeTag===el.dataset.tag?'':el.dataset.tag);});
+  });
+  grid.querySelectorAll('.r-card').forEach(card=>{
+    card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',(e.clientX-r.left)+'px');card.style.setProperty('--my',(e.clientY-r.top)+'px');});
+  });
+}
+
+async function load(){
+  try{
+    const r=await fetch('/data/data.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('fetch failed');
+    const data=await r.json();
+    ALL_R=(data.research||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    buildFilters(ALL_R);
+    render();
+  } catch(e){
+    document.getElementById('rGrid').innerHTML='<div class="empty-state"><span>&#9888;&#65039;</span>Failed to load data.json.</div>';
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input',e=>{searchQ=e.target.value;render();});
+load();
+</script>
+{{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

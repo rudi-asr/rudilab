@@ -1,46 +1,341 @@
-{{ define "main" }}
-{{ $data := .Site.Data.data }}
-<div class="page">
-  <div class="page-header">
-    <h1>{{ i18n "section_achievements" }}</h1>
-  </div>
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
-  </div>
-  <div class="filter-tags">
-    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
-    {{ $seen := slice }}
-    {{ range $data.achievements }}
-      {{ $iss := .issuer }}
-      {{ if not (in $seen $iss) }}
-        {{ $seen = $seen | append $iss }}
-        <button data-filter="{{ $iss | lower }}">{{ $iss }}</button>
-      {{ end }}
-    {{ end }}
-  </div>
-  <div class="ach-grid">
-    {{ range $data.achievements }}
-    {{ $link := .credlyLink | default .credentialUrl | default "https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly" }}
-    <a class="ach-card" href="{{ $link }}" target="_blank" rel="noopener" data-card data-tag="{{ .issuer | lower }}">
-      <div class="ach-badge">
-        {{ with .image }}
-        <img src="{{ . }}" alt="achievement badge" loading="lazy">
-        {{ else }}
-        <div style="width:60px;height:60px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent)">&#127894;</div>
-        {{ end }}
-      </div>
-      <div class="ach-info">
-        <div class="ach-issuer">{{ .issuer }}</div>
-        <div class="ach-name">{{ .name }}</div>
-        <div class="ach-category">{{ .category }}</div>
-        <div class="ach-date">{{ .date }}</div>
-      </div>
-    </a>
-    {{ end }}
-  </div>
-</div>
-{{ end }}
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{- i18n "section_achievements" }} - Rudi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
+  {{/* CSS Hugo pipes */}}
+  {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <style>
+:root{
+  --bg:#0a0d12;--panel:#111722;--panel-2:#0d121a;--line:#1d2532;
+  --text:#c3cede;--text-strong:#e9f0f8;--muted:#75839a;
+  --accent:#5ad1a0;--warn:#e0a94a;--crit:#e06c75;
+  --mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+}
+html[data-theme="light"]{
+  --bg:#f6f8fa;--panel:#ffffff;--panel-2:#f0f3f6;--line:#d8dee6;
+  --text:#33404f;--text-strong:#111820;--muted:#66748a;
+  --accent:#0f8a63;--warn:#9a6b12;--crit:#b03a44;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);
+  font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
 
-{{ define "footer_sig" }}// Achievements - rudilab.my.id - Rudi - 2026{{ end }}
-{{ define "footer_back_href" }}/{{ end }}
-{{ define "footer_back_label" }}&larr; back to homepage{{ end }}
+/* nav styles in /assets/css/style.css */
+/* ── LAYOUT ── */
+.page{max-width:1160px;margin:0 auto;padding:0 24px 80px}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:36px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.page-header h1{font-size:clamp(18px,2.8vw,24px);color:var(--text-strong);font-weight:700;margin-bottom:4px}
+.page-header .sub{color:var(--muted);font-size:12.5px}
+.backlink{display:inline-block;color:var(--muted);font-size:12.5px;margin-bottom:20px}
+.backlink:hover{color:var(--accent);text-decoration:none}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--muted);pointer-events:none;width:15px;height:15px}
+#searchInput{
+  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text-strong);
+  font-family:var(--mono);font-size:13px;padding:10px 14px 10px 36px;
+  border-radius:7px;outline:none;transition:border-color .15s;
+}
+#searchInput::placeholder{color:var(--muted)}
+#searchInput:focus{border-color:var(--accent)}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filter-label{color:var(--muted);font-size:11.5px;letter-spacing:.08em;flex:none}
+.tag-btn{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:20px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tag-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tag-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:700}
+html[data-theme="light"] .tag-btn.active{color:#fff}
+
+/* ── RESULT INFO ── */
+.result-info{font-size:12px;color:var(--muted);margin-bottom:18px;min-height:18px}
+.result-info b{color:var(--accent)}
+
+/* ── GRID ── */
+.ach-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:18px;
+}
+@media(max-width:560px){.ach-grid{grid-template-columns:1fr}}
+
+/* ── CARD ── */
+.ach-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  transition:border-color .18s,transform .18s,box-shadow .18s;
+  position:relative;overflow:hidden;
+  text-decoration:none;color:inherit;cursor:pointer;
+}
+.ach-card::before{
+  content:'';position:absolute;inset:0;border-radius:12px;
+  background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),
+    color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.ach-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
+  transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.ach-card:hover::before{opacity:1}
+
+/* badge image */
+.badge-img{width:120px;height:120px;border-radius:50%;overflow:hidden;
+  border:2px solid var(--line);background:var(--panel-2);
+  display:flex;align-items:center;justify-content:center;flex:none;
+  transition:border-color .18s}
+.ach-card:hover .badge-img{border-color:var(--accent)}
+.badge-img img{width:100%;height:100%;object-fit:cover}
+.badge-initials{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:1px}
+
+/* card info */
+.ach-info{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:100%}
+.ach-issuer{font-size:12.5px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.ach-name{font-size:14px;font-weight:700;color:var(--text-strong);line-height:1.38}
+.ach-category{font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.ach-date{font-size:11px;color:var(--muted)}
+
+/* verify button */
+.ach-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;
+  border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.btn-verify{
+  display:inline-flex;align-items:center;gap:5px;
+  background:none;border:1px solid var(--line);color:var(--muted);
+  font-family:var(--mono);font-size:11.5px;padding:5px 12px;border-radius:6px;
+  cursor:pointer;transition:all .15s;text-decoration:none;
+}
+.btn-verify:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.btn-verify.primary{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
+  color:var(--accent)}
+.btn-verify.primary:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+
+/* empty state */
+.empty-state{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty-state span{display:block;font-size:28px;margin-bottom:12px;opacity:.4}
+
+/* scroll to top */
+.totop{position:fixed;right:20px;bottom:24px;width:38px;height:38px;border-radius:6px;
+  border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;
+  font-family:var(--mono);font-size:15px;display:none;align-items:center;justify-content:center;
+  transition:color .15s,border-color .15s}
+.totop:hover{color:var(--accent);border-color:var(--accent)}
+.totop.show{display:flex}
+
+/* footer */
+.foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:10px}
+.foot-sig{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.foot-back{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none}
+.foot-back:hover{color:var(--accent)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+{{ partial "topbar.html" . }}
+
+<div class="page">
+  <a class="backlink" href="/">← back to homepage</a>
+
+  <div class="page-header">
+    <h1>Achievements</h1>
+    <p class="sub">Certifications, badges, and digital credentials - verified achievements in cybersecurity and networking.</p>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search name, issuer, category..." autocomplete="off">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">FILTER:</span>
+      <div id="filterTags"></div>
+    </div>
+  </div>
+
+  <div class="result-info" id="resultInfo"></div>
+  <div class="ach-grid" id="achGrid"><div class="empty-state"><span>&#9203;</span>Loading...</div></div>
+</div>
+
+<button class="totop" id="totop" title="Back to top">&#8593;</button>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <span class="foot-sig">// Achievements - rudilab.my.id - Rudi - 2026</span>
+      <a class="foot-back" href="/">← back to homepage</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── helpers ── */
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function initials(name){
+  return (name||'').split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+}
+
+/* issuer display names (template: add vendor aliases here, keep data.json raw) */
+const ISSUER_LABEL = {
+  'Hack The Box': 'Hack The Box (HTB)',
+  'Hack The Box Academy': 'Hack The Box (HTB)'
+};
+function issuerLabel(a){
+  return ISSUER_LABEL[a.issuer] || a.issuer || '';
+}
+
+/* ── state ── */
+let ALL = [];
+let activeTag = null;
+let searchQ = '';
+
+/* ── filter tags ── */
+function buildFilterTags(items){
+  const counts = {};
+  items.forEach(a=>{
+    const tags = tagsOf(a);
+    tags.forEach(t=>{ counts[t]=(counts[t]||0)+1; });
+  });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const wrap = document.getElementById('filterTags');
+  wrap.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'tag-btn active';
+  all.textContent = 'All';
+  all.dataset.tag = '';
+  all.addEventListener('click', ()=>setTag(''));
+  wrap.appendChild(all);
+  sorted.forEach(([tag])=>{
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn';
+    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.addEventListener('click', ()=>setTag(tag));
+    wrap.appendChild(btn);
+  });
+}
+
+function tagsOf(a){
+  const tags = [];
+  if(a.category) tags.push(a.category);
+  if(a.issuer) tags.push(issuerLabel(a));
+  return tags;
+}
+
+function setTag(tag){
+  activeTag = tag || null;
+  document.querySelectorAll('#filterTags .tag-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tag === (tag||''));
+  });
+  render();
+}
+
+/* ── render ── */
+function render(){
+  const grid = document.getElementById('achGrid');
+  const q = searchQ.toLowerCase().trim();
+  const filtered = ALL.filter(a=>{
+    const matchTag = !activeTag || tagsOf(a).includes(activeTag);
+    const matchQ   = !q ||
+      (a.name||'').toLowerCase().includes(q) ||
+      (a.issuer||'').toLowerCase().includes(q) ||
+      (a.category||'').toLowerCase().includes(q);
+    return matchTag && matchQ;
+  });
+
+  const info = document.getElementById('resultInfo');
+  info.innerHTML = filtered.length === ALL.length
+    ? `Showing <b>${ALL.length}</b> achievement${ALL.length===1?'':'s'}`
+    : `Showing <b>${filtered.length}</b> of <b>${ALL.length}</b> achievements`;
+
+  if(!filtered.length){
+    grid.innerHTML = `<div class="empty-state"><span>&#128269;</span>No achievements match your filter.</div>`;
+    return;
+  }
+
+  const CREDLY_PROFILE = 'https://www.credly.com/users/asruddin-rudi.7dd0a056/badges/credly';
+
+  function cardHtml(a){
+    const href = a.credlyLink || a.credentialUrl || CREDLY_PROFILE;
+    const actionLabel = a.credlyLink ? 'View on Credly' : 'View Credential';
+    const badgeHtml = a.image
+      ? `<img src="${esc(a.image)}" alt="${esc(a.name)}">`
+      : `<span class="badge-initials">${esc(initials(a.name))}</span>`;
+    return `
+    <a class="ach-card" href="${esc(href)}" target="_blank" rel="noopener">
+      <div class="badge-img">${badgeHtml}</div>
+      <div class="ach-info">
+        <div class="ach-issuer">${esc(issuerLabel(a))}</div>
+        <div class="ach-name">${esc(a.name)}</div>
+        <div class="ach-category">${esc(a.category||'Badge')}</div>
+        ${a.date ? `<div class="ach-date">${esc(a.date)}</div>` : ''}
+      </div>
+      <div class="ach-actions">
+        <span class="btn-verify primary">&#10003; ${actionLabel} &#8599;</span>
+      </div>
+    </a>`;
+  }
+
+  grid.innerHTML = filtered.map(cardHtml).join('');
+
+  /* glow */
+  grid.querySelectorAll('.ach-card').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+      card.style.setProperty('--my', (e.clientY-r.top)+'px');
+    });
+  });
+}
+
+/* ── fetch ── */
+async function load(){
+  try{
+    const r = await fetch('/data/data.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('fetch failed');
+    const data = await r.json();
+    ALL = (data.achievements||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    buildFilterTags(ALL);
+    render();
+  } catch(e){
+    document.getElementById('achGrid').innerHTML=
+      '<div class="empty-state"><span>&#9888;&#65039;</span>Failed to load data.json.</div>';
+  }
+}
+
+/* ── search ── */
+document.getElementById('searchInput').addEventListener('input', e=>{
+  searchQ = e.target.value;
+  render();
+});
+
+/* ── scroll to top ── */
+const totop = document.getElementById('totop');
+window.addEventListener('scroll', ()=>totop.classList.toggle('show', scrollY>300));
+totop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+load();
+</script>
+{{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

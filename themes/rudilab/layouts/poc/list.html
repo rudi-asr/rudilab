@@ -1,44 +1,365 @@
-{{ define "main" }}
-{{ $data := .Site.Data.data }}
-<div class="page">
-  <div class="page-header">
-    <h1>{{ i18n "section_poc" }}</h1>
-    <p>{{ i18n "poc_subtitle" }}</p>
-  </div>
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="{{ i18n "search_placeholder" }}">
-  </div>
-  <div class="filter-tags">
-    <button class="active" data-filter="all">{{ i18n "filter_all" }}</button>
-    {{ $seen := slice }}
-    {{ range $data.poc }}
-      {{ $cat := .category }}
-      {{ if not (in $seen $cat) }}
-        {{ $seen = $seen | append $cat }}
-        <button data-filter="{{ $cat | lower }}">{{ $cat }}</button>
-      {{ end }}
-    {{ end }}
-  </div>
-  <div class="poc-grid">
-    {{ range $data.poc }}
-    <a class="card" href="{{ .pageUrl }}" data-card data-tag="{{ .category | lower }}">
-      <div class="card-meta">
-        <span class="card-date">{{ .date }}</span>
-        <span class="log-cat">{{ .category }}</span>
-        <span class="status Proven">{{ i18n "status_proven" }}</span>
-      </div>
-      <h3>{{ .title }}</h3>
-      <p>{{ .description | truncate 100 }}</p>
-      <div class="card-meta">
-        <span class="muted mono" style="font-size:11px">{{ i18n "target" }}: {{ .target }}</span>
-        <span class="muted mono" style="font-size:11px">{{ i18n "severity" }}: {{ .severity }}</span>
-      </div>
-    </a>
-    {{ end }}
-  </div>
-</div>
-{{ end }}
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{- i18n "section_poc" }} - Rudi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
+  {{/* CSS Hugo pipes */}}
+  {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <style>
+:root{
+  --bg:#0a0d12;--panel:#111722;--panel-2:#0d121a;--line:#1d2532;
+  --text:#c3cede;--text-strong:#e9f0f8;--muted:#75839a;
+  --accent:#5ad1a0;--warn:#e0a94a;--crit:#e06c75;
+  --mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+}
+html[data-theme="light"]{
+  --bg:#f6f8fa;--panel:#ffffff;--panel-2:#f0f3f6;--line:#d8dee6;
+  --text:#33404f;--text-strong:#111820;--muted:#66748a;
+  --accent:#0f8a63;--warn:#9a6b12;--crit:#b03a44;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);
+  font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
 
-{{ define "footer_sig" }}// PoC - rudilab.my.id - Rudi - 2026{{ end }}
-{{ define "footer_back_href" }}/{{ end }}
-{{ define "footer_back_label" }}&larr; back to homepage{{ end }}
+/* nav styles in /assets/css/style.css */
+/* ── LAYOUT ── */
+.page{max-width:1160px;margin:0 auto;padding:0 24px 80px}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:36px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.page-header h1{font-size:clamp(18px,2.8vw,24px);color:var(--text-strong);font-weight:700;margin-bottom:4px}
+.page-header .sub{color:var(--muted);font-size:12.5px}
+.backlink{display:inline-block;color:var(--muted);font-size:12.5px;margin-bottom:20px}
+.backlink:hover{color:var(--accent);text-decoration:none}
+
+/* ── TOOLBAR (search + filter) ── */
+.toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--muted);pointer-events:none;width:15px;height:15px}
+#searchInput{
+  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text-strong);
+  font-family:var(--mono);font-size:13px;padding:10px 14px 10px 36px;
+  border-radius:7px;outline:none;transition:border-color .15s;
+}
+#searchInput::placeholder{color:var(--muted)}
+#searchInput:focus{border-color:var(--accent)}
+
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filter-label{color:var(--muted);font-size:11.5px;letter-spacing:.08em;flex:none}
+.tag-btn{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:20px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tag-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tag-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:700}
+html[data-theme="light"] .tag-btn.active{color:#fff}
+
+/* ── RESULT INFO ── */
+.result-info{font-size:12px;color:var(--muted);margin-bottom:18px;min-height:18px}
+.result-info b{color:var(--accent)}
+
+/* ── GRID ── */
+.poc-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+@media(max-width:900px){.poc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.poc-grid{grid-template-columns:1fr}}
+
+/* ── CARD ── */
+.poc-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color .18s,transform .18s,box-shadow .18s;
+  text-decoration:none;color:inherit;cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.poc-card::before{
+  content:'';position:absolute;inset:0;border-radius:10px;
+  background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),
+    color-mix(in srgb,var(--accent) 6%,transparent),transparent 70%);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.poc-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
+  transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25);text-decoration:none}
+.poc-card:hover::before{opacity:1}
+.poc-card:hover .card-title{color:var(--accent)}
+
+/* card top row: severity badge + date */
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sev-badge{
+  font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:3px;border:1px solid;
+  letter-spacing:.06em;white-space:nowrap;flex:none;
+}
+.sev-critical{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 40%,transparent);background:color-mix(in srgb,var(--crit) 10%,transparent)}
+.sev-high{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+.sev-medium{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 28%,transparent);background:color-mix(in srgb,var(--warn) 6%,transparent)}
+.sev-low{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.card-date{font-size:11px;color:var(--muted)}
+
+/* card title */
+.card-title{font-size:14px;font-weight:700;color:var(--text-strong);
+  line-height:1.38;transition:color .15s;margin-top:2px}
+
+/* card description */
+.card-desc{font-size:12.5px;color:var(--text);line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  flex:1}
+
+/* card tags (category + OWASP) */
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.ctag{
+  font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  background:var(--panel-2);white-space:nowrap;
+}
+.ctag:hover{border-color:var(--accent);color:var(--accent)}
+.ctag.active{border-color:var(--accent);color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 10%,transparent)}
+
+/* card footer */
+.card-footer{display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.card-key{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.card-arrow{color:var(--muted);font-size:14px;transition:color .15s,transform .15s}
+.poc-card:hover .card-arrow{color:var(--accent);transform:translateX(3px)}
+
+/* empty state */
+.empty-state{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty-state span{display:block;font-size:28px;margin-bottom:12px;opacity:.4}
+
+/* scroll to top */
+.totop{position:fixed;right:20px;bottom:24px;width:38px;height:38px;border-radius:6px;
+  border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;
+  font-family:var(--mono);font-size:15px;display:none;align-items:center;justify-content:center;
+  transition:color .15s,border-color .15s}
+.totop:hover{color:var(--accent);border-color:var(--accent)}
+.totop.show{display:flex}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+{{ partial "topbar.html" . }}
+
+<div class="page">
+  <a class="backlink" href="/">← back to homepage</a>
+
+  <div class="page-header">
+    <h1>PoC Write-ups</h1>
+    <p class="sub">Vulnerability research case studies - click a tag to filter, or search by title / category.</p>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search title, category, description…" autocomplete="off">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">FILTER:</span>
+      <div id="filterTags"></div>
+    </div>
+  </div>
+
+  <div class="result-info" id="resultInfo"></div>
+  <div class="poc-grid" id="pocGrid"><div class="empty-state"><span>⏳</span>Loading…</div></div>
+</div>
+
+<button class="totop" id="totop" title="Back to top">↑</button>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <span class="foot-sig">// PoC - rudilab.my.id - Rudi - 2026</span>
+      <a class="foot-back" href="/">← back to homepage</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+
+/* ── helpers ── */
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function sevClass(sev){
+  if(!sev) return 'low';
+  const s=sev.toLowerCase();
+  if(s.includes('critical')) return 'critical';
+  if(s.includes('high'))     return 'high';
+  if(s.includes('medium'))   return 'medium';
+  return 'low';
+}
+function sevLabel(sev){
+  if(!sev) return '-';
+  const s=sev.toLowerCase();
+  if(s.includes('critical')) return 'CRITICAL';
+  if(s.includes('high'))     return 'HIGH';
+  if(s.includes('medium'))   return 'MEDIUM';
+  return 'LOW';
+}
+
+/* ── state ── */
+let ALL_POC = [];
+let activeTag = null;
+let searchQ   = '';
+
+/* ── build tag list from data ── */
+function buildFilterTags(poc){
+  const counts = {};
+  poc.forEach(p=>{
+    const tags = tagsOf(p);
+    tags.forEach(t=>{ counts[t]=(counts[t]||0)+1; });
+  });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const wrap = document.getElementById('filterTags');
+  wrap.innerHTML = '';
+
+  // "All" button
+  const all = document.createElement('button');
+  all.className = 'tag-btn active';
+  all.textContent = 'All';
+  all.dataset.tag = '';
+  all.addEventListener('click', ()=>setTag(''));
+  wrap.appendChild(all);
+
+  sorted.forEach(([tag])=>{
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn';
+    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.addEventListener('click', ()=>setTag(tag));
+    wrap.appendChild(btn);
+  });
+}
+
+function tagsOf(p){
+  const tags = [];
+  if(p.category) tags.push(p.category);
+  // derive severity word as tag
+  const sw = sevLabel(p.severity);
+  if(sw && sw!=='-') tags.push(sw);
+  return tags;
+}
+
+function setTag(tag){
+  activeTag = tag || null;
+  // update button active states
+  document.querySelectorAll('#filterTags .tag-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tag === (tag||''));
+  });
+  render();
+}
+
+/* ── render grid ── */
+function render(){
+  const grid = document.getElementById('pocGrid');
+  const q = searchQ.toLowerCase().trim();
+
+  const filtered = ALL_POC.filter(p=>{
+    const matchTag = !activeTag || tagsOf(p).includes(activeTag);
+    const matchQ   = !q ||
+      (p.title||'').toLowerCase().includes(q) ||
+      (p.category||'').toLowerCase().includes(q) ||
+      (p.description||'').toLowerCase().includes(q) ||
+      (p.key||'').toLowerCase().includes(q);
+    return matchTag && matchQ;
+  });
+
+  // update result info
+  const info = document.getElementById('resultInfo');
+  info.innerHTML = filtered.length === ALL_POC.length
+    ? `Showing <b>${ALL_POC.length}</b> write-up${ALL_POC.length===1?'':'s'}`
+    : `Showing <b>${filtered.length}</b> of <b>${ALL_POC.length}</b> write-ups`;
+
+  if(!filtered.length){
+    grid.innerHTML = `<div class="empty-state"><span>🔍</span>No write-ups match your filter.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p=>{
+    const href = p.pageUrl ? p.pageUrl : '#';
+    const sc   = sevClass(p.severity);
+    const sl   = sevLabel(p.severity);
+    const tags = tagsOf(p);
+    return `
+    <a class="poc-card" href="${esc(href)}" ${!p.pageUrl?'style="pointer-events:none;opacity:.55;"':''}>
+      <div class="card-top">
+        <span class="sev-badge sev-${sc}">${sl}</span>
+        <span class="card-date">${esc(p.date)}</span>
+      </div>
+      <div class="card-title">${esc(p.title)}</div>
+      <div class="card-desc">${esc(p.description)}</div>
+      <div class="card-tags">${tags.map(t=>`
+        <span class="ctag${activeTag===t?' active':''}" data-tag="${esc(t)}">${esc(t)}</span>`
+      ).join('')}</div>
+      <div class="card-footer">
+        <span class="card-key">${esc(p.key.toUpperCase())}</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>`;
+  }).join('');
+
+  // card tag clicks (stop propagation so card link doesn't fire)
+  grid.querySelectorAll('.ctag').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const t = el.dataset.tag;
+      setTag(activeTag===t ? '' : t);
+    });
+  });
+
+  // glow follow mouse per card
+  grid.querySelectorAll('.poc-card').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+      card.style.setProperty('--my', (e.clientY-r.top)+'px');
+    });
+  });
+}
+
+/* ── fetch data ── */
+async function load(){
+  try{
+    const r = await fetch('/data/data.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('fetch failed');
+    const data = await r.json();
+    ALL_POC = (data.poc||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    buildFilterTags(ALL_POC);
+    render();
+  } catch(e){
+    document.getElementById('pocGrid').innerHTML=
+      '<div class="empty-state"><span>⚠️</span>Failed to load data.json.</div>';
+  }
+}
+
+/* ── search ── */
+document.getElementById('searchInput').addEventListener('input', e=>{
+  searchQ = e.target.value;
+  render();
+});
+
+load();
+</script>
+{{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

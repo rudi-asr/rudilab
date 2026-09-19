@@ -1,5 +1,5 @@
 <div class="topbar">
-  <div class="wrap">
+  <div class="topbar-inner">
     <a class="brand" href="{{ "/" | relLangURL }}" aria-label="Go to homepage">
       <svg class="brand-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect width="32" height="32" rx="6" fill="#0a0d12"/>
@@ -10,7 +10,6 @@
       <b>RUDI</b> <span class="brand-slug">// sec-research.log</span>
     </a>
     <div class="top-right">
-      {{/* Nav links - collapsed di mobile */}}
       <nav class="nav" id="mainNav">
         <a href="{{ "/#about" | absLangURL }}">{{ i18n "nav_about" }}</a>
         <a href="{{ "/poc/" | relLangURL }}">{{ i18n "nav_poc" }}</a>
@@ -20,21 +19,18 @@
         <a href="{{ "/#certs" | absLangURL }}">{{ i18n "nav_certifications" }}</a>
         <a href="{{ "/#books" | absLangURL }}">{{ i18n "nav_books" }}</a>
       </nav>
-
-      {{/* Lang toggle - SELALU tampil, di luar nav */}}
       <div class="lang-wrap">
         {{ range .AllTranslations }}
           <a href="{{ .RelPermalink }}" class="lang-btn{{ if eq . $.Page }} active{{ end }}">{{ .Language.Params.langFlag }}</a>
         {{ end }}
         {{ if eq (len .AllTranslations) 0 }}
           {{ if eq .Language.Lang "en" }}
-            <span class="lang-btn dim">ID</span>
+            <span class="lang-btn dim" title="ID belum tersedia">ID</span>
           {{ else }}
             <a href="{{ replace .RelPermalink "/id/" "/" }}" class="lang-btn">EN</a>
           {{ end }}
         {{ end }}
       </div>
-
       <button class="nav-toggle" id="navToggle" title="Menu" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
       <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#9728;</button>
     </div>

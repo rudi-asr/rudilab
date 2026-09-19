@@ -1,193 +1,574 @@
-{{ define "main" }}
-{{ $data := .Site.Data.data }}
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rudi - Offensive Security | Penetration Tester | Infrastructure Security</title>
+  <meta name="description" content="{{ i18n `hero_role` }}">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/favicon/favicon-128.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <style>
+  :root{
+    --bg:#0d1320; --bg-2:#10182a; --panel:#151f34; --panel-2:#1b2740;
+    --line:#26324a; --text:#e7ecf6; --muted:#9fb0c3;
+    --accent:#d9a441; --accent-2:#4f8fef; --ok:#5fbf8f;
+    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif; --disp:'Space Grotesk',sans-serif;
+  }
+  [data-theme="light"]{
+    --bg:#f8f9fc; --bg-2:#eef1f7; --panel:#ffffff; --panel-2:#f0f3f9;
+    --line:#c2cbdc; --text:#000000; --muted:#1a2a45;
+    --accent:#1a3a6e; --accent-2:#1255b8; --ok:#0d5c30;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(79,143,239,0.08), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(217,164,65,0.06), transparent 60%), var(--bg);
+    color:var(--text); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased;
+    transition:background .25s;
+  }
+  [data-theme="light"] body{
+    background: var(--bg);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important;}}
+  /* grid-overlay in /assets/css/style.css */
+  a{color:var(--accent-2);}
+  .wrap{max-width:960px; margin:0 auto; padding:0 28px; position:relative; z-index:1;}
+
+  /* nav styles in /assets/css/style.css */
+  #hdr{position:sticky;top:0;z-index:20;}
+
+  .hero{padding:88px 0 60px; position:relative;}
+  .hero-id{text-align:center; display:flex; flex-direction:column; align-items:center;}
+  .hero-photo{margin:0 0 22px;}
+  .hero-photo img{width:220px; height:auto; display:block; border-radius:10px;
+    border:1px solid var(--line); background:var(--panel); object-fit:cover; aspect-ratio:3/4;}
+  .hero-id .field-row{grid-template-columns:auto auto; justify-content:center; gap:4px 10px;}
+  .hero-id .lede{margin-left:auto; margin-right:auto;}
+  @media (max-width:640px){
+    .hero-id .field-row{grid-template-columns:1fr; gap:0; text-align:center;}
+  }
+  .capture-frame{border:1px solid var(--line); background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color .2s;}
+  .capture-frame:hover{border-color:var(--accent-2);}
+  .capture-head{display:flex; align-items:center; justify-content:space-between; padding:10px 16px;
+    border-bottom:1px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--muted);}
+  .capture-head .hint{color:var(--accent-2);}
+  .capture-body{padding:26px 24px 30px;}
+  .field-row{display:grid; grid-template-columns:100px 1fr; gap:4px 14px; font-family:var(--mono);
+    font-size:12.5px; color:var(--muted); margin-bottom:4px;}
+  .field-row b{color:var(--ok); font-weight:500;}
+  .hero h1{font-family:var(--disp); font-weight:700; font-size:clamp(28px,5.2vw,42px); margin:22px 0 6px; line-height:1.1;}
+  .hero .role{font-family:var(--mono); font-size:14px; color:var(--accent); margin-bottom:16px;}
+  .hero p.lede{max-width:620px; color:var(--muted); font-size:15.5px; margin:0 0 20px;}
+
+  section{padding:54px 0; border-top:1px solid var(--line);}
+  .sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; flex-wrap:wrap;}
+  .sec-head-l{display:flex; align-items:baseline; gap:12px;}
+  .sec-tag{font-family:var(--mono); font-size:12px; color:var(--accent-2);}
+  .sec-head h2{font-family:var(--disp); font-size:22px; margin:0; font-weight:600;}
+  .sec-sub{color:var(--muted); font-size:13.5px; font-family:var(--mono);}
+
+  .bg-strip{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; padding-top:18px; border-top:1px dashed var(--line);}
+  .bg-strip .lbl{font-family:var(--mono); font-size:11px; color:#ffffff; font-weight:700; text-transform:uppercase; letter-spacing:.05em; width:100%; margin-bottom:6px;}
+  [data-theme="light"] .bg-strip .lbl{color:#1a2a45;}
+  .tag{font-family:var(--mono); font-size:11.5px; padding:5px 10px; border:1px solid var(--line);
+    border-radius:20px; color:var(--muted);}
+
+  .log{border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .log-entry{display:grid; grid-template-columns:96px 1fr auto; gap:16px; padding:18px 20px;
+    border-bottom:1px solid var(--line); align-items:start;}
+  .log-entry:last-child{border-bottom:none;}
+  .log-entry.clickable{cursor:pointer; transition:border-color .15s;}
+  .log-entry.clickable:hover{border-bottom-color:var(--accent-2);}
+  .log-entry.clickable:hover .log-main h3{color:var(--accent);}
+  .log-ts{font-family:var(--mono); font-size:12px; color:var(--muted); padding-top:2px;}
+  .log-main h3{font-size:15px; margin:0 0 5px; font-weight:600; color:var(--text); transition:color .15s;}
+  .log-main h3 a{color:inherit; text-decoration:none;}
+  .log-main h3 a:hover{color:var(--accent); text-decoration:underline;}
+  .log-main p{margin:0 0 8px; color:var(--muted); font-size:13.5px;}
+  .log-main .r-authors{font-size:12px; color:var(--muted); margin:0 0 3px;}
+  .log-main .r-journal{font-size:12px; color:var(--accent-2); font-family:var(--mono); margin:0 0 6px;}
+  .log-main .meta{font-family:var(--mono); font-size:11.5px; color:var(--accent-2); display:flex; gap:14px; flex-wrap:wrap; align-items:center;}
+  .log-main .meta .hint{color:var(--accent-2);}
+  .meta button.linklike{background:none; border:none; padding:0; font-family:var(--mono); font-size:11.5px;
+    color:var(--accent-2); cursor:pointer; text-decoration:underline;}
+  button.linklike{background:none; border:none; padding:0; font-family:var(--mono); font-size:11.5px;
+    color:var(--accent-2); cursor:pointer; text-decoration:underline;}
+  .status{font-family:var(--mono); font-size:10.5px; padding:4px 9px; border-radius:20px; height:fit-content; white-space:nowrap;}
+  .status.done{background:rgba(95,191,143,0.12); color:var(--ok); border:1px solid rgba(95,191,143,0.3);}
+  .status.Proven{background:rgba(95,191,143,0.12); color:var(--ok); border:1px solid rgba(95,191,143,0.3); font-weight:600;}
+  .status.review{background:rgba(217,164,65,0.12); color:var(--accent); border:1px solid rgba(217,164,65,0.3);}
+  .status.demo{background:rgba(139,151,179,0.12); color:var(--muted); border:1px solid var(--line);}
+  @media (max-width:640px){.log-entry{grid-template-columns:1fr;} .log-ts{padding-top:0;}}
+
+  .cert-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:700px){.cert-grid{grid-template-columns:1fr;}}
+  .cert-card{display:flex; gap:14px; align-items:flex-start; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:16px;}
+  .cert-badge{width:46px; height:46px; border-radius:8px; flex:none; display:flex; align-items:center; justify-content:center;
+    font-family:var(--disp); font-weight:700; font-size:14px; color:#fff; background:var(--accent);}
+  .cert-info h3{margin:0 0 3px; font-size:14.5px; font-weight:600;}
+  .cert-info .issuer{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-bottom:6px;}
+  .cert-info .id{font-family:var(--mono); font-size:11px; color:var(--muted);}
+  .cert-info .verify{font-family:var(--mono); font-size:11px; margin-top:4px; display:inline-block;}
+  .cert-preview-link{background:none; border:0; padding:0; color:var(--accent-2); cursor:pointer; text-decoration:underline;}
+  .cert-modal{position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    padding:20px; background:rgba(0,0,0,.72);}
+  .cert-modal[hidden]{display:none;}
+  .cert-modal-card{width:min(900px,100%); height:min(90vh,900px); display:flex; flex-direction:column;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .cert-modal-head{display:flex; align-items:center; justify-content:space-between; padding:10px 14px;
+    border-bottom:1px solid var(--line); font-family:var(--mono); font-size:12px; color:var(--text);}
+  .cert-modal-head .theme-btn{font-size:20px;}
+  .cert-preview{width:100%; flex:1; overflow:auto; padding:18px; background:#fff; text-align:center;}
+  .cert-preview img{max-width:100%; height:auto; box-shadow:0 2px 12px rgba(0,0,0,.18);}
+  .cert-preview p{font-family:var(--mono); font-size:12px; color:#5b6a85;}
+
+  .book-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  @media (max-width:700px){.book-grid{grid-template-columns:1fr;}}
+  .book-card{display:flex; gap:16px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px;}
+  .book-cover{width:78px; height:104px; flex:none; border-radius:6px; background:linear-gradient(160deg, var(--panel-2), var(--bg-2));
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center; padding:8px; text-align:center;}
+  .book-cover span{font-family:var(--disp); font-size:11px; font-weight:600; color:var(--muted); line-height:1.3;}
+  .book-info .cat{font-family:var(--mono); font-size:10.5px; color:var(--accent); text-transform:uppercase; letter-spacing:.04em;}
+  .book-info h3{font-size:14.5px; margin:6px 0 5px; font-weight:600;}
+  .book-info p{margin:0 0 8px; font-size:13px; color:var(--muted);}
+  .book-info a{font-family:var(--mono); font-size:11.5px;}
+
+  .btn{display:inline-block; padding:9px 16px; border-radius:8px; background:var(--accent-2); color:#fff;
+    text-decoration:none; font-family:var(--mono); font-size:12.5px; border:1px solid transparent; cursor:pointer;}
+  .btn.ghost{background:none; border:1px solid var(--line); color:var(--muted);}
+  .btn.ghost:hover{color:var(--accent); border-color:var(--accent);}
+
+  .detail-grid{margin-bottom:20px;}
+  .detail-desc{font-size:15px; color:var(--text); max-width:680px; margin:0 0 20px;}
+  .detail-block{border-top:1px dashed var(--line); padding-top:16px; margin-top:16px;}
+  .detail-block .lbl{font-family:var(--mono); font-size:11px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.05em; display:block; margin-bottom:6px;}
+  .detail-block p{margin:0; color:var(--muted); font-size:14px;}
+  .shot-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;}
+  .shot-grid img{width:100%; border-radius:8px; border:1px solid var(--line); cursor:zoom-in;}
+  .detail-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px;}
+
+  footer{padding:44px 0 60px; border-top:1px solid var(--line);}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;}
+  .foot-row .sig{font-family:var(--mono); font-size:12px; color:var(--muted);}
+  .foot-row .sig a{color:var(--muted); text-decoration:underline;}
+
+  .fab-stack{position:fixed; right:22px; bottom:22px; z-index:30; display:flex; flex-direction:column; gap:10px; align-items:flex-end;}
+  .fab{width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); cursor:pointer; text-decoration:none; box-shadow:0 6px 18px rgba(0,0,0,0.35);}
+  .fab-top{background:var(--panel); color:var(--text); font-size:18px; opacity:0; pointer-events:none; transform:translateY(8px);
+    transition:opacity .2s, transform .2s;}
+  .fab-top.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .fab-wa{background:#25D366; color:#0d1320; font-size:22px;}
+</style>
+</head>
+<body>
+
+{{ partial "topbar.html" . }}
 
 <div class="wrap">
 
-  {{/* ── HERO - capture-frame style (sama persis dengan site lama) ── */}}
-  <section class="hero" id="top" style="border-top:none;">
-    <div class="capture-frame" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
-      <div class="capture-head">
-        <span>capture - identity.pcap</span>
-        <span class="hint">→ view focus</span>
-      </div>
-      <div class="capture-body">
-        <div class="hero-id">
-          <figure class="hero-photo">
-            <img src="/images/fotodiri/foto.jpg" alt="Foto Rudi" width="472" height="685" loading="eager">
-          </figure>
-          <div class="field-row"><span>SRC</span><span><b>Rudi</b></span></div>
-          <div class="field-row"><span>BASE</span><span>Jakarta, Indonesia</span></div>
-          <div class="field-row"><span>STATUS</span><span><b>ACTIVE</b> - {{ i18n "hero_role" }}</span></div>
-          <h1>{{ i18n "hero_h1" }}</h1>
-          <div class="role">{{ i18n "hero_role" }}</div>
-          <p class="lede">{{ i18n "hero_lede" }}</p>
+  <main id="home">
+    <section class="hero" id="top" style="border-top:none;">
+      <div class="capture-frame" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+        <div class="capture-head">
+          <span>capture - identity.pcap</span>
+          <span class="hint">→ view focus</span>
         </div>
-      </div>
-    </div>
-  </section>
-
-  {{/* ── ABOUT ── */}}
-  <section id="about">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">01</span><h2>{{ i18n "nav_about" }}</h2></div>
-    </div>
-    <p style="color:var(--muted); font-size:15px; text-align:justify; hyphens:auto;">
-      {{ i18n "about_p1" | safeHTML }}
-    </p>
-    <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
-      {{ i18n "about_p2" | safeHTML }}
-    </p>
-    <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
-      {{ i18n "about_p3" | safeHTML }}
-    </p>
-    <div class="bg-strip" style="margin-top:28px;">
-      <span class="lbl"><b>{{ i18n "tools_label" }}</b></span>
-      <span class="tag">Nmap</span><span class="tag">Burp Suite</span><span class="tag">OWASP ZAP</span>
-      <span class="tag">Nuclei</span><span class="tag">Nessus / OpenVAS</span><span class="tag">Wireshark</span>
-      <span class="tag">tcpdump</span><span class="tag">SQLmap</span><span class="tag">Metasploit</span>
-      <span class="tag">Autopsy</span>
-    </div>
-    <div class="bg-strip">
-      <span class="lbl"><b>{{ i18n "capabilities_label" }}</b></span>
-      <span class="tag">Vulnerability Assessment</span><span class="tag">Penetration Testing</span>
-      <span class="tag">Security Research</span><span class="tag">Digital Forensics</span>
-      <span class="tag">Incident Response</span><span class="tag">Network Security</span>
-      <span class="tag">System Hardening</span><span class="tag">Web Application Security</span>
-      <span class="tag">Cloud Security</span><span class="tag">Container Security</span>
-    </div>
-    <div class="bg-strip">
-      <span class="lbl"><b>{{ i18n "environments_label" }}</b></span>
-      <span class="tag">Cisco</span><span class="tag">MikroTik</span><span class="tag">Juniper</span>
-      <span class="tag">Fortinet (FortiGate)</span><span class="tag">VMware</span><span class="tag">Proxmox</span>
-      <span class="tag">Docker / Kubernetes</span><span class="tag">Linux / Windows Server</span>
-      <span class="tag">Oracle / PostgreSQL</span><span class="tag">AWS / GCP</span>
-    </div>
-  </section>
-
-  {{/* ── PROOF OF CONCEPT ── */}}
-  <section id="poc">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">02</span><h2>{{ i18n "section_poc" }}</h2></div>
-      <a class="sec-sub" href="{{ "/poc/" | relLangURL }}" style="text-decoration:none;">{{ i18n "view_all" }} &rarr;</a>
-    </div>
-    <div class="log">
-      {{ $pocs := sort $data.poc "date" "desc" }}
-      {{ range first 3 $pocs }}
-      <div class="log-entry clickable" onclick="window.location='{{ .pageUrl }}'">
-        <div class="log-ts">{{ .date }}</div>
-        <div class="log-main">
-          <h3>{{ .title }}</h3>
-          <p>{{ .description | truncate 120 }}</p>
-          <div class="meta">
-            <span>{{ .category }}</span>
-            <span>{{ i18n "severity" }}: {{ .severity }}</span>
+        <div class="capture-body">
+          <div class="hero-id">
+            <figure class="hero-photo">
+              <img src="images/fotodiri/foto.jpg"
+                   alt="Foto Rudi"
+                   width="472" height="685" loading="eager">
+            </figure>
+            <div class="field-row"><span>SRC</span><span><b>Rudi</b></span></div>
+            <div class="field-row"><span>BASE</span><span>Jakarta, Indonesia</span></div>
+            <div class="field-row"><span>STATUS</span><span><b>ACTIVE</b> - Offensive Security | Penetration Tester | Infrastructure Security</span></div>
+            <h1>Offensive Security | Penetration Tester | Infrastructure Security</h1>
+            <div class="role">Offensive Security | Penetration Tester | Infrastructure Security</div>
+            <p class="lede">I research and prove security vulnerabilities. My work spans security research, vulnerability assessment, and penetration testing.</p>
           </div>
         </div>
-        <span class="status Proven">{{ i18n "status_proven" }}</span>
       </div>
-      {{ end }}
+    </section>
+
+    <section id="about">
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">01</span><h2>About</h2></div></div>
+      <p style="color:var(--muted); font-size:15px; text-align:justify; hyphens:auto;">
+        My core identity is <b style="color:var(--text)">security research</b> -
+        finding, validating, and explaining security issues with a focus on deep technical understanding.
+        Available for <b style="color:var(--text)">remote engagements globally</b>, with async-friendly reporting.
+      </p>
+      <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
+        My security work is grounded on <b style="color:var(--text)">10+ years hands-on inside enterprise infrastructure</b> -
+        the same networks, servers, virtualization stacks, cloud tenants, and DevOps pipelines
+        I now assess for weaknesses. That background is a deliberate advantage: I can read a
+        target the way it was actually built, spot the misconfigurations that plain tool scans
+        miss, and produce write-ups that reproduce cleanly on both a lab VM and the client's own environment.
+      </p>
+      <p style="color:var(--muted); font-size:15px; margin-top:14px; text-align:justify; hyphens:auto;">
+        <b style="color:var(--text)">Thesis:</b> <em>Analysis of network attacks against a server-based
+        intrusion detection system, using the generic forensics framework methodology.</em>
+        Backed further by certifications including
+        <b style="color:var(--text)">CEH, CCNA, Network Security Expert (NSE), and VMware</b>
+        (full list in <a href="#certs">Certifications</a>).
+      </p>
+      <div class="bg-strip" style="margin-top:28px;">
+        <span class="lbl"><b>Security Research Tools</b></span>
+        <span class="tag">Nmap</span>
+        <span class="tag">Burp Suite</span>
+        <span class="tag">OWASP ZAP</span>
+        <span class="tag">Nuclei</span>
+        <span class="tag">Nessus / OpenVAS</span>
+        <span class="tag">Wireshark</span>
+        <span class="tag">tcpdump</span>
+        <span class="tag">SQLmap</span>
+        <span class="tag">Metasploit</span>
+        <span class="tag">Autopsy</span>
+      </div>
+      <div class="bg-strip">
+        <span class="lbl"><b>Security capabilities</b></span>
+        <span class="tag">Vulnerability Assessment</span>
+        <span class="tag">Penetration Testing</span>
+        <span class="tag">Security Research</span>
+        <span class="tag">Digital Forensics</span>
+        <span class="tag">Incident Response</span>
+        <span class="tag">Network Security</span>
+        <span class="tag">System Hardening</span>
+        <span class="tag">Web Application Security</span>
+        <span class="tag">Cloud Security</span>
+        <span class="tag">Container Security</span>
+      </div>
+      <div class="bg-strip">
+        <span class="lbl"><b>Environments I've assessed / hardened</b></span>
+        <span class="tag">Cisco</span>
+        <span class="tag">MikroTik</span>
+        <span class="tag">Juniper</span>
+        <span class="tag">Fortinet (FortiGate)</span>
+        <span class="tag">VMware</span>
+        <span class="tag">Proxmox</span>
+        <span class="tag">Docker / Kubernetes</span>
+        <span class="tag">Linux / Windows Server</span>
+        <span class="tag">Oracle / PostgreSQL</span>
+        <span class="tag">AWS / GCP</span>
+      </div>
+    </section>
+
+    <section id="poc">
+      <div class="sec-head">
+        <div class="sec-head-l"><span class="sec-tag">02</span><h2>Proof of Concept (PoC)</h2></div>
+        <span class="sec-sub">3 latest - click to open write-up</span>
+      </div>
+      <div class="log" id="poc-log"></div>
+      <div style="text-align:center; padding:20px 0 4px;">
+        <a class="btn ghost" href="poc/collect-poc.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
+          View all PoC write-ups →
+        </a>
+      </div>
+    </section>
+
+    <section id="lab">
+      <div class="sec-head">
+        <div class="sec-head-l"><span class="sec-tag">03</span><h2>Lab</h2></div>
+        <span class="sec-sub">3 latest - step-by-step lab guides</span>
+      </div>
+      <div class="log" id="lab-log"></div>
+      <div style="text-align:center; padding:20px 0 4px;">
+        <a class="btn ghost" href="/lab/collect-lab.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
+          View all Homelab guides →
+        </a>
+      </div>
+    </section>
+
+    <section id="research">
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">04</span><h2>Research &amp; Publications</h2></div><span class="sec-sub">3 latest published</span></div>
+      <div class="log" id="research-log"></div>
+      <div style="text-align:center; padding:20px 0 4px;">
+        <a class="btn ghost" href="research/collect-research.html" style="font-family:var(--mono);font-size:13px;letter-spacing:.04em;">
+          View all Research &amp; Publications →
+        </a>
+      </div>
+    </section>
+
+    <section id="certs">
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">05</span><h2>Certifications</h2></div></div>
+      <div class="cert-grid" id="cert-grid"></div>
+    </section>
+
+    <section id="books">
+      <div class="sec-head"><div class="sec-head-l"><span class="sec-tag">06</span><h2>Books</h2></div></div>
+      <div class="book-grid" id="book-grid"></div>
+    </section>
+  </main>
+
+  <section id="poc-detail" style="display:none;">
+    <div class="sec-head">
+      <div class="sec-head-l"><span class="sec-tag">POC</span><h2 id="poc-detail-title"></h2></div>
+      <span class="sec-sub"><button class="linklike" onclick="location.hash='#poc'">← back to PoC list</button></span>
     </div>
+    <div id="poc-detail-body"></div>
   </section>
 
-  {{/* ── LAB ── */}}
-  <section id="lab">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">03</span><h2>{{ i18n "section_lab" }}</h2></div>
-      <a class="sec-sub" href="{{ "/lab/" | relLangURL }}" style="text-decoration:none;">{{ i18n "view_all" }} &rarr;</a>
-    </div>
-    <div class="log">
-      {{ $labs := sort $data.homelab "date" "desc" }}
-      {{ range first 3 $labs }}
-      <div class="log-entry clickable" onclick="window.location='{{ .pageUrl }}'">
-        <div class="log-ts">{{ .date }}</div>
-        <div class="log-main">
-          <h3>{{ .title }}</h3>
-          <p>{{ .description | truncate 120 }}</p>
-          <div class="meta">
-            <span>{{ .category }}</span>
-            {{ with .difficulty }}<span>{{ . }}</span>{{ end }}
-          </div>
-        </div>
-        <span class="status done">Lab</span>
-      </div>
-      {{ end }}
-    </div>
-  </section>
-
-  {{/* ── RESEARCH ── */}}
-  <section id="research">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">04</span><h2>{{ i18n "section_research" }}</h2></div>
-      <a class="sec-sub" href="{{ "/research/" | relLangURL }}" style="text-decoration:none;">{{ i18n "view_all" }} &rarr;</a>
-    </div>
-    <div class="log">
-      {{ $published := slice }}
-      {{ range $data.research }}{{ if eq .status "done" }}{{ $published = $published | append . }}{{ end }}{{ end }}
-      {{ $sorted := sort $published "date" "desc" }}
-      {{ range first 3 $sorted }}
-      <div class="log-entry {{ if .driveLink }}clickable{{ end }}" {{ if .driveLink }}onclick="window.open('{{ .driveLink }}','_blank')"{{ end }}>
-        <div class="log-ts">{{ .date }}</div>
-        <div class="log-main">
-          <h3>{{ if .driveLink }}<a href="{{ .driveLink }}" target="_blank" rel="noopener">{{ .full_title | default .title }}</a>{{ else }}{{ .full_title | default .title }}{{ end }}</h3>
-          <p class="r-authors">{{ .authors }}</p>
-          <p class="r-journal">{{ .journal_name | default .journal }}{{ with .volume }} - {{ . }}{{ end }}</p>
-          <div class="meta">
-            {{ with .doi }}<a href="https://doi.org/{{ . }}" target="_blank" rel="noopener" style="color:var(--accent-2)">DOI &nearr;</a>{{ end }}
-            {{ with .driveLink }}<a href="{{ . }}" target="_blank" rel="noopener" style="color:var(--accent-2)">{{ i18n "view_document" }} &nearr;</a>{{ end }}
-          </div>
-        </div>
-        <span class="status done">{{ i18n "status_published" }}</span>
-      </div>
-      {{ end }}
-    </div>
-  </section>
-
-  {{/* ── CERTIFICATIONS ── */}}
-  <section id="certs">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">05</span><h2>{{ i18n "section_certifications" }}</h2></div>
-    </div>
-    <div class="cert-grid">
-      {{ range $data.certs }}
-      <div class="cert-card">
-        <div class="cert-badge">{{ .issuer | upper | truncate 3 "" }}</div>
-        <div class="cert-info">
-          <h3>{{ .name }}</h3>
-          <div class="issuer">{{ .issuer }}</div>
-          {{ with .id }}<div class="id">ID: {{ . }}</div>{{ end }}
-          {{ with .verifyLink }}<a class="verify" href="{{ . }}" target="_blank" rel="noopener">Verify &nearr;</a>{{ end }}
-        </div>
-      </div>
-      {{ end }}
-    </div>
-  </section>
-
-  {{/* ── BOOKS ── */}}
-  <section id="books">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-tag">06</span><h2>{{ i18n "section_books" }}</h2></div>
-    </div>
-    <div class="book-grid">
-      {{ range $data.books }}
-      <div class="book-card">
-        <div class="book-cover">
-          {{ if .cover }}
-          <img src="{{ .cover }}" alt="{{ .title }}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">
-          {{ else }}
-          <span>{{ .title }}</span>
-          {{ end }}
-        </div>
-        <div class="book-info">
-          <div class="cat">{{ .category }}</div>
-          <h3>{{ .title }}</h3>
-          <p>{{ .note }}</p>
-          {{ with .isbn }}<p style="font-family:var(--mono);font-size:11px;color:var(--muted)">ISBN {{ . }}</p>{{ end }}
-          {{ with .link }}<a href="{{ . }}" target="_blank" rel="noopener">{{ i18n "view_document" }} &nearr;</a>{{ end }}
-        </div>
-      </div>
-      {{ end }}
-    </div>
-  </section>
+  <div id="ftr"></div>
 
 </div>
-{{ end }}
+
+<div class="fab-stack">
+  <div class="fab fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</div>
+  <a class="fab fab-wa" id="fabWa" href="#" target="_blank" rel="noopener" title="Chat on WhatsApp">☎</a>
+</div>
+
+<div class="cert-modal" id="certModal" hidden role="dialog" aria-modal="true" aria-labelledby="certModalTitle">
+  <div class="cert-modal-card">
+    <div class="cert-modal-head">
+      <strong id="certModalTitle">Certificate preview</strong>
+      <button class="theme-btn" id="certModalClose" type="button" aria-label="Close preview">×</button>
+    </div>
+  <div class="cert-preview" id="certPreview" aria-label="Certificate preview"></div>
+</div>
+</div>
+
+<script>
+/* ============================================================
+   DATA - loaded statically from data.json.
+   Edit data.json then commit & push to update.
+   ============================================================ */
+
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => (
+    {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]
+  ));
+}
+
+function statusLabel(s){
+  return { done: "Published", review: "In review", demo: "Example", Proven: "Proven" }[s] || s;
+}
+
+function renderLog(containerId, items, opts){
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map((item) => {
+    const metaBits = [];
+    if (opts.showDoi && item.doi) metaBits.push(`<a href="https://doi.org/${esc(item.doi)}" target="_blank" rel="noopener">DOI: ${esc(item.doi)}</a>`);
+    if (item.category) metaBits.push(item.category);
+    let preview;
+    if (opts.openPoc) {
+      preview = `<span class="hint">open detail ↗</span>`;
+    } else {
+      preview = item.driveLink
+        ? `<a href="${esc(item.driveLink)}" target="_blank" rel="noopener">View Document ↗</a>`
+        : `<span style="color:var(--muted)">Document link pending</span>`;
+    }
+    metaBits.push(preview);
+    const entryAttrs = opts.openPoc
+      ? ` class="log-entry clickable" data-open-poc="${esc(item.key)}"`
+      : ` class="log-entry"`;
+    return `
+      <div${entryAttrs}>
+        <div class="log-ts">${esc(item.date)}</div>
+        <div class="log-main">
+          <h3>${opts.showDoi && item.driveLink ? `<a href="${esc(item.driveLink)}" target="_blank" rel="noopener">${item.full_title ? esc(item.full_title) : esc(item.title)}</a>` : (opts.showDoi && item.full_title ? esc(item.full_title) : esc(item.title))}</h3>
+          ${opts.showDoi && item.authors ? `<p class="r-authors">${esc(item.authors)}</p>` : ""}
+          ${opts.showDoi && (item.journal_name||item.journal) ? `<p class="r-journal">${[item.journal_name||item.journal, item.volume, item.date].filter(Boolean).join(" - ")}</p>` : (item.description ? `<p>${esc(item.description)}</p>` : "")}
+          <div class="meta">${metaBits.join('<span style="color:var(--line)">·</span>')}</div>
+        </div>
+        <span class="status ${esc(item.status)}">${statusLabel(item.status)}</span>
+      </div>`;
+  }).join("");
+}
+
+function renderCerts(certs){
+  const el = document.getElementById("cert-grid");
+  el.innerHTML = certs.map(c => `
+    <div class="cert-card">
+      <div class="cert-badge">${esc(c.name.split(" ").map(w=>w[0]).slice(0,2).join(""))}</div>
+      <div class="cert-info">
+        <h3>${esc(c.name)}</h3>
+        <div class="issuer">${esc(c.issuer)}</div>
+        <div class="id">ID: ${esc(c.id)}</div>
+        ${c.verifyLink
+          ? `<button class="verify cert-preview-link" type="button" data-cert-url="${esc(c.verifyLink)}">Preview ↗</button>`
+          : `<span class="verify" style="color:var(--muted)">Verify link pending</span>`}
+      </div>
+    </div>`).join("");
+}
+
+function renderBooks(books){
+  const el = document.getElementById("book-grid");
+  el.innerHTML = books.map(b => `
+    <div class="book-card">
+      <div class="book-cover">${b.cover
+        ? `<img src="${esc(b.cover)}" alt="${esc(b.title)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`
+        : `<span>${esc(b.title)}</span>`}</div>
+      <div class="book-info">
+        <div class="cat">${esc(b.category)}</div>
+        <h3>${esc(b.title)}</h3>
+        <p>${esc(b.note || "")}</p>
+        ${b.isbn ? `<p style="font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:0 0 6px;">ISBN ${esc(b.isbn)}</p>` : ""}
+        ${b.link
+          ? `<a href="${esc(b.link)}" target="_blank" rel="noopener">View ↗</a>`
+          : `<span style="color:var(--muted); font-family:var(--mono); font-size:11.5px;">Link pending</span>`}
+      </div>
+    </div>`).join("");
+}
+
+async function fetchJSON(url){
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error("not ok: " + url);
+  return r.json();
+}
+
+// ALL_POC is cached so detail pages can look up entries by key.
+let ALL_POC = [];
+
+async function loadData(){
+  const data = await fetchJSON("/data/data.json");
+  ALL_POC = (data.poc || []).slice().sort((a,b) => b.date.localeCompare(a.date));
+  document.getElementById("fabWa").href = `https://wa.me/${data.config.whatsapp}`;
+  const pocPreview = ALL_POC.slice(0, 3);
+  renderLog("poc-log", pocPreview, { showDoi:false, openPoc:true });
+  const hlAll = (data.homelab || []).slice().sort((a,b) => b.date.localeCompare(a.date));
+  renderLog("lab-log", hlAll.slice(0, 3), { showDoi:false, openPoc:true, isHomelab:true });
+  const rsAll = (data.research || []).slice().sort((a,b) => b.date.localeCompare(a.date));
+  renderLog("research-log", rsAll.filter(r => r.status === "done").slice(0, 3), { showDoi:true });
+  renderCerts(data.certs || []);
+  renderBooks(data.books || []);
+  // Anchor scroll (e.g. /#certs) fires while grids are still empty, so the
+  // native scroll position is computed against a short document and lands
+  // too high once data.json fills the cards in. Re-scroll to the hash
+  // target after render so it lands on the correct section.
+  if (/^#[A-Za-z][\w:.-]*$/.test(location.hash)) {
+    const target = document.querySelector(location.hash);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+
+/* ---- PoC detail routing (hash) ---- */
+function showHome(){
+  document.getElementById("home").style.display = "";
+  document.getElementById("poc-detail").style.display = "none";
+  window.scrollTo(0, 0);
+}
+
+function renderPocDetail(item){
+  document.getElementById("poc-detail-title").textContent = item.title;
+  const rows = [
+    ["DATE", item.date],
+    ["CATEGORY", item.category],
+    ["STATUS", statusLabel(item.status)],
+    ["SEVERITY", item.severity],
+    ["TARGET", item.target]
+  ].filter(r => r[1]);
+  const shots = (item.screenshots || []).map(u =>
+    `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="screenshot" loading="lazy"></a>`
+  ).join("");
+  const dl = item.driveLink
+    ? `<a class="btn" href="${esc(item.driveLink)}" target="_blank" rel="noopener">View document ↗</a>`
+    : "";
+  document.getElementById("poc-detail-body").innerHTML = `
+    <div class="capture-frame" style="cursor:default;">
+      <div class="capture-head"><span>poc - detail</span><span class="hint">${esc(statusLabel(item.status))}</span></div>
+      <div class="capture-body">
+        <div class="detail-grid">
+          ${rows.map(([k,v]) => `<div class="field-row"><span>${k}</span><span><b>${esc(v)}</b></span></div>`).join("")}
+        </div>
+        ${item.description ? `<p class="detail-desc">${esc(item.description)}</p>` : ""}
+        ${item.impact ? `<div class="detail-block"><span class="lbl">Impact</span><p>${esc(item.impact)}</p></div>` : ""}
+        ${item.remediation ? `<div class="detail-block"><span class="lbl">Remediation</span><p>${esc(item.remediation)}</p></div>` : ""}
+        ${shots ? `<div class="detail-block"><span class="lbl">Screenshots</span><div class="shot-grid">${shots}</div></div>` : ""}
+        <div class="detail-actions">
+          ${dl}
+          <a class="btn ghost" href="#poc">← Back to list</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function loadPoc(key){
+  const item = (ALL_POC || []).find(x => x.key === key);
+  if (!item) { showHome(); return; }
+  // If this PoC has a dedicated write-up page, redirect there instead of
+  // rendering the inline detail view. Keeps a single source of truth.
+  if (item.pageUrl) { location.replace(item.pageUrl); return; }
+  document.getElementById("home").style.display = "none";
+  document.getElementById("poc-detail").style.display = "block";
+  renderPocDetail(item);
+  window.scrollTo(0, 0);
+}
+
+function route(){
+  const m = location.hash.match(/^#\/poc\/(.+)$/);
+  if (m) { loadPoc(decodeURIComponent(m[1])); return; }
+  // Only reset to home view if we were on a PoC detail page.
+  // Otherwise leave the browser's native anchor scrolling alone (nav links, etc).
+  const detail = document.getElementById("poc-detail");
+  if (detail && detail.style.display === "block") showHome();
+}
+
+document.getElementById("poc-log").addEventListener("click", (e) => {
+  const entry = e.target.closest("[data-open-poc]");
+  if (!entry) return;
+  const key = entry.dataset.openPoc;
+  const item = (ALL_POC || []).find(x => x.key === key);
+  if (item && item.pageUrl) { location.href = item.pageUrl; return; }
+  console.warn("PoC entry has no pageUrl:", key);
+});
+
+document.getElementById("lab-log").addEventListener("click", (e) => {
+  const entry = e.target.closest("[data-open-poc]");
+  if (!entry) return;
+  const key = entry.dataset.openPoc;
+  // homelab data fetched inside loadData - re-fetch or cache
+  fetch("/data/data.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
+    const item = (d.homelab||[]).find(x=>x.key===key);
+    if (item && item.pageUrl) { location.href = item.pageUrl; return; }
+  });
+});
+
+loadData();
+
+const certModal = document.getElementById("certModal");
+const certPreview = document.getElementById("certPreview");
+const certModalClose = document.getElementById("certModalClose");
+function closeCertPreview(){
+  certModal.hidden = true;
+  certPreview.replaceChildren();
+}
+document.getElementById("cert-grid").addEventListener("click", (e) => {
+  const button = e.target.closest("[data-cert-url]");
+  if (!button) return;
+  certModal.hidden = false;
+  const image = document.createElement("img");
+  image.src = button.dataset.certUrl;
+  image.alt = "Certificate preview";
+  certPreview.replaceChildren(image);
+});
+certModalClose.addEventListener("click", closeCertPreview);
+certModal.addEventListener("click", (e) => {
+  if (e.target === certModal) closeCertPreview();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !certModal.hidden) closeCertPreview();
+});
+
+window.addEventListener("scroll", () => {
+  // fabTop handled by loader.js
+});
+</script>
+{{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

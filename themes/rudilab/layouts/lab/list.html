@@ -74,7 +74,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--muted);f
 
   <div class="page-header">
     <h1>Lab Guides</h1>
-    <p class="sub">Step-by-step security lab guides - Docker Compose, SIEM, IDS, and more. Click a stack tag to filter.</p>
+    <p class="sub">Step-by-step security lab guides - Docker Compose, SIEM, IDS, and more. Click a stack tag to filter. {{ with .OutputFormats.Get "printlab" }}<a href="{{ .RelPermalink }}" style="font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-left:8px;white-space:nowrap">⬇ Print all → PDF</a>{{ end }}</p>
   </div>
 
   <div class="toolbar">

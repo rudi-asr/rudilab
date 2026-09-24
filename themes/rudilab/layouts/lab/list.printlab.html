@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ i18n "section_lab" }} - Print - Rudi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico">
+  <style>
+    /* Print/PDF presentation untuk Homelab guides - bersih, kertas */
+    :root{
+      --ink:#111820; --muted:#66748a; --line:#ccd4de; --soft:#eef1f6;
+      --accent:#0f6b3a; --cy:#1f6f8a; --am:#8a5a00; --rd:#8a1f1f;
+      --mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+      --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:#fff;color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.6}
+    a{color:var(--accent);text-decoration:none}
+    .print-head{padding:36px 40px 20px;border-bottom:2px solid var(--ink)}
+    .print-head h1{font-size:24px;margin:0 0 6px}
+    .print-head .sub{font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .toc{padding:20px 40px;background:var(--soft);border-bottom:1px solid var(--line);font-size:13px}
+    .toc a{display:block;padding:2px 0;color:var(--ink)}
+    .toc a:hover{color:var(--accent)}
+    .lab{padding:34px 40px 8px;border-bottom:1px solid var(--line);page-break-before:always}
+    .lab:first-of-type{page-break-before:auto}
+    .lab .doc h1{font-size:20px;margin:0 0 4px}
+    .lab .docmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0 20px}
+    .lab .docmeta div{background:var(--soft);padding:8px 12px}
+    .lab .docmeta dt{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+    .lab .docmeta dd{margin:0;font-size:12.5px}
+    .badge{display:inline-block;padding:1px 8px;border-radius:3px;font-size:11px;border:1px solid var(--line)}
+    .badge.beginner{color:var(--accent);border-color:var(--accent)}
+    section{padding:6px 0 4px}
+    h2{margin:22px 0 10px;font-size:16px;border-bottom:1px solid var(--soft);padding-bottom:6px}
+    h2 i{font-family:var(--mono);font-style:normal;font-size:12px;color:var(--cy);margin-right:6px}
+    p{margin:0 0 12px;text-align:justify}
+    ul,ol{margin:4px 0 14px;padding-left:22px}
+    li{margin-bottom:4px}
+    code{font-family:var(--mono);font-size:11.5px;background:var(--soft);border:1px solid var(--line);padding:0 4px;border-radius:3px}
+    pre{margin:10px 0 16px;padding:12px 14px;background:var(--soft);border:1px solid var(--line);border-radius:6px;overflow-x:auto;font-family:var(--mono);font-size:11px;line-height:1.55;page-break-inside:avoid;white-space:pre}
+    pre code{background:none;border:none;padding:0;font-size:11px}
+    table{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:11.5px;page-break-inside:avoid}
+    th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+    figure{margin:14px 0;page-break-inside:avoid}
+    figure img{max-width:100%;border:1px solid var(--line);border-radius:6px}
+    figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);padding-top:6px}
+    .note{font-size:12px;color:var(--muted);border-left:3px solid var(--am);padding:8px 12px;background:var(--soft);border-radius:0 6px 6px 0}
+    .backlink{display:none}
+    .print-foot{padding:24px 40px 60px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+    .btn-print{position:fixed;right:22px;bottom:22px;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .btn-print:hover{background:var(--accent)}
+    @media print{
+      .btn-print,.toc{display:none}
+      .lab{padding:20px 0 6px}
+      h2{page-break-after:avoid}
+      body{font-size:12px}
+    }
+  </style>
+</head>
+<body>
+  <div class="print-head">
+    <h1>{{ i18n "section_lab" }} - Complete Print Edition</h1>
+    <div class="sub">rudilab.my.id · Rudi · Offensive Security | Penetration Tester | Infrastructure Security · {{ now.Format "2006-01-02" }}</div>
+  </div>
+
+  <div class="toc">
+    <strong>Contents</strong>
+    {{ range .Pages.ByDate }}
+      <a href="#{{ .File.ContentBaseName }}">{{ with .Params.lab_num }}{{ . }} - {{ end }}{{ .Title }}</a>
+    {{ end }}
+  </div>
+
+  {{ range .Pages.ByDate }}
+  <div class="lab" id="{{ .File.ContentBaseName }}">
+    {{ .Content }}
+  </div>
+  {{ end }}
+
+  <div class="print-foot">
+    Generated from markdown sources. Lab guides are step-by-step walkthroughs for self-hosted security tools.
+  </div>
+
+  <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+</body>
+</html>

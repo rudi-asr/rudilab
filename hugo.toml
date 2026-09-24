@@ -12,6 +12,12 @@ defaultContentLanguageInSubdir = false
     isHTML = true
     permalinkable = true
 
+  [outputFormats.printlab]
+    mediaType = "text/html"
+    baseName = "printlab"
+    isHTML = true
+    permalinkable = true
+
 [outputs]
   # per-section outputs diatur via front matter _index.md (poc: ["html","print"])
 

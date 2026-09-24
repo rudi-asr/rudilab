@@ -160,7 +160,7 @@ html[data-theme="light"] .tag-btn.active{color:#fff}
 
   <div class="page-header">
     <h1>PoC Write-ups</h1>
-    <p class="sub">Vulnerability research case studies - click a tag to filter, or search by title / category.</p>
+    <p class="sub">Vulnerability research case studies - click a tag to filter, or search by title / category. {{ with .OutputFormats.Get "print" }}<a href="{{ .RelPermalink }}" style="font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-left:8px;white-space:nowrap">⬇ Print all → PDF</a>{{ end }}</p>
   </div>
 
   <!-- TOOLBAR -->

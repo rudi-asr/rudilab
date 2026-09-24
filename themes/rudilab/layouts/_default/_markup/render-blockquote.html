@@ -1,0 +1,13 @@
+{{- /* blockquote: marker IMPACT:: / FIX:: / NOTCLAIMED:: -> callout; else plain blockquote */ -}}
+{{- $t := .Text -}}
+{{- if findRE `(?s)^<p>(IMPACT|FIX|NOTCLAIMED)::` $t -}}
+  {{- $cls := replaceRE `(?s)^<p>(IMPACT|FIX|NOTCLAIMED)::.*$` `$1` $t -}}
+  {{- $label := replaceRE `(?s)^<p>(?:IMPACT|FIX|NOTCLAIMED)::\s*([^\n<]*).*$` `$1` $t -}}
+  {{- $body := replaceRE `(?s)^<p>(?:IMPACT|FIX|NOTCLAIMED)::[^<]*</p>\s*` `` $t -}}
+  {{- if findRE `(?s)^<p>(?:IMPACT|FIX|NOTCLAIMED)::` $body -}}
+    {{- $body = replaceRE `(?s)^<p>(?:IMPACT|FIX|NOTCLAIMED)::` `<p>` $body -}}
+  {{- end -}}
+  <div class="callout {{ lower $cls }}">{{ if $label }}<span class="label">{{ $label }}</span>{{ end }}{{ if $body }}<div class="callout-body">{{ $body | safeHTML }}</div>{{ end }}</div>
+{{- else -}}
+  <blockquote>{{ $t | safeHTML }}</blockquote>
+{{- end -}}

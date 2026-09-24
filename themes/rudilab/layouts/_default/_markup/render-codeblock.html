@@ -1,0 +1,13 @@
+{{- /* codeblock: fenced ```lang {label="..."} -> .code + .code-head + chroma */ -}}
+<div class="code">
+  <div class="code-head">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span>{{ with .Attributes.label }}{{ . }}{{ else }}{{ .Type | default "code" }}{{ end }}</span>
+  </div>
+  {{- $lang := .Type | default "" -}}
+  {{- if $lang -}}
+    {{ transform.Highlight .Inner $lang }}
+  {{- else -}}
+    <pre><code>{{ .Inner }}</code></pre>
+  {{- end -}}
+</div>

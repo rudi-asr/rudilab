@@ -5,8 +5,23 @@ uglyURLs = true
 defaultContentLanguage        = "en"
 defaultContentLanguageInSubdir = false
 
+[outputFormats]
+  [outputFormats.print]
+    mediaType = "text/html"
+    baseName = "print"
+    isHTML = true
+    permalinkable = true
+
+[outputs]
+  # per-section outputs diatur via front matter _index.md (poc: ["html","print"])
+
 [markup.goldmark.renderer]
   unsafe = true
+
+[markup.highlight]
+  codeFences = true
+  noClasses = false
+  style = "monokai"
 
 [markup.tableOfContents]
   startLevel = 2

@@ -281,6 +281,15 @@
       "note": "Penerbit Mafy",
       "link": "https://penerbitmafy.com/produk/pengantar-sistem-komputer-dari-representasi-data-hingga-sistem-komputer-terintegrasi/",
       "cover": "/images/books/pengantar-sistem-komputer.png"
+    },
+    {
+      "key": "b3",
+      "title": "Pengantar Hukum Siber: Cyber Law",
+      "category": "Buku Kolaborasi",
+      "note": "Penerbit Buku Sonpedia, Okt 2026 - 98 hlm",
+      "isbn": "978-634-345-000-9",
+      "link": "https://buku.sonpedia.com/2026/09/pengantar-hukum-siber-cyber-law.html",
+      "cover": "/images/books/cyber-law.jpeg"
     }
   ],
   "homelab": [

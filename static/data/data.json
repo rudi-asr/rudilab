@@ -266,8 +266,9 @@
     {
       "key": "c9",
       "name": "Certified Cybersecurity Educator Professional (CCEP)",
-      "issuer": "EC-Council",
-      "id": "-"
+      "issuer": "Red Team Leaders",
+      "id": "aa29b02542260e09",
+      "verifyUrl": "https://courses.redteamleaders.com/exam-completion/aa29b02542260e09"
     }
   ],
   "books": [

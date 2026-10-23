@@ -121,6 +121,9 @@
   .cert-info .issuer{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-bottom:6px;}
   .cert-info .id{font-family:var(--mono); font-size:11px; color:var(--muted);}
   .cert-info .verify{font-family:var(--mono); font-size:11px; margin-top:4px; display:inline-block;}
+  .cert-info .cert-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:4px;}
+  .cert-info .cert-actions .verify{margin-top:0;}
+  .cert-info a.verify{color:var(--accent-2); text-decoration:underline;}
   .cert-preview-link{background:none; border:0; padding:0; color:var(--accent-2); cursor:pointer; text-decoration:underline;}
   .cert-modal{position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
     padding:20px; background:rgba(0,0,0,.72);}
@@ -404,8 +407,14 @@ function renderCerts(certs){
         <h3>${esc(c.name)}</h3>
         <div class="issuer">${esc(c.issuer)}</div>
         <div class="id">ID: ${esc(c.id)}</div>
-        ${c.verifyLink
-          ? `<button class="verify cert-preview-link" type="button" data-cert-url="${esc(c.verifyLink)}">Preview ↗</button>`
+        ${(c.verifyLink || c.verifyUrl) ? `<div class="cert-actions">
+          ${c.verifyLink
+            ? `<button class="verify cert-preview-link" type="button" data-cert-url="${esc(c.verifyLink)}">Preview ↗</button>`
+            : ""}
+          ${c.verifyUrl
+            ? `<a class="verify" href="${esc(c.verifyUrl)}" target="_blank" rel="noopener">Verify ↗</a>`
+            : ""}
+        </div>`
           : `<span class="verify" style="color:var(--muted)">Verify link pending</span>`}
       </div>
     </div>`).join("");

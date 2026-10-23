@@ -262,6 +262,12 @@
       "issuer": "eSecurity Institute",
       "id": "jklxvyb9lb",
       "verifyLink": "/images/certifications/Certied Computer Forensics Analyst (CCFA).jpg"
+    },
+    {
+      "key": "c9",
+      "name": "Certified Cybersecurity Educator Professional (CCEP)",
+      "issuer": "EC-Council",
+      "id": "-"
     }
   ],
   "books": [
